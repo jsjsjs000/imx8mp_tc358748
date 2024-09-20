@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/clock/imx8mp-clock.h>
+#include <dt-bindings/gpio/gpio.h>
+#include "../imx8mp-pinfunc.h"
+
+/ {
+	compatible = "phytec,imx8mp-phyboard-pollux";
+};
+
+/* I2C3 */
+&i2c3 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	clock-frequency = <400000>;
+	status = "okay";
+
+	tc358748@0e {
+		compatible = "pco,tc358748_driver";
+		reg = <0x0e>;
+		status = "okay";
+	};
+};
