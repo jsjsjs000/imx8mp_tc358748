@@ -403,7 +403,7 @@ static bool tc358748_setup(void)
 	confctl = num_data_lanes - 1;
 	confctl |=
 			(1 << 2) |  /* I2C slave index increment */
-			// (1 << 3) |  /* Parallel clock polarity inverted - $$ nVidia driver */
+			(1 << 3) |  /* Parallel clock polarity inverted - $$ nVidia driver */
 			(1 << 4) |  /* H Sync active low */
 			(1 << 5) |  /* V Sync active low */
 			(1 << 6) |  /* Parallel port enable - $$ nVidia driver */
@@ -419,20 +419,25 @@ static bool tc358748_setup(void)
 
 
 
-i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x60);
-i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
-i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
-i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
-i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
-i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
-i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
-i2c_write_reg32(tc358748_i2c_client, D2W_CNTRL, 0x14c);
-i2c_write_reg32(tc358748_i2c_client, D3W_CNTRL, 0x150);
+// i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x60);
+// i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
+// i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
+// i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
+// i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
+// i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
+// i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
+// i2c_write_reg32(tc358748_i2c_client, D2W_CNTRL, 0x14c);
+// i2c_write_reg32(tc358748_i2c_client, D3W_CNTRL, 0x150);
 i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
 i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
 i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
-i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
-i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+
+// i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
+i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 1);
+// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffffff - 0xffffee03);
+i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 1);
+
 i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
 i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
 i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, 0x1);
@@ -440,7 +445,7 @@ i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
 i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
 i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
 i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
-// return true;
+return true;
 
 
 
@@ -656,31 +661,31 @@ t_wakeup=1; // $$
 
 		/* Setup the debug output */
 		/* DBG_LCNT */
-	dbg_cnt = height - 1;
-	if (!i2c_write_reg16(tc358748_i2c_client, DBG_LCNT, dbg_cnt))
-	{
-		pr_err(TAG "Can't write DBG_LCNT");
-		return false;
-	}
-	pr_info(TAG "DBG_LCNT (0x%04x) = %d", DBG_LCNT, dbg_cnt);
+	// dbg_cnt = height - 1;
+	// if (!i2c_write_reg16(tc358748_i2c_client, DBG_LCNT, dbg_cnt))
+	// {
+	// 	pr_err(TAG "Can't write DBG_LCNT");
+	// 	return false;
+	// }
+	// pr_info(TAG "DBG_LCNT (0x%04x) = %d", DBG_LCNT, dbg_cnt);
 
-		/* DBG_WIDTH */
-	dbg_width = total_width * bpp / 8;
-	if (!i2c_write_reg16(tc358748_i2c_client, DBG_WIDTH, (u16)dbg_width))
-	{
-		pr_err(TAG "Can't write DBG_WIDTH");
-		return false;
-	}
-	pr_info(TAG "DBG_WIDTH (0x%04x) = %d", DBG_WIDTH, dbg_width);
+	// 	/* DBG_WIDTH */
+	// dbg_width = total_width * bpp / 8;
+	// if (!i2c_write_reg16(tc358748_i2c_client, DBG_WIDTH, (u16)dbg_width))
+	// {
+	// 	pr_err(TAG "Can't write DBG_WIDTH");
+	// 	return false;
+	// }
+	// pr_info(TAG "DBG_WIDTH (0x%04x) = %d", DBG_WIDTH, dbg_width);
 
-		/* DBG_VBLANK */
-	dbg_vblank = v_sync - 1;
-	if (!i2c_write_reg16(tc358748_i2c_client, DBG_VBLANK, dbg_vblank))
-	{
-		pr_err(TAG "Can't write DBG_VBLANK");
-		return false;
-	}
-	pr_info(TAG "DBG_VBLANK (0x%04x) = %d", DBG_VBLANK, dbg_vblank);
+	// 	/* DBG_VBLANK */
+	// dbg_vblank = v_sync - 1;
+	// if (!i2c_write_reg16(tc358748_i2c_client, DBG_VBLANK, dbg_vblank))
+	// {
+	// 	pr_err(TAG "Can't write DBG_VBLANK");
+	// 	return false;
+	// }
+	// pr_info(TAG "DBG_VBLANK (0x%04x) = %d", DBG_VBLANK, dbg_vblank);
 
 
 
