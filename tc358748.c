@@ -36,6 +36,11 @@
 #define TXOPTIONCNTRL   0x0238
 #define CSI_CONFW       0x0500
 #define CSI_START       0x0518
+#define CLW_CNTRL       0x0140
+#define D0W_CNTRL       0x0144
+#define D1W_CNTRL       0x0148
+#define D2W_CNTRL       0x014c
+#define D3W_CNTRL       0x0150
 
 #define DBG_LCNT        0x00E0
 #define DBG_WIDTH       0x00E2
@@ -158,7 +163,7 @@ static bool i2c_write(struct i2c_client *client, u8 *send, u16 send_size)
 
 static bool i2c_write_reg16(struct i2c_client *client, u16 reg, u16 value)
 {
-	u8 send[4] = { reg >> 8, reg & 0xff, value & 0xff, value >> 8 };
+	u8 send[4] = { reg >> 8, reg & 0xff, value >> 8, value & 0xff };
 	return i2c_write(client, send, sizeof(send));
 }
 
@@ -176,7 +181,7 @@ static bool i2c_read_reg16(struct i2c_client *client, u16 reg, u16 *ret_value)
 static bool i2c_write_reg32(struct i2c_client *client, u16 reg, u32 value)
 {
 	u8 send[2 + 4] = { reg >> 8, reg & 0xff,
-			(value >> 16) & 0xff, (value >> 24) & 0xff, value & 0xff, (value >> 8) & 0xff };
+			(value >> 8) & 0xff, value & 0xff, (value >> 24) & 0xff, (value >> 16) & 0xff };
 	return i2c_write(client, send, sizeof(send));
 }
 
@@ -245,7 +250,8 @@ static bool tc358748_set_pll(void)
 
 	const u16 fbd = 383;
 	const u8 prd = 1;
-	const u8 frs = 3;
+	const u8 frs = 3;      // Pll_clk =  76'056'360   z DDR
+	// const u8 frs = 2;   // Pll_clk = 152'112'720 bez DDR  $$
 	const u8 sclk_div = frs > 2 ? 2 : frs;
 	const u8 clk_div = sclk_div;
 
@@ -308,35 +314,36 @@ static bool tc358748_setup(void)
 	u16 datafmt;
 	u16 wordcnt;
 
-	u16 width = 640;
-	u16 height = 480;
-	u16 total_width = 800;
-	// u16 total_height = 525;
-	// u16 h_front_porch = 16;
-	// u16 h_sync = 96;
-	// u16 h_back_porch = 48;
-	// u16 v_front_porch = 10;
-	u16 v_sync = 2;
-	// u16 v_back_porch = 33;
+	const u16 width = 640;
+	const u16 height = 480;
+	const u16 total_width = 800;
+	// const u16 total_height = 525;
+	// const u16 h_front_porch = 16;
+	// const u16 h_sync = 96;
+	// const u16 h_back_porch = 48;
+	// const u16 v_front_porch = 10;
+	const u16 v_sync = 2;
+	// const u16 v_back_porch = 33;
 
-	u8 bpp = 24;
-	u8 num_data_lanes = 4;
-	u64 pixelclock = 12676060;                      // 800 * 525 * 30,181095238 = 12'676'060
-	u64 csi_bus = 38028180;                         // 38'028'180
-	u64 csi_rate = bpp * pixelclock;                // 304'225'440 bps
-	u64 csi_lane_rate = csi_rate / num_data_lanes;  // 76'056'360 (min 62'500'000, max 1G)
+	const u8 bpp = 24;
+	const u8 num_data_lanes = 4;
+	const u32 pixelclock = 12676060;                      // 800 * 525 * 30,181095238 = 12'676'060
+	const u32 csi_bus = 38028180;                         // 38'028'180 z DDR  $$
+	// const u32 csi_bus = 76056360;                         // 76'056'360 bez DDR  $$
+	const u32 csi_rate = bpp * pixelclock;                // 304'225'440 bps
+	const u32 csi_lane_rate = csi_rate / num_data_lanes;  // 76'056'360 (min 62'500'000, max 1G)
 
-	u64 hsbyte_clk;
-	u64 linecnt;
-	u64 lptxtime;
-	u64 t_wakeup;
-	u64 tclk_prepare;
-	u64 tclk_zero;
-	u64 tclk_trail;
-	u64 tclk_post;
-	u64 ths_prepare;
-	u64 ths_zero;
-	u64 ths_trail;
+	u32 hsbyte_clk;
+	u32 linecnt;
+	u32 lptxtime;
+	u32 t_wakeup;
+	u32 tclk_prepare;
+	u32 tclk_zero;
+	u32 tclk_trail;
+	u32 tclk_post;
+	u32 ths_prepare;
+	u32 ths_zero;
+	u32 ths_trail;
 
 	u32 tclk_headercnt;
 	u32 ths_headercnt;
@@ -347,19 +354,19 @@ static bool tc358748_setup(void)
 	u32 dbg_width;
 	u16 dbg_vblank;
 
-	pr_info(TAG "bpp = %d", bpp);
-	pr_info(TAG "num_data_lanes = %d", num_data_lanes);
-	pr_info(TAG "pixelclock = %llu", pixelclock);
-	pr_info(TAG "csi_bus = %llu", csi_bus);
-	pr_info(TAG "csi_rate = %llu", csi_rate);
-	pr_info(TAG "csi_lane_rate = %llu", csi_lane_rate);
+	pr_info(TAG "  bpp = %d", bpp);
+	pr_info(TAG "  num_data_lanes = %d", num_data_lanes);
+	pr_info(TAG "  pixelclock = %u", pixelclock);
+	pr_info(TAG "  csi_bus = %u", csi_bus);
+	pr_info(TAG "  csi_rate = %u", csi_rate);
+	pr_info(TAG "  csi_lane_rate = %u", csi_lane_rate);
 
 	if (!i2c_read_reg16(tc358748_i2c_client, CHIPID, &chip_id))
 	{
 		pr_err(TAG "Can't read ChipId");
 		return false;
 	}
-	
+
 	if (chip_id != 0x4401)
 	{
 		pr_err(TAG "Chip not found - ChipId 0x04%x is not 0x4401", chip_id);
@@ -375,8 +382,8 @@ static bool tc358748_setup(void)
 	}
 	pr_info(TAG "SYSCTL (0x%04x) = 1 - Reset", SYSCTL);
 
-	usleep_range(100, 100);
-	pr_info(TAG "Wait 100us");
+	usleep_range(50 * 1000, 50 * 1000);
+	pr_info(TAG "Wait 50ms");
 
 		/* End of reset */
 	if (!i2c_write_reg16(tc358748_i2c_client, SYSCTL, 0))
@@ -396,11 +403,12 @@ static bool tc358748_setup(void)
 	confctl = num_data_lanes - 1;
 	confctl |=
 			(1 << 2) |  /* I2C slave index increment */
-			(1 << 3) |  /* Parallel clock polarity inverted */
+			// (1 << 3) |  /* Parallel clock polarity inverted - $$ nVidia driver */
 			(1 << 4) |  /* H Sync active low */
 			(1 << 5) |  /* V Sync active low */
-			(1 << 6) |  /* Parallel port enable */
-			(0 << 8);   /* Parallel data format - mode 0 */
+			(1 << 6) |  /* Parallel port enable - $$ nVidia driver */
+			// (0 << 8);   /* Parallel data format - mode 0 */
+			(3 << 8);   /* Parallel data format - reserved - $$ nVidia driver */
 	if (!i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl))
 	{
 		pr_err(TAG "Can't write CONFCTL");
@@ -408,8 +416,39 @@ static bool tc358748_setup(void)
 	}
 	pr_info(TAG "CONFCTL (0x%04x) = 0x%04x", CONFCTL, confctl);
 
+
+
+
+i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x60);
+i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
+i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
+i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
+i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
+i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
+i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
+i2c_write_reg32(tc358748_i2c_client, D2W_CNTRL, 0x14c);
+i2c_write_reg32(tc358748_i2c_client, D3W_CNTRL, 0x150);
+i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
+i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
+i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
+i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
+i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
+i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
+i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, 0x1);
+i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
+i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
+i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
+i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
+// return true;
+
+
+
+
+
+
 		/* FIFOCTL - FiFo level */
-	fifoctl = 16;
+	fifoctl = 1; // 12 RGB888 ;//16;  // $$
 	if (!i2c_write_reg16(tc358748_i2c_client, FIFOCTL, fifoctl))
 	{
 		pr_err(TAG "Can't write FIFOCTL");
@@ -424,7 +463,7 @@ static bool tc358748_setup(void)
 		pr_err(TAG "Can't write DATAFMT");
 		return false;
 	}
-	pr_info(TAG "DATAFMT (0x%04x) = %d - Data Format", DATAFMT, datafmt);
+	pr_info(TAG "DATAFMT (0x%04x) = 0x%04x - Data Format", DATAFMT, datafmt);
 
 		/* WORDCNT */
 	wordcnt = width * bpp / 8;
@@ -479,17 +518,17 @@ static bool tc358748_setup(void)
 			max(clk_ns(csi_lane_rate, 8),
 				60 + clk_ns(csi_lane_rate, 4)));
 
-	pr_info(TAG "hsbyte_clk = %llu", hsbyte_clk);
-	pr_info(TAG "linecnt = %llu", linecnt);
-	pr_info(TAG "lptxtime = %llu", lptxtime);
-	pr_info(TAG "t_wakeup = %llu", t_wakeup);
-	pr_info(TAG "tclk_prepare = %llu", tclk_prepare);
-	pr_info(TAG "tclk_zero = %llu", tclk_zero);
-	pr_info(TAG "tclk_trail = %llu", tclk_trail);
-	pr_info(TAG "tclk_post = %llu", tclk_post);
-	pr_info(TAG "ths_prepare = %llu", ths_prepare);
-	pr_info(TAG "ths_zero = %llu", ths_zero);
-	pr_info(TAG "ths_trail = %llu", ths_trail);
+	pr_info(TAG "  hsbyte_clk = %u", hsbyte_clk);
+	pr_info(TAG "  linecnt = %u", linecnt);
+	pr_info(TAG "  lptxtime = %u", lptxtime);
+	pr_info(TAG "  t_wakeup = %u", t_wakeup);
+	pr_info(TAG "  tclk_prepare = %u", tclk_prepare);
+	pr_info(TAG "  tclk_zero = %u", tclk_zero);
+	pr_info(TAG "  tclk_trail = %u", tclk_trail);
+	pr_info(TAG "  tclk_post = %u", tclk_post);
+	pr_info(TAG "  ths_prepare = %u", ths_prepare);
+	pr_info(TAG "  ths_zero = %u", ths_zero);
+	pr_info(TAG "  ths_trail = %u", ths_trail);
 
 
 		/* Setup D-PHY */
@@ -499,7 +538,7 @@ static bool tc358748_setup(void)
 		pr_err(TAG "Can't write LINEINITCNT");
 		return false;
 	}
-	pr_info(TAG "LINEINITCNT (0x%04x) = %llu", LINEINITCNT, linecnt);
+	pr_info(TAG "LINEINITCNT (0x%04x) = %u", LINEINITCNT, linecnt);
 
 		/* LPTXTIMECNT */
 	if (!i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, lptxtime))
@@ -507,7 +546,7 @@ static bool tc358748_setup(void)
 		pr_err(TAG "Can't write LPTXTIMECNT");
 		return false;
 	}
-	pr_info(TAG "LPTXTIMECNT (0x%04x) = %llu", LPTXTIMECNT, lptxtime);
+	pr_info(TAG "LPTXTIMECNT (0x%04x) = %u", LPTXTIMECNT, lptxtime);
 
 		/* TCLK_HEADERCNT */
 	tclk_headercnt = tclk_prepare | (tclk_zero << 8);
@@ -524,7 +563,7 @@ static bool tc358748_setup(void)
 		pr_err(TAG "Can't write TCLK_TRAILCNT");
 		return false;
 	}
-	pr_info(TAG "TCLK_TRAILCNT (0x%04x) = %llu", TCLK_TRAILCNT, tclk_trail);
+	pr_info(TAG "TCLK_TRAILCNT (0x%04x) = %u", TCLK_TRAILCNT, tclk_trail);
 
 		/* THS_HEADERCNT */
 	ths_headercnt = ths_prepare | (ths_zero << 8);
@@ -536,12 +575,13 @@ static bool tc358748_setup(void)
 	pr_info(TAG "THS_HEADERCNT (0x%04x) = 0x%08x", THS_HEADERCNT, ths_headercnt);
 
 		/* TWAKEUP */
+t_wakeup=1; // $$
 	if (!i2c_write_reg32(tc358748_i2c_client, TWAKEUP, t_wakeup))
 	{
 		pr_err(TAG "Can't write TWAKEUP");
 		return false;
 	}
-	pr_info(TAG "TWAKEUP (0x%04x) = %llu", TWAKEUP, t_wakeup);
+	pr_info(TAG "TWAKEUP (0x%04x) = %u", TWAKEUP, t_wakeup);
 
 		/* TCLK_POSTCNT */
 	if (!i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, tclk_post))
@@ -549,7 +589,7 @@ static bool tc358748_setup(void)
 		pr_err(TAG "Can't write TCLK_POSTCNT");
 		return false;
 	}
-	pr_info(TAG "TCLK_POSTCNT (0x%04x) = %llu", TCLK_POSTCNT, tclk_post);
+	pr_info(TAG "TCLK_POSTCNT (0x%04x) = %u", TCLK_POSTCNT, tclk_post);
 
 		/* THS_TRAILCNT */
 	if (!i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, ths_trail))
@@ -557,7 +597,7 @@ static bool tc358748_setup(void)
 		pr_err(TAG "Can't write THS_TRAILCNT");
 		return false;
 	}
-	pr_info(TAG "THS_TRAILCNT (0x%04x) = %llu", THS_TRAILCNT, ths_trail);
+	pr_info(TAG "THS_TRAILCNT (0x%04x) = %u", THS_TRAILCNT, ths_trail);
 
 		/* HSTXVREGCNT */
 	hstxvregcnt = 5;
@@ -603,9 +643,9 @@ static bool tc358748_setup(void)
 
 		/* CSI_CONFW */
 	csi_confw = CSI_SET_REGISTER | CSI_CONTROL_REG |
-				((num_data_lanes - 1) << 1 |
+				((num_data_lanes - 1) << 1) |
 				(1 << 7) |   /* High-speed mode */
-				(1 << 15));  /* CSI mode */
+				(1 << 15);   /* CSI mode */
 	if (!i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, csi_confw))
 	{
 		pr_err(TAG "Can't write CSI_CONFW");
