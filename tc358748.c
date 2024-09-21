@@ -428,6 +428,60 @@ static bool tc358748_setup(void)
 // i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
 // i2c_write_reg32(tc358748_i2c_client, D2W_CNTRL, 0x14c);
 // i2c_write_reg32(tc358748_i2c_client, D3W_CNTRL, 0x150);
+// i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
+// i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
+
+// // i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 1);
+// // i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+// // i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffffff - 0xffffee03);
+// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 1);
+
+// i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
+// i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, 0x1);
+// i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
+// i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
+// i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
+// i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
+// return true;
+
+
+
+
+
+
+		/* FIFOCTL - FiFo level */
+	// fifoctl = 1; // 12 RGB888 ;//16;  // $$
+	// if (!i2c_write_reg16(tc358748_i2c_client, FIFOCTL, fifoctl))
+	// {
+	// 	pr_err(TAG "Can't write FIFOCTL");
+	// 	return false;
+	// }
+	// pr_info(TAG "FIFOCTL (0x%04x) = %d - FiFo Level", FIFOCTL, fifoctl);
+
+	// 	/* DATAFMT - Data Format */
+	// datafmt = (3 << 4);  /* 3 - RGB888 */
+	// if (!i2c_write_reg16(tc358748_i2c_client, DATAFMT, datafmt))
+	// {
+	// 	pr_err(TAG "Can't write DATAFMT");
+	// 	return false;
+	// }
+	// pr_info(TAG "DATAFMT (0x%04x) = 0x%04x - Data Format", DATAFMT, datafmt);
+
+	// 	/* WORDCNT */
+	// wordcnt = width * bpp / 8;
+	// if (!i2c_write_reg16(tc358748_i2c_client, WORDCNT, wordcnt))
+	// {
+	// 	pr_err(TAG "Can't write WORDCNT");
+	// 	return false;
+	// }
+	// pr_info(TAG "WORDCNT (0x%04x) = %d - Word count", WORDCNT, wordcnt);
+
+
+
+
 i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
 i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
 i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
@@ -449,35 +503,6 @@ return true;
 
 
 
-
-
-
-		/* FIFOCTL - FiFo level */
-	fifoctl = 1; // 12 RGB888 ;//16;  // $$
-	if (!i2c_write_reg16(tc358748_i2c_client, FIFOCTL, fifoctl))
-	{
-		pr_err(TAG "Can't write FIFOCTL");
-		return false;
-	}
-	pr_info(TAG "FIFOCTL (0x%04x) = %d - FiFo Level", FIFOCTL, fifoctl);
-
-		/* DATAFMT - Data Format */
-	datafmt = (3 << 4);  /* 3 - RGB888 */
-	if (!i2c_write_reg16(tc358748_i2c_client, DATAFMT, datafmt))
-	{
-		pr_err(TAG "Can't write DATAFMT");
-		return false;
-	}
-	pr_info(TAG "DATAFMT (0x%04x) = 0x%04x - Data Format", DATAFMT, datafmt);
-
-		/* WORDCNT */
-	wordcnt = width * bpp / 8;
-	if (!i2c_write_reg16(tc358748_i2c_client, WORDCNT, wordcnt))
-	{
-		pr_err(TAG "Can't write WORDCNT");
-		return false;
-	}
-	pr_info(TAG "WORDCNT (0x%04x) = %d - Word count", WORDCNT, wordcnt);
 
 
 		/* Compute the D-PHY settings */
