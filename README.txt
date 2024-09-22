@@ -26,7 +26,7 @@ alias up_all='ssh root@192.168.3.11 " \
   scp drivers/media/i2c/tc358748.ko root@192.168.3.11:/lib/modules/5.15.71-bsp-yocto-nxp-i.mx8mp-pd23.1.0/kernel/drivers/media/i2c/ && \
   scp ~/linux-imx-v5.15.71_2.2.2-phy/arch/arm64/boot/dts/freescale/overlays/imx8mp-tc358748-i2c3.dtbo root@192.168.3.11:/boot/'
 alias re='ssh root@192.168.3.11 reboot'
-alias mod='ssh root@192.168.3.11 "modprobe -r tc358748; modprobe tc358748; ls /dev/video*; ls /dev/csi*; ls /dev/media*"'
+alias mod='ssh root@192.168.3.11 "modprobe -r tc358748; modprobe tc358748; ls /dev/video*; ls /dev/csi*; ls /dev/media*; media-ctl -p"'
 
 clear; co && up && mod
 
@@ -39,3 +39,5 @@ dmesg | tail
 
 i2cdetect -y 2  # I2C3
 #> 0e as UU
+
+dmesg | grep -i 'tc358748\|video\|csi\|isi\|media'
