@@ -96,7 +96,7 @@
 
 
 
-
+// from AR0521
 &{/} {
 	vm017_csi1_clk: vm017-csi1-ext-clk {
 		#clock-cells = <0>;

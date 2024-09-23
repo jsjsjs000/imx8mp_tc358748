@@ -367,11 +367,12 @@ bool tc358748_setup(struct i2c_client *client)
 // $$ działa za każdym razem w 640 RGB888, ale nie działa reset software'owy - resetować zasilaniem
 
 // i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x60);
-i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x30);   // RGB888
+// i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x30);   // RGB888
 i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
 i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
-// i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
-i2c_write_reg16(tc358748_i2c_client, WORDCNT, 640 * 3); // 640
+i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
+// i2c_write_reg16(tc358748_i2c_client, WORDCNT, 640 * 3); // 640
+i2c_write_reg32(tc358748_i2c_client, CSI_RESET, 0);
 i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
 i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
 i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
@@ -381,11 +382,10 @@ i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
 i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
 i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
 
-// i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
+i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
 i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 1);
-// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
-// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffffff - 0xffffee03);
-i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0x0101);
+i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0x0101);
 
 i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
 i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
@@ -396,3 +396,28 @@ i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
 i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
 return true;
 }
+
+bool tc358748_stop(struct i2c_client *client)
+{
+	i2c_write_reg32(tc358748_i2c_client, CSI_RESET, 0x03);
+	// i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
+	i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
+	i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
+	i2c_write_reg16(tc358748_i2c_client, SYSCTL, 1);
+	return true;
+}
+
+/*
+
+reset z stm32 dopiero po włączeniu zegara od FPGA
+
+
+(PP_MISC)  0x0032
+Clear RstPtr and FrmStop to 1’b0
+0xc000 reset -> 0 normal
+
+
+(ConfCtl: 0x0004)
+PPEn - 6 bit włączać dopiero na końcu inicjalizacji
+
+*/

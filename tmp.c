@@ -528,8 +528,8 @@ struct priv_ioctl priv_ioctls[] = {
 
 static inline struct ar0521 *to_ar0521(struct v4l2_subdev *sd);
 static inline int bpp_to_index(unsigned int bpp);
-static int ar0521_read(struct ar0521 *sensor, u16 reg, u16 *val);
-static int ar0521_write(struct ar0521 *sensor, u16 reg, u16 val);
+// static int ar0521_read(struct ar0521 *sensor, u16 reg, u16 *val);
+// static int ar0521_write(struct ar0521 *sensor, u16 reg, u16 val);
 static int ar0521_s_stream(struct v4l2_subdev *sd, int enable);
 static int ar0521_set_selection(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *state,
@@ -891,125 +891,127 @@ static int ar0521_vv_set_fps(struct ar0521 *sensor, void *args)
 	return 0;
 }
 
-static int ar0521_vv_read_reg(struct ar0521 *sensor, void *args)
-{
-	struct device *dev = sensor->subdev.dev;
-	struct vvcam_sccb_data_s reg;
-	int ret;
+// static int ar0521_vv_read_reg(struct ar0521 *sensor, void *args)
+// {
+// 	struct device *dev = sensor->subdev.dev;
+// 	struct vvcam_sccb_data_s reg;
+// 	int ret;
 
-	dev_dbg(dev, "%s\n", __func__);
+// 	dev_dbg(dev, "%s\n", __func__);
 
-	ret = copy_from_user(&reg, args, sizeof(struct vvcam_sccb_data_s));
-	if (ret)
-		return ret;
+// 	ret = copy_from_user(&reg, args, sizeof(struct vvcam_sccb_data_s));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_read(sensor, reg.addr, (u16 *)&reg.data);
-	if (ret)
-		return ret;
+// 	ret = ar0521_read(sensor, reg.addr, (u16 *)&reg.data);
+// 	if (ret)
+// 		return ret;
 
-	ret = copy_to_user(args, &reg, sizeof(struct vvcam_sccb_data_s));
-	if (ret)
-		return ret;
+// 	ret = copy_to_user(args, &reg, sizeof(struct vvcam_sccb_data_s));
+// 	if (ret)
+// 		return ret;
 
-	return 0;
-}
+// 	return 0;
+// }
 
-static int ar0521_vv_write_reg(struct ar0521 *sensor, void *args)
-{
-	struct device *dev = sensor->subdev.dev;
-	struct vvcam_sccb_data_s reg;
-	int ret;
+// static int ar0521_vv_write_reg(struct ar0521 *sensor, void *args)
+// {
+// 	struct device *dev = sensor->subdev.dev;
+// 	struct vvcam_sccb_data_s reg;
+// 	int ret;
 
-	dev_dbg(dev, "%s\n", __func__);
+// 	dev_dbg(dev, "%s\n", __func__);
 
-	ret = copy_from_user(&reg, args, sizeof(struct vvcam_sccb_data_s));
-	if (ret)
-		return ret;
+// 	ret = copy_from_user(&reg, args, sizeof(struct vvcam_sccb_data_s));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, reg.addr, (u16)reg.data);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, reg.addr, (u16)reg.data);
+// 	if (ret)
+// 		return ret;
 
-	return 0;
-}
+// 	return 0;
+// }
 
 static long ar0521_priv_ioctl(struct v4l2_subdev *sd, unsigned int cmd,
 			      void *arg)
 {
-	struct ar0521 *sensor = to_ar0521(sd);
-	int ret;
-	unsigned int idx;
-
-	if (cmd >= 0x100)
-		idx = cmd - 0x100;
-	else
-		idx = sizeof(priv_ioctls);
-
-	if (idx < sizeof(priv_ioctls))
-		dev_dbg(sd->dev, "%s: %s\n", __func__, priv_ioctls[idx].name);
-	else
-		dev_dbg(sd->dev, "%s: Unknown priv ioctl: 0x%08x\n",
-			__func__, cmd);
-
-	switch (cmd) {
-	case VIDIOC_QUERYCAP:
-		ar0521_vv_querycap(sensor, arg);
-		break;
-	case VVSENSORIOC_QUERY:
-		ret = ar0521_vv_querymode(sensor, arg);
-		if (ret)
-			return -EIO;
-		break;
-	case VVSENSORIOC_G_SENSOR_MODE:
-		ret = ar0521_vv_get_sensormode(sensor, arg);
-		if (ret)
-			return ret;
-		break;
-	case VVSENSORIOC_S_SENSOR_MODE:
-		ret = ar0521_vv_set_sensormode(sensor, arg);
-		if (ret)
-			return ret;
-		break;
-	case VVSENSORIOC_S_STREAM:
-		ret = ar0521_vv_s_stream(sensor, arg);
-		if (ret)
-			return ret;
-		break;
-	case VVSENSORIOC_S_EXP:
-		ret = ar0521_vv_set_exposure(sensor, arg);
-		if (ret)
-			return -EIO;
-		break;
-	case VVSENSORIOC_S_GAIN:
-		ret = ar0521_vv_set_gain(sensor, arg);
-		if (ret)
-			return -EIO;
-		break;
-	case VVSENSORIOC_S_WB:
-		ret = ar0521_vv_set_wb(sensor, arg);
-		break;
-	case VVSENSORIOC_G_FPS:
-		ret = ar0521_vv_get_fps(sensor, arg);
-		break;
-	case VVSENSORIOC_S_FPS:
-		ret = ar0521_vv_set_fps(sensor, arg);
-		break;
-	case VVSENSORIOC_READ_REG:
-		ret = ar0521_vv_read_reg(sensor, arg);
-		if (ret)
-			return ret;
-		break;
-	case VVSENSORIOC_WRITE_REG:
-		ret = ar0521_vv_write_reg(sensor, arg);
-		if (ret)
-			return ret;
-		break;
-	default:
-		return -ENOTTY;
-	};
-
 	return 0;
 }
+// 	struct ar0521 *sensor = to_ar0521(sd);
+// 	int ret;
+// 	unsigned int idx;
+
+// 	if (cmd >= 0x100)
+// 		idx = cmd - 0x100;
+// 	else
+// 		idx = sizeof(priv_ioctls);
+
+// 	if (idx < sizeof(priv_ioctls))
+// 		dev_dbg(sd->dev, "%s: %s\n", __func__, priv_ioctls[idx].name);
+// 	else
+// 		dev_dbg(sd->dev, "%s: Unknown priv ioctl: 0x%08x\n",
+// 			__func__, cmd);
+
+// 	switch (cmd) {
+// 	case VIDIOC_QUERYCAP:
+// 		ar0521_vv_querycap(sensor, arg);
+// 		break;
+// 	case VVSENSORIOC_QUERY:
+// 		ret = ar0521_vv_querymode(sensor, arg);
+// 		if (ret)
+// 			return -EIO;
+// 		break;
+// 	case VVSENSORIOC_G_SENSOR_MODE:
+// 		ret = ar0521_vv_get_sensormode(sensor, arg);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case VVSENSORIOC_S_SENSOR_MODE:
+// 		ret = ar0521_vv_set_sensormode(sensor, arg);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case VVSENSORIOC_S_STREAM:
+// 		ret = ar0521_vv_s_stream(sensor, arg);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case VVSENSORIOC_S_EXP:
+// 		ret = ar0521_vv_set_exposure(sensor, arg);
+// 		if (ret)
+// 			return -EIO;
+// 		break;
+// 	case VVSENSORIOC_S_GAIN:
+// 		ret = ar0521_vv_set_gain(sensor, arg);
+// 		if (ret)
+// 			return -EIO;
+// 		break;
+// 	case VVSENSORIOC_S_WB:
+// 		ret = ar0521_vv_set_wb(sensor, arg);
+// 		break;
+// 	case VVSENSORIOC_G_FPS:
+// 		ret = ar0521_vv_get_fps(sensor, arg);
+// 		break;
+// 	case VVSENSORIOC_S_FPS:
+// 		ret = ar0521_vv_set_fps(sensor, arg);
+// 		break;
+// 	case VVSENSORIOC_READ_REG:
+// 		ret = ar0521_vv_read_reg(sensor, arg);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case VVSENSORIOC_WRITE_REG:
+// 		ret = ar0521_vv_write_reg(sensor, arg);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	default:
+// 		return -ENOTTY;
+// 	};
+
+// 	return 0;
+// }
 
 static inline struct ar0521 *to_ar0521(struct v4l2_subdev *sd)
 {
@@ -1026,109 +1028,109 @@ static inline int bpp_to_index(unsigned int bpp)
 	return (bpp - 8) / 2;
 }
 
-static int ar0521_read(struct ar0521 *sensor, u16 reg, u16 *val)
-{
-	struct i2c_client *i2c = v4l2_get_subdevdata(&sensor->subdev);
-	unsigned char reg_buf[2], read_buf[2];
-	int ret;
-	u16 result;
-	struct i2c_msg xfer[] = {
-		[0] = {
-			.addr = i2c->addr,
-			.flags = 0,
-			.len = 2,
-			.buf = reg_buf,
-		},
-		[1] = {
-			.addr = i2c->addr,
-			.flags = I2C_M_RD,
-			.len = 2,
-			.buf = read_buf,
-		},
-	};
+// static int ar0521_read(struct ar0521 *sensor, u16 reg, u16 *val)
+// {
+// 	struct i2c_client *i2c = v4l2_get_subdevdata(&sensor->subdev);
+// 	unsigned char reg_buf[2], read_buf[2];
+// 	int ret;
+// 	u16 result;
+// 	struct i2c_msg xfer[] = {
+// 		[0] = {
+// 			.addr = i2c->addr,
+// 			.flags = 0,
+// 			.len = 2,
+// 			.buf = reg_buf,
+// 		},
+// 		[1] = {
+// 			.addr = i2c->addr,
+// 			.flags = I2C_M_RD,
+// 			.len = 2,
+// 			.buf = read_buf,
+// 		},
+// 	};
 
-	reg_buf[0] = (reg >> 8) & 0xff;
-	reg_buf[1] = reg & 0xff;
+// 	reg_buf[0] = (reg >> 8) & 0xff;
+// 	reg_buf[1] = reg & 0xff;
 
-	ret = i2c_transfer(i2c->adapter, xfer, ARRAY_SIZE(xfer));
-	if (ret >= 0 && ret != ARRAY_SIZE(xfer))
-		ret = -EIO;
+// 	ret = i2c_transfer(i2c->adapter, xfer, ARRAY_SIZE(xfer));
+// 	if (ret >= 0 && ret != ARRAY_SIZE(xfer))
+// 		ret = -EIO;
 
-	if (ret < 0) {
-		dev_err(&i2c->dev, "Failed to read i2c message (%d)\n", ret);
-		return ret;
-	}
+// 	if (ret < 0) {
+// 		dev_err(&i2c->dev, "Failed to read i2c message (%d)\n", ret);
+// 		return ret;
+// 	}
 
-	result = read_buf[0] << 8;
-	result |= read_buf[1];
+// 	result = read_buf[0] << 8;
+// 	result |= read_buf[1];
 
-	*val = result;
+// 	*val = result;
 
-	return 0;
-}
+// 	return 0;
+// }
 
-static int ar0521_write(struct ar0521 *sensor, u16 reg, u16 val)
-{
-	struct i2c_client *i2c = v4l2_get_subdevdata(&sensor->subdev);
-	unsigned char write_buf[4];
-	int ret;
-	struct i2c_msg xfer[] = {
-		[0] = {
-			.addr = i2c->addr,
-			.flags = 0,
-			.len = 4,
-			.buf = write_buf,
-		},
-	};
+// static int ar0521_write(struct ar0521 *sensor, u16 reg, u16 val)
+// {
+// 	struct i2c_client *i2c = v4l2_get_subdevdata(&sensor->subdev);
+// 	unsigned char write_buf[4];
+// 	int ret;
+// 	struct i2c_msg xfer[] = {
+// 		[0] = {
+// 			.addr = i2c->addr,
+// 			.flags = 0,
+// 			.len = 4,
+// 			.buf = write_buf,
+// 		},
+// 	};
 
-	write_buf[0] = (reg >> 8) & 0xff;
-	write_buf[1] = reg & 0xff;
+// 	write_buf[0] = (reg >> 8) & 0xff;
+// 	write_buf[1] = reg & 0xff;
 
-	write_buf[2] = (val >> 8) & 0xff;
-	write_buf[3] = val & 0xff;
+// 	write_buf[2] = (val >> 8) & 0xff;
+// 	write_buf[3] = val & 0xff;
 
-	ret = i2c_transfer(i2c->adapter, xfer, ARRAY_SIZE(xfer));
-	if (ret >= 0 && ret != ARRAY_SIZE(xfer))
-		ret = -EIO;
+// 	ret = i2c_transfer(i2c->adapter, xfer, ARRAY_SIZE(xfer));
+// 	if (ret >= 0 && ret != ARRAY_SIZE(xfer))
+// 		ret = -EIO;
 
-	if (ret < 0) {
-		dev_err(&i2c->dev, "Failed to write i2c message (%d)\n", ret);
-		return ret;
-	}
+// 	if (ret < 0) {
+// 		dev_err(&i2c->dev, "Failed to write i2c message (%d)\n", ret);
+// 		return ret;
+// 	}
 
-	dev_dbg(&i2c->dev, "Wrote i2c message 0x%02x at 0x%02x\n", val, reg);
+// 	dev_dbg(&i2c->dev, "Wrote i2c message 0x%02x at 0x%02x\n", val, reg);
 
-	return 0;
-}
+// 	return 0;
+// }
 
-static int ar0521_update_bits(struct ar0521 *sensor, u16 reg,
-			      u16 mask, u16 val)
-{
-	u16 orig, tmp;
-	int ret;
+// static int ar0521_update_bits(struct ar0521 *sensor, u16 reg,
+// 			      u16 mask, u16 val)
+// {
+// 	u16 orig, tmp;
+// 	int ret;
 
-	ret = ar0521_read(sensor, reg, &orig);
-	if (ret)
-		return ret;
+// 	ret = ar0521_read(sensor, reg, &orig);
+// 	if (ret)
+// 		return ret;
 
-	tmp = orig & ~mask;
-	tmp |= val & mask;
+// 	tmp = orig & ~mask;
+// 	tmp |= val & mask;
 
-	if (tmp != orig)
-		ret = ar0521_write(sensor, reg, tmp);
+// 	if (tmp != orig)
+// 		ret = ar0521_write(sensor, reg, tmp);
 
-	return ret;
-}
+// 	return ret;
+// }
 
-static int ar0521_set_bits(struct ar0521 *sensor, u16 reg, u16 val)
-{
-	return ar0521_update_bits(sensor, reg, val, val);
-}
+// static int ar0521_set_bits(struct ar0521 *sensor, u16 reg, u16 val)
+// {
+// 	return ar0521_update_bits(sensor, reg, val, val);
+// }
 
-static int ar0521_clear_bits(struct ar0521 *sensor, u16 reg, u16 val)
-{
-	return ar0521_update_bits(sensor, reg, val, 0);
-}
+// static int ar0521_clear_bits(struct ar0521 *sensor, u16 reg, u16 val)
+// {
+// 	return ar0521_update_bits(sensor, reg, val, 0);
+// }
 
 #ifdef DEBUG
 static int ar0521_debugfs_init(struct ar0521 *sensor)
@@ -1181,189 +1183,189 @@ static const struct ar0521_format *ar0521_find_format(struct ar0521 *sensor,
 	return &sensor->formats[sensor->num_fmts - 1];
 }
 
-static int ar0521_enter_standby(struct ar0521 *sensor)
-{
-	unsigned int timeout = 1000;
-	int ret;
-	u16 val;
+// static int ar0521_enter_standby(struct ar0521 *sensor)
+// {
+// 	unsigned int timeout = 1000;
+// 	int ret;
+// 	u16 val;
 
-	ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
-				BIT_STREAM);
-	if (ret)
-		return ret;
+// 	ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
+// 				BIT_STREAM);
+// 	if (ret)
+// 		return ret;
 
-	while (timeout) {
-		ar0521_read(sensor, AR0521_FRAME_STATUS, &val);
+// 	while (timeout) {
+// 		ar0521_read(sensor, AR0521_FRAME_STATUS, &val);
 
-		if (val & BIT_STANDBY_STATUS)
-			break;
+// 		if (val & BIT_STANDBY_STATUS)
+// 			break;
 
-		timeout--;
+// 		timeout--;
 
-		if (timeout == 0) {
-			v4l2_warn(&sensor->subdev,
-				  "timeout while trying to enter standby\n");
-			break;
-		}
+// 		if (timeout == 0) {
+// 			v4l2_warn(&sensor->subdev,
+// 				  "timeout while trying to enter standby\n");
+// 			break;
+// 		}
 
-		usleep_range(2000, 3000);
-	}
+// 		usleep_range(2000, 3000);
+// 	}
 
-	msleep(100);
-	ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER, BIT_SMIA_SER_DIS);
-	if (ret)
-		return ret;
+// 	msleep(100);
+// 	ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER, BIT_SMIA_SER_DIS);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_clear_bits(sensor, AR0521_SER_CTRL_STAT,
-				BIT_FRAMER_TEST_MODE);
+// 	ret = ar0521_clear_bits(sensor, AR0521_SER_CTRL_STAT,
+// 				BIT_FRAMER_TEST_MODE);
 
-	return ret;
-}
+// 	return ret;
+// }
 
-static int ar0521_mipi_enter_lp11(struct ar0521 *sensor)
-{
-	int ret;
+// static int ar0521_mipi_enter_lp11(struct ar0521 *sensor)
+// {
+// 	int ret;
 
-	ret = ar0521_write(sensor, AR0521_SERIAL_TEST,
-			   AR0521_TEST_MODE_LP11 |
-			   AR0521_TEST_LANE_0 | AR0521_TEST_LANE_1 |
-			   AR0521_TEST_LANE_2 | AR0521_TEST_LANE_3);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_SERIAL_TEST,
+// 			   AR0521_TEST_MODE_LP11 |
+// 			   AR0521_TEST_LANE_0 | AR0521_TEST_LANE_1 |
+// 			   AR0521_TEST_LANE_2 | AR0521_TEST_LANE_3);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_set_bits(sensor, AR0521_SER_CTRL_STAT,
-			      BIT_FRAMER_TEST_MODE);
-	if (ret)
-		return ret;
+// 	ret = ar0521_set_bits(sensor, AR0521_SER_CTRL_STAT,
+// 			      BIT_FRAMER_TEST_MODE);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_update_bits(sensor, AR0521_RESET_REGISTER,
-				 BIT_STREAM | BIT_SMIA_SER_DIS,
-				 BIT_STREAM);
-	return ret;
-}
+// 	ret = ar0521_update_bits(sensor, AR0521_RESET_REGISTER,
+// 				 BIT_STREAM | BIT_SMIA_SER_DIS,
+// 				 BIT_STREAM);
+// 	return ret;
+// }
 
-static void ar0521_reset(struct ar0521 *sensor)
-{
-	unsigned long ext_freq = clk_get_rate(sensor->extclk);
-	unsigned long ext_freq_mhz = ext_freq / 1000000;
-	unsigned long wait_usecs;
+// static void ar0521_reset(struct ar0521 *sensor)
+// {
+// 	unsigned long ext_freq = clk_get_rate(sensor->extclk);
+// 	unsigned long ext_freq_mhz = ext_freq / 1000000;
+// 	unsigned long wait_usecs;
 
-	if (sensor->reset_gpio) {
-		gpiod_set_value_cansleep(sensor->reset_gpio, 1);
-		usleep_range(1000, 1100);
-		gpiod_set_value_cansleep(sensor->reset_gpio, 0);
-	} else {
-		ar0521_set_bits(sensor, AR0521_RESET_REGISTER, BIT_RESET);
-	}
+// 	if (sensor->reset_gpio) {
+// 		gpiod_set_value_cansleep(sensor->reset_gpio, 1);
+// 		usleep_range(1000, 1100);
+// 		gpiod_set_value_cansleep(sensor->reset_gpio, 0);
+// 	} else {
+// 		ar0521_set_bits(sensor, AR0521_RESET_REGISTER, BIT_RESET);
+// 	}
 
-	wait_usecs = 160000 / ext_freq_mhz;
-	usleep_range(wait_usecs, wait_usecs + 1000);
-}
+// 	wait_usecs = 160000 / ext_freq_mhz;
+// 	usleep_range(wait_usecs, wait_usecs + 1000);
+// }
 
-static int ar0521_unset_trigger(struct ar0521 *sensor)
-{
-	int ret;
+// static int ar0521_unset_trigger(struct ar0521 *sensor)
+// {
+// 	int ret;
 
-	ret = ar0521_set_bits(sensor, AR0521_GPI_STATUS,
-			      BIT_TRIGGER_PIN_SEL(7));
-	if (ret)
-		return ret;
+// 	ret = ar0521_set_bits(sensor, AR0521_GPI_STATUS,
+// 			      BIT_TRIGGER_PIN_SEL(7));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_clear_bits(sensor, AR0521_SLAVE_MODE_CTRL,
-				BIT_VD_TRIG_NEW_FRAME |
-				BIT_VD_TRIG_GRST |
-				BIT_VD_NEW_FRAME_ONLY);
-	if (ret)
-		return ret;
+// 	ret = ar0521_clear_bits(sensor, AR0521_SLAVE_MODE_CTRL,
+// 				BIT_VD_TRIG_NEW_FRAME |
+// 				BIT_VD_TRIG_GRST |
+// 				BIT_VD_NEW_FRAME_ONLY);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_clear_bits(sensor, AR0521_GLOBAL_SEQ_TRIGGER,
-				BIT_GLOBAL_TRIGGER |
-				BIT_SEQ_TRIGGER_GLOBAL_FLASH);
-	if (ret)
-		return ret;
+// 	ret = ar0521_clear_bits(sensor, AR0521_GLOBAL_SEQ_TRIGGER,
+// 				BIT_GLOBAL_TRIGGER |
+// 				BIT_SEQ_TRIGGER_GLOBAL_FLASH);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
-				BIT_GAIN_INSERT_ALL |
-				BIT_FORCED_PLL_ON |
-				BIT_GPI_EN);
-	return ret;
-}
+// 	ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
+// 				BIT_GAIN_INSERT_ALL |
+// 				BIT_FORCED_PLL_ON |
+// 				BIT_GPI_EN);
+// 	return ret;
+// }
 
-static int ar0521_set_trigger_mode(struct ar0521 *sensor, int mode)
-{
-	int pin = sensor->trigger_pin;
-	int ret;
+// static int ar0521_set_trigger_mode(struct ar0521 *sensor, int mode)
+// {
+// 	int pin = sensor->trigger_pin;
+// 	int ret;
 
-	if (sensor->is_streaming) {
-		ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
-					BIT_STREAM);
-		if (ret)
-			return ret;
-	}
+// 	if (sensor->is_streaming) {
+// 		ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
+// 					BIT_STREAM);
+// 		if (ret)
+// 			return ret;
+// 	}
 
-	switch (mode) {
-	case AR0521_TRIGGER_OFF:
-		ret = ar0521_unset_trigger(sensor);
-		if (ret)
-			return ret;
-		break;
-	case AR0521_TRIGGER_GRR:
-		ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
-				      BIT_GPI_EN);
-		if (ret)
-			return ret;
+// 	switch (mode) {
+// 	case AR0521_TRIGGER_OFF:
+// 		ret = ar0521_unset_trigger(sensor);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case AR0521_TRIGGER_GRR:
+// 		ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
+// 				      BIT_GPI_EN);
+// 		if (ret)
+// 			return ret;
 
-		ret = ar0521_update_bits(sensor, AR0521_GPI_STATUS,
-					 BIT_TRIGGER_PIN_SEL_MASK,
-					 BIT_TRIGGER_PIN_SEL(pin));
-		if (ret)
-			return ret;
+// 		ret = ar0521_update_bits(sensor, AR0521_GPI_STATUS,
+// 					 BIT_TRIGGER_PIN_SEL_MASK,
+// 					 BIT_TRIGGER_PIN_SEL(pin));
+// 		if (ret)
+// 			return ret;
 
-		ret = ar0521_set_bits(sensor, AR0521_SLAVE_MODE_CTRL,
-				      BIT_VD_TRIG_NEW_FRAME |
-				      BIT_VD_NEW_FRAME_ONLY);
-		if (ret)
-			return ret;
+// 		ret = ar0521_set_bits(sensor, AR0521_SLAVE_MODE_CTRL,
+// 				      BIT_VD_TRIG_NEW_FRAME |
+// 				      BIT_VD_NEW_FRAME_ONLY);
+// 		if (ret)
+// 			return ret;
 
-		break;
-	case AR0521_TRIGGER_ERS:
-		ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
-				      BIT_GAIN_INSERT_ALL |
-				      BIT_FORCED_PLL_ON |
-				      BIT_GPI_EN);
-		if (ret)
-			return ret;
+// 		break;
+// 	case AR0521_TRIGGER_ERS:
+// 		ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
+// 				      BIT_GAIN_INSERT_ALL |
+// 				      BIT_FORCED_PLL_ON |
+// 				      BIT_GPI_EN);
+// 		if (ret)
+// 			return ret;
 
-		ret = ar0521_update_bits(sensor, AR0521_GPI_STATUS,
-					 BIT_TRIGGER_PIN_SEL_MASK,
-					 BIT_TRIGGER_PIN_SEL(pin));
-		if (ret)
-			return ret;
+// 		ret = ar0521_update_bits(sensor, AR0521_GPI_STATUS,
+// 					 BIT_TRIGGER_PIN_SEL_MASK,
+// 					 BIT_TRIGGER_PIN_SEL(pin));
+// 		if (ret)
+// 			return ret;
 
-		ret = ar0521_set_bits(sensor, AR0521_SLAVE_MODE_CTRL,
-				      BIT_VD_TRIG_NEW_FRAME |
-				      BIT_VD_TRIG_GRST |
-				      BIT_VD_NEW_FRAME_ONLY);
-		if (ret)
-			return ret;
+// 		ret = ar0521_set_bits(sensor, AR0521_SLAVE_MODE_CTRL,
+// 				      BIT_VD_TRIG_NEW_FRAME |
+// 				      BIT_VD_TRIG_GRST |
+// 				      BIT_VD_NEW_FRAME_ONLY);
+// 		if (ret)
+// 			return ret;
 
-		ret = ar0521_set_bits(sensor, AR0521_GLOBAL_SEQ_TRIGGER,
-				      BIT_GLOBAL_TRIGGER |
-				      BIT_SEQ_TRIGGER_GLOBAL_FLASH);
-		if (ret)
-			return ret;
+// 		ret = ar0521_set_bits(sensor, AR0521_GLOBAL_SEQ_TRIGGER,
+// 				      BIT_GLOBAL_TRIGGER |
+// 				      BIT_SEQ_TRIGGER_GLOBAL_FLASH);
+// 		if (ret)
+// 			return ret;
 
-		break;
-	default:
-		return -EINVAL;
-	}
+// 		break;
+// 	default:
+// 		return -EINVAL;
+// 	}
 
-	if (sensor->is_streaming)
-		return ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
-				       BIT_STREAM);
-	else
-		return 0;
-}
+// 	if (sensor->is_streaming)
+// 		return ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
+// 				       BIT_STREAM);
+// 	else
+// 		return 0;
+// }
 
 static int ar0521_power_on(struct ar0521 *sensor)
 {
@@ -1379,52 +1381,54 @@ static void ar0521_power_off(struct ar0521 *sensor)
 /* V4L2 subdev core ops */
 static int ar0521_s_power(struct v4l2_subdev *sd, int on)
 {
-	struct ar0521 *sensor = to_ar0521(sd);
-	int ret = 0;
-
-	dev_dbg(sd->dev, "%s on: %d\n", __func__, on);
-
-	mutex_lock(&sensor->lock);
-
-	if (on) {
-		if (sensor->power_user > 0) {
-			sensor->power_user++;
-			goto out;
-		}
-
-		ret = ar0521_power_on(sensor);
-		if (ret)
-			goto out;
-
-		/* Enable MIPI LP-11 test mode as required by e.g. i.MX 6 */
-		if (!sensor->is_streaming) {
-			ret = ar0521_mipi_enter_lp11(sensor);
-			if (ret) {
-				ar0521_power_off(sensor);
-				goto out;
-			}
-		}
-
-		sensor->power_user++;
-
-	} else {
-		sensor->power_user--;
-		if (sensor->power_user < 0) {
-			dev_err(sd->dev, "More s_power OFF than ON\n");
-			ret = -EINVAL;
-			goto out;
-		}
-
-		if (sensor->power_user == 0) {
-			ar0521_enter_standby(sensor);
-			ar0521_power_off(sensor);
-		}
-	}
-
-out:
-	mutex_unlock(&sensor->lock);
-	return ret;
+	return 0;
 }
+// 	struct ar0521 *sensor = to_ar0521(sd);
+// 	int ret = 0;
+
+// 	dev_dbg(sd->dev, "%s on: %d\n", __func__, on);
+
+// 	mutex_lock(&sensor->lock);
+
+// 	if (on) {
+// 		if (sensor->power_user > 0) {
+// 			sensor->power_user++;
+// 			goto out;
+// 		}
+
+// 		ret = ar0521_power_on(sensor);
+// 		if (ret)
+// 			goto out;
+
+// 		/* Enable MIPI LP-11 test mode as required by e.g. i.MX 6 */
+// 		if (!sensor->is_streaming) {
+// 			ret = ar0521_mipi_enter_lp11(sensor);
+// 			if (ret) {
+// 				ar0521_power_off(sensor);
+// 				goto out;
+// 			}
+// 		}
+
+// 		sensor->power_user++;
+
+// 	} else {
+// 		sensor->power_user--;
+// 		if (sensor->power_user < 0) {
+// 			dev_err(sd->dev, "More s_power OFF than ON\n");
+// 			ret = -EINVAL;
+// 			goto out;
+// 		}
+
+// 		if (sensor->power_user == 0) {
+// 			ar0521_enter_standby(sensor);
+// 			ar0521_power_off(sensor);
+// 		}
+// 	}
+
+// out:
+// 	mutex_unlock(&sensor->lock);
+// 	return ret;
+// }
 
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int ar0521_s_register(struct v4l2_subdev *sd,
@@ -1448,288 +1452,292 @@ static int ar0521_g_register(struct v4l2_subdev *sd,
 }
 #endif
 
-static int ar0521_config_pll(struct ar0521 *sensor)
-{
-	int index;
-	int ret;
+// static int ar0521_config_pll(struct ar0521 *sensor)
+// {
+// 	int index;
+// 	int ret;
 
-	index = bpp_to_index(sensor->bpp);
+// 	index = bpp_to_index(sensor->bpp);
 
-#ifdef DEBUG
-	if (sensor->manual_pll)
-		index = 3;
-#endif /* ifdef DEBUG */
+// #ifdef DEBUG
+// 	if (sensor->manual_pll)
+// 		index = 3;
+// #endif /* ifdef DEBUG */
 
-	ret = ar0521_write(sensor, AR0521_VT_PIX_CLK_DIV,
-			   sensor->pll[index].vt_pix_div);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_VT_PIX_CLK_DIV,
+// 			   sensor->pll[index].vt_pix_div);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_VT_SYS_CLK_DIV,
-			   sensor->pll[index].vt_sys_div);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_VT_SYS_CLK_DIV,
+// 			   sensor->pll[index].vt_sys_div);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_PRE_PLL_CLK_DIV,
-			   BIT_PLL_DIV2(sensor->pll[index].pll2_div) |
-			   BIT_PLL_DIV1(sensor->pll[index].pll_div));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_PRE_PLL_CLK_DIV,
+// 			   BIT_PLL_DIV2(sensor->pll[index].pll2_div) |
+// 			   BIT_PLL_DIV1(sensor->pll[index].pll_div));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_PLL_MUL,
-			   BIT_PLL_MUL2(sensor->pll[index].pll2_mul) |
-			   BIT_PLL_MUL1(sensor->pll[index].pll_mul));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_PLL_MUL,
+// 			   BIT_PLL_MUL2(sensor->pll[index].pll2_mul) |
+// 			   BIT_PLL_MUL1(sensor->pll[index].pll_mul));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_OP_PIX_CLK_DIV,
-			   sensor->pll[index].op_pix_div);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_OP_PIX_CLK_DIV,
+// 			   sensor->pll[index].op_pix_div);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_OP_SYS_CLK_DIV,
-			   sensor->pll[index].op_sys_div);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_OP_SYS_CLK_DIV,
+// 			   sensor->pll[index].op_sys_div);
+// 	if (ret)
+// 		return ret;
 
-	usleep_range(1000, 1500);
+// 	usleep_range(1000, 1500);
 
-	return 0;
-}
+// 	return 0;
+// }
 
-static int ar0521_config_frame(struct ar0521 *sensor)
-{
-	unsigned int height = sensor->fmt.height * sensor->h_skip;
-	unsigned int width = sensor->fmt.width * sensor->w_skip;
-	int ret;
-	u16 x_end, y_end;
+// static int ar0521_config_frame(struct ar0521 *sensor)
+// {
+// 	unsigned int height = sensor->fmt.height * sensor->h_skip;
+// 	unsigned int width = sensor->fmt.width * sensor->w_skip;
+// 	int ret;
+// 	u16 x_end, y_end;
 
-	ret = ar0521_write(sensor, AR0521_Y_ADDR_START, sensor->crop.top);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_Y_ADDR_START, sensor->crop.top);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_X_ADDR_START, sensor->crop.left);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_X_ADDR_START, sensor->crop.left);
+// 	if (ret)
+// 		return ret;
 
-	y_end = sensor->crop.top + height - 1;
-	ret = ar0521_write(sensor, AR0521_Y_ADRR_END, y_end);
-	if (ret)
-		return ret;
+// 	y_end = sensor->crop.top + height - 1;
+// 	ret = ar0521_write(sensor, AR0521_Y_ADRR_END, y_end);
+// 	if (ret)
+// 		return ret;
 
-	x_end = sensor->crop.left + width - 1;
-	ret = ar0521_write(sensor, AR0521_X_ADRR_END, x_end);
-	if (ret)
-		return ret;
+// 	x_end = sensor->crop.left + width - 1;
+// 	ret = ar0521_write(sensor, AR0521_X_ADRR_END, x_end);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_FRAME_LENGTH_LINES, sensor->vlen);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_FRAME_LENGTH_LINES, sensor->vlen);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_LINE_LENGTH_PCK, sensor->hlen);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_LINE_LENGTH_PCK, sensor->hlen);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_X_OUTPUT_SIZE, sensor->fmt.width);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_X_OUTPUT_SIZE, sensor->fmt.width);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_Y_OUTPUT_SIZE, sensor->fmt.height);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_Y_OUTPUT_SIZE, sensor->fmt.height);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_X_ODD_INC,
-			   (sensor->w_skip << 1) - 1);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_X_ODD_INC,
+// 			   (sensor->w_skip << 1) - 1);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_Y_ODD_INC,
-			   (sensor->h_skip << 1) - 1);
+// 	ret = ar0521_write(sensor, AR0521_Y_ODD_INC,
+// 			   (sensor->h_skip << 1) - 1);
 
-	return ret;
-}
+// 	return ret;
+// }
 
-static int ar0521_config_mipi(struct ar0521 *sensor)
-{
-	int ret;
-	u16 val;
+// static int ar0521_config_mipi(struct ar0521 *sensor)
+// {
+// 	int ret;
+// 	u16 val;
 
-	switch (sensor->bpp) {
-	case 8:
-		val = AR0521_CSI2_DT_RAW8;
-		break;
-	case 10:
-		val = AR0521_CSI2_DT_RAW10;
-		break;
-	case 12:
-		val = AR0521_CSI2_DT_RAW12;
-		break;
-	default:
-		return -EINVAL;
-	}
+// 	switch (sensor->bpp) {
+// 	case 8:
+// 		val = AR0521_CSI2_DT_RAW8;
+// 		break;
+// 	case 10:
+// 		val = AR0521_CSI2_DT_RAW10;
+// 		break;
+// 	case 12:
+// 		val = AR0521_CSI2_DT_RAW12;
+// 		break;
+// 	default:
+// 		return -EINVAL;
+// 	}
 
-	ret = ar0521_write(sensor, AR0521_MIPI_CNTRL, val);
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_MIPI_CNTRL, val);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_0,
-			   BIT_HS_PREP(sensor->info.t_hs_prep) |
-			   BIT_HS_ZERO(sensor->info.t_hs_zero) |
-			   BIT_HS_TRAIL(sensor->info.t_hs_trail));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_0,
+// 			   BIT_HS_PREP(sensor->info.t_hs_prep) |
+// 			   BIT_HS_ZERO(sensor->info.t_hs_zero) |
+// 			   BIT_HS_TRAIL(sensor->info.t_hs_trail));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_1,
-			   BIT_CLK_PREP(sensor->info.t_clk_prep) |
-			   BIT_CLK_ZERO(sensor->info.t_clk_zero) |
-			   BIT_CLK_TRAIL(sensor->info.t_clk_trail));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_1,
+// 			   BIT_CLK_PREP(sensor->info.t_clk_prep) |
+// 			   BIT_CLK_ZERO(sensor->info.t_clk_zero) |
+// 			   BIT_CLK_TRAIL(sensor->info.t_clk_trail));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_2,
-			   BIT_BGAP(sensor->info.t_bgap) |
-			   BIT_CLK_PRE(sensor->info.t_clk_pre) |
-			   BIT_CLK_POST_MSBS(sensor->info.t_clk_post_msbs));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_2,
+// 			   BIT_BGAP(sensor->info.t_bgap) |
+// 			   BIT_CLK_PRE(sensor->info.t_clk_pre) |
+// 			   BIT_CLK_POST_MSBS(sensor->info.t_clk_post_msbs));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_3,
-			   BIT_LPX(sensor->info.t_lpx) |
-			   BIT_WAKEUP(sensor->info.t_wakeup) |
-			   BIT_CLK_POST(sensor->info.t_clk_post));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_3,
+// 			   BIT_LPX(sensor->info.t_lpx) |
+// 			   BIT_WAKEUP(sensor->info.t_wakeup) |
+// 			   BIT_CLK_POST(sensor->info.t_clk_post));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_4,
-			   (sensor->info.cont_tx_clk ? BIT_CONT_TX_CLK : 0) |
-			   (sensor->info.vreg_mode ? BIT_VREG_MODE : 0) |
-			   BIT_HS_EXIT(sensor->info.t_hs_exit) |
-			   BIT_INIT(sensor->info.t_init));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_MIPI_TIMING_4,
+// 			   (sensor->info.cont_tx_clk ? BIT_CONT_TX_CLK : 0) |
+// 			   (sensor->info.vreg_mode ? BIT_VREG_MODE : 0) |
+// 			   BIT_HS_EXIT(sensor->info.t_hs_exit) |
+// 			   BIT_INIT(sensor->info.t_init));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_DATA_FORMAT_BITS,
-			   BIT_DATA_FMT_IN(sensor->bpp) |
-			   BIT_DATA_FMT_OUT(sensor->bpp));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_DATA_FORMAT_BITS,
+// 			   BIT_DATA_FMT_IN(sensor->bpp) |
+// 			   BIT_DATA_FMT_OUT(sensor->bpp));
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_write(sensor, AR0521_SERIAL_FORMAT,
-			   BIT_TYPE(AR0521_TYPE_MIPI) |
-			   BIT_LANES(sensor->info.num_lanes));
-	if (ret)
-		return ret;
+// 	ret = ar0521_write(sensor, AR0521_SERIAL_FORMAT,
+// 			   BIT_TYPE(AR0521_TYPE_MIPI) |
+// 			   BIT_LANES(sensor->info.num_lanes));
+// 	if (ret)
+// 		return ret;
 
-	if (sensor->trigger) {
-		ret = ar0521_set_trigger_mode(sensor, sensor->trigger);
-		if (ret)
-			return ret;
-	}
+// 	if (sensor->trigger) {
+// 		ret = ar0521_set_trigger_mode(sensor, sensor->trigger);
+// 		if (ret)
+// 			return ret;
+// 	}
 
-	ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
-			      BIT_STREAM | BIT_MASK_BAD);
-	if (ret)
-		return ret;
+// 	ret = ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
+// 			      BIT_STREAM | BIT_MASK_BAD);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
-				BIT_SMIA_SER_DIS);
-	if (ret)
-		return ret;
+// 	ret = ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
+// 				BIT_SMIA_SER_DIS);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_update_bits(sensor, 0x3f20, BIT(3), 0);
+// 	ret = ar0521_update_bits(sensor, 0x3f20, BIT(3), 0);
 
-	return ret;
-}
+// 	return ret;
+// }
 
-static int ar0521_stream_on(struct ar0521 *sensor)
-{
-	int ret;
+// static int ar0521_stream_on(struct ar0521 *sensor)
+// {
+// 	int ret;
 
-	ret = ar0521_enter_standby(sensor);
-	if (ret)
-		return ret;
+// 	ret = ar0521_enter_standby(sensor);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_config_pll(sensor);
-	if (ret)
-		return ret;
+// 	ret = ar0521_config_pll(sensor);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_config_frame(sensor);
-	if (ret)
-		return ret;
+// 	ret = ar0521_config_frame(sensor);
+// 	if (ret)
+// 		return ret;
 
-	ret = ar0521_config_mipi(sensor);
-	if (ret)
-		return ret;
+// 	ret = ar0521_config_mipi(sensor);
+// 	if (ret)
+// 		return ret;
 
-	sensor->is_streaming = true;
-	return 0;
-}
+// 	sensor->is_streaming = true;
+// 	return 0;
+// }
 
-static int ar0521_stream_off(struct ar0521 *sensor)
-{
-	int ret;
+// static int ar0521_stream_off(struct ar0521 *sensor)
+// {
+// 	int ret;
 
-	if (sensor->trigger) {
-		ret = ar0521_unset_trigger(sensor);
-		if (ret)
-			dev_warn(sensor->subdev.dev,
-				 "Failed to unset trigger mode\n");
-	}
+// 	if (sensor->trigger) {
+// 		ret = ar0521_unset_trigger(sensor);
+// 		if (ret)
+// 			dev_warn(sensor->subdev.dev,
+// 				 "Failed to unset trigger mode\n");
+// 	}
 
-	ret = ar0521_enter_standby(sensor);
+// 	ret = ar0521_enter_standby(sensor);
 
-	sensor->is_streaming = false;
-	return ret;
-}
+// 	sensor->is_streaming = false;
+// 	return ret;
+// }
 
-/* V4L2 subdev video ops */
+// /* V4L2 subdev video ops */
 static int ar0521_s_stream(struct v4l2_subdev *sd, int enable)
 {
-	struct ar0521 *sensor = to_ar0521(sd);
-	int ret = 0;
-
-	dev_dbg(sd->dev, "%s enable: %d\n", __func__, enable);
-
-	mutex_lock(&sensor->lock);
-
-	if (enable && sensor->is_streaming) {
-		ret = -EBUSY;
-		goto out;
-	}
-
-	if (!enable && !sensor->is_streaming)
-		goto out;
-
-	if (enable)
-		ret = ar0521_stream_on(sensor);
-	else
-		ret = ar0521_stream_off(sensor);
-
-out:
-	mutex_unlock(&sensor->lock);
-	return ret;
+	return 0;
 }
+// 	struct ar0521 *sensor = to_ar0521(sd);
+// 	int ret = 0;
+
+// 	dev_dbg(sd->dev, "%s enable: %d\n", __func__, enable);
+
+// 	mutex_lock(&sensor->lock);
+
+// 	if (enable && sensor->is_streaming) {
+// 		ret = -EBUSY;
+// 		goto out;
+// 	}
+
+// 	if (!enable && !sensor->is_streaming)
+// 		goto out;
+
+// 	if (enable)
+// 		ret = ar0521_stream_on(sensor);
+// 	else
+// 		ret = ar0521_stream_off(sensor);
+
+// out:
+// 	mutex_unlock(&sensor->lock);
+// 	return ret;
+// }
 
 static int ar0521_g_frame_interval(struct v4l2_subdev *sd,
 				   struct v4l2_subdev_frame_interval *interval)
 {
-	struct ar0521 *sensor = to_ar0521(sd);
-	unsigned long pix_freq;
-	int index;
-
-	mutex_lock(&sensor->lock);
-
-	index = bpp_to_index(sensor->bpp);
-	pix_freq = sensor->pll[index].pix_freq;
-
-	interval->interval.numerator = 10;
-	interval->interval.denominator = div_u64(pix_freq * 10ULL,
-						 sensor->vlen * sensor->hlen);
-
-	mutex_unlock(&sensor->lock);
-
 	return 0;
 }
+// 	struct ar0521 *sensor = to_ar0521(sd);
+// 	unsigned long pix_freq;
+// 	int index;
+
+// 	mutex_lock(&sensor->lock);
+
+// 	index = bpp_to_index(sensor->bpp);
+// 	pix_freq = sensor->pll[index].pix_freq;
+
+// 	interval->interval.numerator = 10;
+// 	interval->interval.denominator = div_u64(pix_freq * 10ULL,
+// 						 sensor->vlen * sensor->hlen);
+
+// 	mutex_unlock(&sensor->lock);
+
+// 	return 0;
+// }
 
 static struct v4l2_rect *ar0521_get_pad_crop(struct ar0521 *sensor,
 					     struct v4l2_subdev_state *state,
@@ -1972,17 +1980,19 @@ static int ar0521_get_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
-static int ar0521_group_param_hold(struct ar0521 *sensor)
-{
-	return ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
-			       BIT_GROUPED_PARAM_HOLD);
-}
+// static int ar0521_group_param_hold(struct ar0521 *sensor)
+// {
+// 	return 0;
+// 	// return ar0521_set_bits(sensor, AR0521_RESET_REGISTER,
+// 	// 		       BIT_GROUPED_PARAM_HOLD);
+// }
 
-static int ar0521_group_param_release(struct ar0521 *sensor)
-{
-	return ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
-				 BIT_GROUPED_PARAM_HOLD);
-}
+// static int ar0521_group_param_release(struct ar0521 *sensor)
+// {
+// 	return 0;
+// 	// return ar0521_clear_bits(sensor, AR0521_RESET_REGISTER,
+// 	// 			 BIT_GROUPED_PARAM_HOLD);
+// }
 
 static int ar0521_set_selection(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *state,
@@ -2017,19 +2027,19 @@ static int ar0521_set_selection(struct v4l2_subdev *sd,
 	_crop->width = min_t(unsigned int, sel->r.width, max_w - _crop->left);
 	_crop->height = min_t(unsigned int, sel->r.height, max_h - _crop->top);
 
-	if (sensor->is_streaming) {
-		ret = ar0521_group_param_hold(sensor);
-		if (ret)
-			goto out;
+	// if (sensor->is_streaming) {
+	// 	ret = ar0521_group_param_hold(sensor);
+	// 	if (ret)
+	// 		goto out;
 
-		ret = ar0521_config_frame(sensor);
-		if (ret)
-			goto out;
+	// 	// ret = ar0521_config_frame(sensor);
+	// 	// if (ret)
+	// 	// 	goto out;
 
-		ret = ar0521_group_param_release(sensor);
-		if (ret)
-			goto out;
-	}
+	// 	ret = ar0521_group_param_release(sensor);
+	// 	if (ret)
+	// 		goto out;
+	// }
 
 	sel->r = *_crop;
 
@@ -2118,156 +2128,156 @@ static const struct media_entity_operations ar0521_entity_ops = {
 	.get_fwnode_pad		= v4l2_subdev_get_fwnode_pad_1_to_1,
 };
 
-static int ar0521_set_analogue_gain(struct ar0521 *sensor, unsigned int val)
-{
-	unsigned int coarse, fine;
+// static int ar0521_set_analogue_gain(struct ar0521 *sensor, unsigned int val)
+// {
+// 	unsigned int coarse, fine;
 
-	for (coarse = 4; coarse >= 0; coarse--)
-		if ((1u << coarse) * 1000 <= val)
-			break;
+// 	for (coarse = 4; coarse >= 0; coarse--)
+// 		if ((1u << coarse) * 1000 <= val)
+// 			break;
 
-	val = val / (1u << (coarse));
-	fine = ((val * 16) / 1000) - 16;
+// 	val = val / (1u << (coarse));
+// 	fine = ((val * 16) / 1000) - 16;
 
-	if (fine > 15)
-		fine = 15;
+// 	if (fine > 15)
+// 		fine = 15;
 
-	ar0521_update_bits(sensor, AR0521_GREENR_GAIN,
-			   BIT_ANA_COARSE_GAIN_MASK | BIT_ANA_FINE_GAIN_MASK,
-			   BIT_ANA_COARSE_GAIN(coarse) |
-			   BIT_ANA_FINE_GAIN(fine));
+// 	ar0521_update_bits(sensor, AR0521_GREENR_GAIN,
+// 			   BIT_ANA_COARSE_GAIN_MASK | BIT_ANA_FINE_GAIN_MASK,
+// 			   BIT_ANA_COARSE_GAIN(coarse) |
+// 			   BIT_ANA_FINE_GAIN(fine));
 
-	return 1000 * (1u << coarse) * (16 + fine) / 16;
-}
+// 	return 1000 * (1u << coarse) * (16 + fine) / 16;
+// }
 
-unsigned int ar0521_get_min_color_gain(struct ar0521 *sensor)
-{
-	unsigned int gains[4];
-	int min_idx = 0;
-	int i;
+// unsigned int ar0521_get_min_color_gain(struct ar0521 *sensor)
+// {
+// 	unsigned int gains[4];
+// 	int min_idx = 0;
+// 	int i;
 
-	gains[0] = sensor->gains.red_ctrl->val;
-	gains[1] = sensor->gains.greenr_ctrl->val;
-	gains[2] = sensor->gains.greenb_ctrl->val;
-	gains[3] = sensor->gains.blue_ctrl->val;
+// 	gains[0] = sensor->gains.red_ctrl->val;
+// 	gains[1] = sensor->gains.greenr_ctrl->val;
+// 	gains[2] = sensor->gains.greenb_ctrl->val;
+// 	gains[3] = sensor->gains.blue_ctrl->val;
 
-	for (i = 0; i < 4; i++) {
-		if (gains[i] < gains[min_idx])
-			min_idx = i;
-	}
+// 	for (i = 0; i < 4; i++) {
+// 		if (gains[i] < gains[min_idx])
+// 			min_idx = i;
+// 	}
 
-	return gains[min_idx];
-}
+// 	return gains[min_idx];
+// }
 
-static int ar0521_set_digital_gain(struct ar0521 *sensor,
-				   struct v4l2_ctrl *ctrl)
-{
-	unsigned int gain;
-	unsigned int gain_min;
-	int ret;
-	u16 val, mask;
+// static int ar0521_set_digital_gain(struct ar0521 *sensor,
+// 				   struct v4l2_ctrl *ctrl)
+// {
+// 	unsigned int gain;
+// 	unsigned int gain_min;
+// 	int ret;
+// 	u16 val, mask;
 
-	val = BIT_DIGITAL_GAIN((ctrl->val * 64) / 1000);
-	mask = BIT_DIGITAL_GAIN_MASK;
+// 	val = BIT_DIGITAL_GAIN((ctrl->val * 64) / 1000);
+// 	mask = BIT_DIGITAL_GAIN_MASK;
 
-	switch (ctrl->id) {
-	case V4L2_CID_DIGITAL_GAIN:
-		if (sensor->model == AR0521_MODEL_MONOCHROME) {
-			ret = ar0521_update_bits(sensor, AR0521_GLOBAL_GAIN,
-						 mask, val);
-			return ret;
-		}
+// 	switch (ctrl->id) {
+// 	case V4L2_CID_DIGITAL_GAIN:
+// 		if (sensor->model == AR0521_MODEL_MONOCHROME) {
+// 			ret = ar0521_update_bits(sensor, AR0521_GLOBAL_GAIN,
+// 						 mask, val);
+// 			return ret;
+// 		}
 
-		gain = sensor->gains.red * ctrl->val;
-		gain = gain / sensor->gains.min_ref;
-		gain = clamp_t(unsigned int, gain, 1000, 7999);
-		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
-		ret = ar0521_update_bits(sensor, AR0521_RED_GAIN, mask, val);
-		if (ret)
-			return ret;
+// 		gain = sensor->gains.red * ctrl->val;
+// 		gain = gain / sensor->gains.min_ref;
+// 		gain = clamp_t(unsigned int, gain, 1000, 7999);
+// 		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
+// 		ret = ar0521_update_bits(sensor, AR0521_RED_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
 
-		sensor->gains.red_ctrl->val = gain;
-		sensor->gains.red_ctrl->cur.val = gain;
+// 		sensor->gains.red_ctrl->val = gain;
+// 		sensor->gains.red_ctrl->cur.val = gain;
 
-		gain = sensor->gains.greenr * ctrl->val;
-		gain = gain / sensor->gains.min_ref;
-		gain = clamp_t(unsigned int, gain, 1000, 7999);
-		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
-		ret = ar0521_update_bits(sensor, AR0521_GREENR_GAIN, mask, val);
-		if (ret)
-			return ret;
+// 		gain = sensor->gains.greenr * ctrl->val;
+// 		gain = gain / sensor->gains.min_ref;
+// 		gain = clamp_t(unsigned int, gain, 1000, 7999);
+// 		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
+// 		ret = ar0521_update_bits(sensor, AR0521_GREENR_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
 
-		sensor->gains.greenr_ctrl->val = gain;
-		sensor->gains.greenr_ctrl->cur.val = gain;
+// 		sensor->gains.greenr_ctrl->val = gain;
+// 		sensor->gains.greenr_ctrl->cur.val = gain;
 
-		gain = sensor->gains.greenb * ctrl->val;
-		gain = gain / sensor->gains.min_ref;
-		gain = clamp_t(unsigned int, gain, 1000, 7999);
-		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
-		ret = ar0521_update_bits(sensor, AR0521_GREENB_GAIN, mask, val);
-		if (ret)
-			return ret;
+// 		gain = sensor->gains.greenb * ctrl->val;
+// 		gain = gain / sensor->gains.min_ref;
+// 		gain = clamp_t(unsigned int, gain, 1000, 7999);
+// 		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
+// 		ret = ar0521_update_bits(sensor, AR0521_GREENB_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
 
-		sensor->gains.greenb_ctrl->val = gain;
-		sensor->gains.greenb_ctrl->cur.val = gain;
+// 		sensor->gains.greenb_ctrl->val = gain;
+// 		sensor->gains.greenb_ctrl->cur.val = gain;
 
-		gain = sensor->gains.blue * ctrl->val;
-		gain = gain / sensor->gains.min_ref;
-		gain = clamp_t(unsigned int, gain, 1000, 7999);
-		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
-		ret = ar0521_update_bits(sensor, AR0521_BLUE_GAIN, mask, val);
-		if (ret)
-			return ret;
+// 		gain = sensor->gains.blue * ctrl->val;
+// 		gain = gain / sensor->gains.min_ref;
+// 		gain = clamp_t(unsigned int, gain, 1000, 7999);
+// 		val = BIT_DIGITAL_GAIN((gain * 64) / 1000);
+// 		ret = ar0521_update_bits(sensor, AR0521_BLUE_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
 
-		sensor->gains.blue_ctrl->val = gain;
-		sensor->gains.blue_ctrl->cur.val = gain;
+// 		sensor->gains.blue_ctrl->val = gain;
+// 		sensor->gains.blue_ctrl->cur.val = gain;
 
-		break;
-	case V4L2_CID_X_DIGITAL_GAIN_RED:
-		ret = ar0521_update_bits(sensor, AR0521_RED_GAIN, mask, val);
-		if (ret)
-			return ret;
-		break;
-	case V4L2_CID_X_DIGITAL_GAIN_GREENR:
-		ret = ar0521_update_bits(sensor, AR0521_GREENR_GAIN, mask, val);
-		if (ret)
-			return ret;
-		break;
-	case V4L2_CID_X_DIGITAL_GAIN_GREENB:
-		ret = ar0521_update_bits(sensor, AR0521_GREENB_GAIN, mask, val);
-		if (ret)
-			return ret;
-		break;
-	case V4L2_CID_X_DIGITAL_GAIN_BLUE:
-		ret = ar0521_update_bits(sensor, AR0521_BLUE_GAIN, mask, val);
-		if (ret)
-			return ret;
-		break;
-	default:
-		ret = -EINVAL;
-		break;
-	}
+// 		break;
+// 	case V4L2_CID_X_DIGITAL_GAIN_RED:
+// 		ret = ar0521_update_bits(sensor, AR0521_RED_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case V4L2_CID_X_DIGITAL_GAIN_GREENR:
+// 		ret = ar0521_update_bits(sensor, AR0521_GREENR_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case V4L2_CID_X_DIGITAL_GAIN_GREENB:
+// 		ret = ar0521_update_bits(sensor, AR0521_GREENB_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	case V4L2_CID_X_DIGITAL_GAIN_BLUE:
+// 		ret = ar0521_update_bits(sensor, AR0521_BLUE_GAIN, mask, val);
+// 		if (ret)
+// 			return ret;
+// 		break;
+// 	default:
+// 		ret = -EINVAL;
+// 		break;
+// 	}
 
-	switch (ctrl->id) {
-	case V4L2_CID_X_DIGITAL_GAIN_RED:
-	case V4L2_CID_X_DIGITAL_GAIN_GREENR:
-	case V4L2_CID_X_DIGITAL_GAIN_GREENB:
-	case V4L2_CID_X_DIGITAL_GAIN_BLUE:
-		gain_min = ar0521_get_min_color_gain(sensor);
-		sensor->gains.red = sensor->gains.red_ctrl->val;
-		sensor->gains.greenr = sensor->gains.greenr_ctrl->val;
-		sensor->gains.greenb = sensor->gains.greenb_ctrl->val;
-		sensor->gains.blue = sensor->gains.blue_ctrl->val;
-		sensor->gains.min_ref = gain_min;
-		sensor->gains.dig_ctrl->val = gain_min;
-		sensor->gains.dig_ctrl->cur.val = gain_min;
-		break;
-	default:
-		break;
-	}
+// 	switch (ctrl->id) {
+// 	case V4L2_CID_X_DIGITAL_GAIN_RED:
+// 	case V4L2_CID_X_DIGITAL_GAIN_GREENR:
+// 	case V4L2_CID_X_DIGITAL_GAIN_GREENB:
+// 	case V4L2_CID_X_DIGITAL_GAIN_BLUE:
+// 		gain_min = ar0521_get_min_color_gain(sensor);
+// 		sensor->gains.red = sensor->gains.red_ctrl->val;
+// 		sensor->gains.greenr = sensor->gains.greenr_ctrl->val;
+// 		sensor->gains.greenb = sensor->gains.greenb_ctrl->val;
+// 		sensor->gains.blue = sensor->gains.blue_ctrl->val;
+// 		sensor->gains.min_ref = gain_min;
+// 		sensor->gains.dig_ctrl->val = gain_min;
+// 		sensor->gains.dig_ctrl->cur.val = gain_min;
+// 		break;
+// 	default:
+// 		break;
+// 	}
 
-	return 0;
-}
+// 	return 0;
+// }
 
 static int ar0521_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -2279,179 +2289,6 @@ static int ar0521_s_ctrl(struct v4l2_ctrl *ctrl)
 pr_info("-------- c 1");  // $$
 return 0;//$$
 
-	switch (ctrl->id) {
-	case V4L2_CID_VBLANK:
-		unsigned int vlen_old;
-
-		if (sensor->is_streaming) {
-			ret = ar0521_group_param_hold(sensor);
-			if (ret)
-				break;
-		}
-
-		vlen_old = sensor->vlen;
-		sensor->vlen = sensor->fmt.height + ctrl->val;
-
-		if (sensor->is_streaming) {
-			ret = ar0521_config_frame(sensor);
-			if (ret) {
-				sensor->vlen = vlen_old;
-				break;
-			}
-
-			ret = ar0521_group_param_release(sensor);
-			if (ret)
-				sensor->vlen = vlen_old;
-		}
-
-		break;
-	case V4L2_CID_HBLANK:
-		unsigned int hlen_old;
-
-		if (sensor->is_streaming) {
-			ret = ar0521_group_param_hold(sensor);
-			if (ret)
-				break;
-		}
-
-		hlen_old = sensor->hlen;
-		sensor->hlen = sensor->fmt.width + ctrl->val;
-
-		if (sensor->is_streaming) {
-			ret = ar0521_config_frame(sensor);
-			if (ret) {
-				sensor->hlen = hlen_old;
-				break;
-			}
-
-			ret = ar0521_group_param_release(sensor);
-			if (ret)
-				sensor->hlen = hlen_old;
-		}
-
-		break;
-	case V4L2_CID_HFLIP:
-		ret = ar0521_update_bits(sensor, AR0521_READ_MODE,
-					 BIT_HORIZ_MIRR,
-					 ctrl->val ? BIT_HORIZ_MIRR : 0);
-		break;
-	case V4L2_CID_VFLIP:
-		ret = ar0521_update_bits(sensor, AR0521_READ_MODE,
-					 BIT_VERT_FLIP,
-					 ctrl->val ? BIT_VERT_FLIP : 0);
-		break;
-	case V4L2_CID_EXPOSURE:
-		ret = ar0521_write(sensor, AR0521_COARSE_INT_TIME, ctrl->val);
-		break;
-	case V4L2_CID_TEST_PATTERN_RED:
-		ret = ar0521_write(sensor, AR0521_TEST_DATA_RED, ctrl->val);
-		break;
-	case V4L2_CID_TEST_PATTERN_GREENR:
-		ret = ar0521_write(sensor, AR0521_TEST_DATA_GREENR, ctrl->val);
-		break;
-	case V4L2_CID_TEST_PATTERN_BLUE:
-		ret = ar0521_write(sensor, AR0521_TEST_DATA_BLUE, ctrl->val);
-		break;
-	case V4L2_CID_TEST_PATTERN_GREENB:
-		ret = ar0521_write(sensor, AR0521_TEST_DATA_GREENB, ctrl->val);
-		break;
-	case V4L2_CID_TEST_PATTERN:
-		/* TODO: This needs fixing */
-		switch (ctrl->val) {
-		case 5:
-			val = AR0521_TP_WALKING_ONES_10BIT;
-			break;
-		case 6:
-			val = AR0521_TP_WALKING_ONES_8BIT;
-			break;
-		default:
-			val = ctrl->val;
-			break;
-		}
-
-		ret = ar0521_write(sensor, AR0521_TEST_PATTERN, val);
-		break;
-	case V4L2_CID_X_BINNING_COL:
-		ret = ar0521_update_bits(sensor, AR0521_READ_MODE,
-					 BIT_X_BIN_EN,
-					 ctrl->val ? BIT_X_BIN_EN : 0);
-		break;
-	case V4L2_CID_X_EXTRA_BLANKING:
-		ret = ar0521_write(sensor, AR0521_EXTRA_DELAY, ctrl->val);
-		break;
-	case V4L2_CID_DIGITAL_GAIN:
-	case V4L2_CID_X_DIGITAL_GAIN_RED:
-	case V4L2_CID_X_DIGITAL_GAIN_GREENR:
-	case V4L2_CID_X_DIGITAL_GAIN_BLUE:
-	case V4L2_CID_X_DIGITAL_GAIN_GREENB:
-		ret = ar0521_set_digital_gain(sensor, ctrl);
-		break;
-	case V4L2_CID_ANALOGUE_GAIN:
-		ctrl->val = ar0521_set_analogue_gain(sensor, ctrl->val);
-		break;
-	case V4L2_CID_X_DYNAMIC_PIXEL_CORRECTION:
-		if (sensor->is_streaming)
-			return -EBUSY;
-
-		mask = BIT_PIX_DEF_2D_COUPLE_EN |
-		       BIT_PIX_DEF_2D_SINGLE_EN |
-		       BIT_PIX_DEF_2D_FUSE_EN |
-		       BIT_PIX_DEF_ID_LOC_CORR_EN |
-		       BIT_PIX_DEF_ID_EN;
-
-		val = ctrl->val ? BIT_PIX_DEF_2D_COUPLE_EN |
-				  BIT_PIX_DEF_2D_SINGLE_EN |
-				  BIT_PIX_DEF_2D_FUSE_EN : 0;
-
-		val |= BIT_PIX_DEF_ID_LOC_CORR_EN |
-		       BIT_PIX_DEF_ID_EN;
-
-		ret = ar0521_update_bits(sensor, AR0521_PIX_DEF_ID, mask, val);
-		break;
-	case V4L2_CID_FLASH_LED_MODE:
-		switch (ctrl->val) {
-		case V4L2_FLASH_LED_MODE_NONE:
-			val = 0;
-			break;
-
-		case V4L2_FLASH_LED_MODE_FLASH:
-			val = BIT_XENON_FLASH;
-			break;
-
-		case V4L2_FLASH_LED_MODE_TORCH:
-			val = BIT_LED_FLASH;
-			break;
-		}
-
-		mask = BIT_XENON_FLASH | BIT_LED_FLASH;
-
-		ret = ar0521_update_bits(sensor, AR0521_FLASH, mask, val);
-		break;
-	case V4L2_CID_X_FLASH_INVERT:
-		val = ctrl->val ? BIT_INVERT_FLASH : 0;
-		ret = ar0521_update_bits(sensor, AR0521_FLASH,
-					 BIT_INVERT_FLASH, val);
-		break;
-	case V4L2_CID_X_FLASH_XENON_WIDTH:
-		ret = ar0521_write(sensor, AR0521_FLASH_COUNT, ctrl->val);
-		break;
-	case V4L2_CID_X_TRIGGER_MODE:
-		sensor->trigger = ctrl->val;
-		ret = ar0521_set_trigger_mode(sensor, sensor->trigger);
-		break;
-	case V4L2_CID_X_TRIGGER_PIN:
-		if (sensor->trigger)
-			return -EBUSY;
-
-		sensor->trigger_pin = ctrl->val;
-		break;
-	default:
-		ret = -EINVAL;
-		break;
-	}
-
-pr_info("-------- c 2: %d", ret);  // $$
-	return ret;
 }
 
 static int ar0521_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
@@ -3092,25 +2929,25 @@ static int ar0521_init_sequencer(struct ar0521 *sensor)
 
 static int ar0521_subdev_registered(struct v4l2_subdev *sd)
 {
-	struct ar0521 *sensor = to_ar0521(sd);
-	int ret;
+// 	struct ar0521 *sensor = to_ar0521(sd);
+// 	int ret;
 
-	ar0521_set_defaults(sensor);
+// 	ar0521_set_defaults(sensor);
 
-#ifdef DEBUG
-	ar0521_debugfs_init(sensor);
-#endif /* ifdef DEBUG */
+// #ifdef DEBUG
+// 	ar0521_debugfs_init(sensor);
+// #endif /* ifdef DEBUG */
 
-	ret = ar0521_init_sequencer(sensor);
-	if (ret)
-		return ret;
+// 	ret = ar0521_init_sequencer(sensor);
+// 	if (ret)
+// 		return ret;
 
-pr_info("-------- b 1");  // $$
-	ret = ar0521_create_ctrls(sensor);
-	if (ret)
-		return ret;
+// pr_info("-------- b 1");  // $$
+// 	ret = ar0521_create_ctrls(sensor);
+// 	if (ret)
+// 		return ret;
 
-	v4l2_ctrl_handler_setup(&sensor->ctrls);
+// 	v4l2_ctrl_handler_setup(&sensor->ctrls);
 pr_info("-------- c 1");  // $$
 
 	return 0;
@@ -3119,46 +2956,6 @@ pr_info("-------- c 1");  // $$
 static const struct v4l2_subdev_internal_ops ar0521_subdev_internal_ops = {
 	.registered		= ar0521_subdev_registered,
 };
-
-// static int ar0521_check_chip_id(struct ar0521 *sensor)
-// {
-// 	struct device *dev = sensor->subdev.dev;
-// 	int ret;
-// 	u16 model_id, customer_rev;
-
-// 	ret = ar0521_power_on(sensor);
-// 	if (ret) {
-// 		dev_err(dev, "Failed to power on sensor (%d)\n", ret);
-// 		return ret;
-// 	}
-
-// 	ar0521_reset(sensor);
-
-// 	ret = ar0521_read(sensor, AR0521_MODEL_ID, &model_id);
-// 	if (ret)
-// 		return ret;
-
-// 	if (model_id != AR0521_CHIP_ID && model_id != AR0522_CHIP_ID) {
-// 		dev_err(dev, "Wrong chip version: 0x%04x\n", model_id);
-// 		return -ENOENT;
-// 	}
-
-// 	ret = ar0521_read(sensor, AR0521_CUSTOMER_REV, &customer_rev);
-// 	if (ret)
-// 		return ret;
-
-// 	dev_info(dev, "Device ID: 0x%04x customer rev: 0x%04x\n",
-// 		 model_id, customer_rev);
-
-// 	if (sensor->model == AR0521_MODEL_UNKNOWN) {
-// 		if (customer_rev & BIT(4))
-// 			sensor->model = AR0521_MODEL_COLOR;
-// 		else
-// 			sensor->model = AR0521_MODEL_MONOCHROME;
-// 	}
-
-// 	return 0;
-// }
 
 static unsigned long ar0521_clk_mul_div(unsigned long freq,
 					unsigned int mul,
@@ -3468,10 +3265,6 @@ static int ar0521_probe(struct i2c_client *i2c,
 
 	if (!tc358748_setup(i2c))
 		return -1;
-return 0;
-
-
-
 
 	sensor = devm_kzalloc(&i2c->dev, sizeof(*sensor), GFP_KERNEL);
 	if (!sensor)
@@ -3530,9 +3323,6 @@ out_media:
 
 static int ar0521_remove(struct i2c_client *i2c)
 {
-	tc358748_stop(i2c);
-return 0;
-
 	struct v4l2_subdev *sd = i2c_get_clientdata(i2c);
 	struct ar0521 *sensor = to_ar0521(sd);
 
