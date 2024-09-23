@@ -901,11 +901,13 @@ static int tc358743_s_dv_timings(struct v4l2_subdev *sd,
 				 struct v4l2_dv_timings *timings)
 {
 	struct tc358743_state *state = to_state(sd);
+pr_info(TAG "  $$ k");
 
 	if (!timings)
 		return -EINVAL;
+pr_info(TAG "  $$ k2");
 
-	if (debug)
+	// if (debug)
 		v4l2_print_dv_timings(sd->name, "tc358743_s_dv_timings: ",
 				timings, false);
 
@@ -914,6 +916,8 @@ static int tc358743_s_dv_timings(struct v4l2_subdev *sd,
 		return 0;
 	}
 
+pr_info(TAG "  $$ k3");
+
 	if (!v4l2_valid_dv_timings(timings,
 				&tc358743_timings_cap, NULL, NULL)) {
 		v4l2_dbg(1, debug, sd, "%s: timings out of range\n", __func__);
@@ -921,6 +925,8 @@ static int tc358743_s_dv_timings(struct v4l2_subdev *sd,
 	}
 
 	state->timings = *timings;
+
+pr_info(TAG "  $$ k4");
 
 	// enable_stream(sd, false);
 	// tc358743_set_pll(sd);
@@ -934,6 +940,7 @@ static int tc358743_g_dv_timings(struct v4l2_subdev *sd,
 {
 	struct tc358743_state *state = to_state(sd);
 
+pr_info(TAG "  $$ b");
 	*timings = state->timings;
 
 	return 0;
@@ -942,6 +949,7 @@ static int tc358743_g_dv_timings(struct v4l2_subdev *sd,
 static int tc358743_enum_dv_timings(struct v4l2_subdev *sd,
 				    struct v4l2_enum_dv_timings *timings)
 {
+pr_info(TAG "  $$ c");
 	if (timings->pad != 0)
 		return -EINVAL;
 
@@ -962,6 +970,8 @@ static int tc358743_query_dv_timings(struct v4l2_subdev *sd,
 	// 	v4l2_print_dv_timings(sd->name, "tc358743_query_dv_timings: ",
 	// 			timings, false);
 
+pr_info(TAG "  $$ d");
+
 	if (!v4l2_valid_dv_timings(timings,
 				&tc358743_timings_cap, NULL, NULL)) {
 		v4l2_dbg(1, debug, sd, "%s: timings out of range\n", __func__);
@@ -974,6 +984,7 @@ static int tc358743_query_dv_timings(struct v4l2_subdev *sd,
 static int tc358743_dv_timings_cap(struct v4l2_subdev *sd,
 		struct v4l2_dv_timings_cap *cap)
 {
+pr_info(TAG "  $$ e");
 	if (cap->pad != 0)
 		return -EINVAL;
 
@@ -988,6 +999,7 @@ static int tc358743_get_mbus_config(struct v4l2_subdev *sd,
 {
 	struct tc358743_state *state = to_state(sd);
 
+pr_info(TAG "  $$ f");
 	cfg->type = V4L2_MBUS_CSI2_DPHY;
 
 	/* Support for non-continuous CSI-2 clock is missing in the driver */
@@ -1015,6 +1027,7 @@ static int tc358743_get_mbus_config(struct v4l2_subdev *sd,
 
 static int tc358743_s_stream(struct v4l2_subdev *sd, int enable)
 {
+pr_info(TAG "  $$ g");
 	// enable_stream(sd, enable);
 	if (!enable) {
 		/* Put all lanes in LP-11 state (STOPSTATE) */
@@ -1030,6 +1043,7 @@ static int tc358743_enum_mbus_code(struct v4l2_subdev *sd,
 		struct v4l2_subdev_state *sd_state,
 		struct v4l2_subdev_mbus_code_enum *code)
 {
+pr_info(TAG "  $$ h");
 	switch (code->index) {
 	case 0:
 		code->code = MEDIA_BUS_FMT_RGB888_1X24;
@@ -1050,6 +1064,7 @@ static int tc358743_get_fmt(struct v4l2_subdev *sd,
 	struct tc358743_state *state = to_state(sd);
 	// u8 vi_rep = i2c_rd8(sd, VI_REP);
 
+pr_info(TAG "  $$ i");
 	if (format->pad != 0)
 		return -EINVAL;
 
@@ -1085,6 +1100,7 @@ static int tc358743_set_fmt(struct v4l2_subdev *sd,
 {
 	struct tc358743_state *state = to_state(sd);
 
+pr_info(TAG "  $$ j");
 	u32 code = format->format.code; /* is overwritten by get_fmt */
 	int ret = tc358743_get_fmt(sd, sd_state, format);
 
@@ -1119,6 +1135,8 @@ static int tc358743_g_edid(struct v4l2_subdev *sd,
 {
 	struct tc358743_state *state = to_state(sd);
 
+	pr_info(TAG "  $$ g_edid");
+
 	memset(edid->reserved, 0, sizeof(edid->reserved));
 
 	if (edid->pad != 0)
@@ -1148,11 +1166,14 @@ static int tc358743_g_edid(struct v4l2_subdev *sd,
 static int tc358743_s_edid(struct v4l2_subdev *sd,
 				struct v4l2_subdev_edid *edid)
 {
+
 	struct tc358743_state *state = to_state(sd);
 	// u16 edid_len = edid->blocks * EDID_BLOCK_SIZE;
 	u16 pa;
 	int err;
 	// int i;
+
+	pr_info(TAG "  $$ e_did");
 
 	v4l2_dbg(2, debug, sd, "%s, pad %d, start block %d, blocks %d\n",
 		 __func__, edid->pad, edid->start_block, edid->blocks);
@@ -1202,6 +1223,8 @@ static int tc358743_s_edid(struct v4l2_subdev *sd,
 static int tc358743_subscribe_event(struct v4l2_subdev *sd, struct v4l2_fh *fh,
 				    struct v4l2_event_subscription *sub)
 {
+	pr_info(TAG "  $$ subscibe_event");
+
 	switch (sub->type) {
 	case V4L2_EVENT_SOURCE_CHANGE:
 		return v4l2_src_change_event_subdev_subscribe(sd, fh, sub);
@@ -1215,6 +1238,8 @@ static int tc358743_subscribe_event(struct v4l2_subdev *sd, struct v4l2_fh *fh,
 
 static int tc358743_isr(struct v4l2_subdev *sd, u32 status, bool *handled)
 {
+	pr_info(TAG "  $$ isr");
+
 	// u16 intstatus = i2c_rd16(sd, INTSTATUS);
 
 	// v4l2_dbg(1, debug, sd, "%s: IntStatus = 0x%04x\n", __func__, intstatus);
@@ -1266,6 +1291,12 @@ static int tc358743_isr(struct v4l2_subdev *sd, u32 status, bool *handled)
 	return 0;
 }
 
+static int tc358743_log_status(struct v4l2_subdev *sd)
+{
+	pr_info(TAG "  $$ log_status");
+	return 0;
+}
+
 static const struct v4l2_subdev_core_ops tc358743_core_ops = {
 	// .log_status = tc358743_log_status,
 #ifdef CONFIG_VIDEO_ADV_DEBUG
@@ -1302,6 +1333,17 @@ static const struct v4l2_subdev_ops tc358743_ops = {
 	.pad = &tc358743_pad_ops,
 };
 
+static int tc358743_link_setup(struct media_entity *entity,
+			       const struct media_pad *local,
+			       const struct media_pad *remote, u32 flags)
+{
+	return 0;
+}
+
+static const struct media_entity_operations tc358743_sd_media_ops = {
+	.link_setup = tc358743_link_setup,
+};
+
 static int tc358743_probe_of(struct tc358743_state *state)
 {
 	struct device *dev = &state->i2c_client->dev;
@@ -1311,26 +1353,33 @@ static int tc358743_probe_of(struct tc358743_state *state)
 	u32 bps_pr_lane;
 	int ret;
 
-	refclk = devm_clk_get(dev, "refclk");
-	if (IS_ERR(refclk)) {
-		if (PTR_ERR(refclk) != -EPROBE_DEFER)
-			dev_err(dev, "failed to get refclk: %ld\n",
-				PTR_ERR(refclk));
-		return PTR_ERR(refclk);
-	}
+// pr_info(TAG "bb 1, 0x%x", state);
+// pr_info(TAG "bb 1, 0x%x", state->i2c_client);
+// pr_info(TAG "bb 1, 0x%x", dev);
+// 	refclk = devm_clk_get(dev, "refclk");
+// pr_info(TAG "bb 1, %d", refclk);
+// 	if (IS_ERR(refclk)) {
+// 		if (PTR_ERR(refclk) != -EPROBE_DEFER)
+// 			dev_err(dev, "failed to get refclk: %ld\n",
+// 				PTR_ERR(refclk));
+// 		return PTR_ERR(refclk);
+	// }
 
+pr_info(TAG "bb 2");
 	ep = of_graph_get_next_endpoint(dev->of_node, NULL);
 	if (!ep) {
 		dev_err(dev, "missing endpoint node\n");
 		return -EINVAL;
 	}
 
+pr_info(TAG "bb 3");
 	ret = v4l2_fwnode_endpoint_alloc_parse(of_fwnode_handle(ep), &endpoint);
 	if (ret) {
 		dev_err(dev, "failed to parse endpoint\n");
 		goto put_node;
 	}
 
+pr_info(TAG "bb 4");
 	if (endpoint.bus_type != V4L2_MBUS_CSI2_DPHY ||
 	    endpoint.bus.mipi_csi2.num_data_lanes == 0 ||
 	    endpoint.nr_of_link_frequencies == 0) {
@@ -1339,6 +1388,7 @@ static int tc358743_probe_of(struct tc358743_state *state)
 		goto free_endpoint;
 	}
 
+pr_info(TAG "bb 5 - lanes %d", endpoint.bus.mipi_csi2.num_data_lanes);
 	if (endpoint.bus.mipi_csi2.num_data_lanes > 4) {
 		dev_err(dev, "invalid number of lanes\n");
 		ret = -EINVAL;
@@ -1347,12 +1397,14 @@ static int tc358743_probe_of(struct tc358743_state *state)
 
 	state->bus = endpoint.bus.mipi_csi2;
 
+pr_info(TAG "bb 6");
 	ret = clk_prepare_enable(refclk);
 	if (ret) {
 		dev_err(dev, "Failed! to enable clock\n");
 		goto free_endpoint;
 	}
 
+pr_info(TAG "bb 7");
 	state->pdata.refclk_hz = clk_get_rate(refclk);
 	state->pdata.ddc5v_delay = DDC5V_DELAY_100_MS;
 	state->pdata.enable_hdcp = false;
@@ -1362,64 +1414,65 @@ static int tc358743_probe_of(struct tc358743_state *state)
 	 * The PLL input clock is obtained by dividing refclk by pll_prd.
 	 * It must be between 6 MHz and 40 MHz, lower frequency is better.
 	 */
-	switch (state->pdata.refclk_hz) {
-	case 26000000:
-	case 27000000:
-	case 42000000:
-		state->pdata.pll_prd = state->pdata.refclk_hz / 6000000;
-		break;
-	default:
-		dev_err(dev, "unsupported refclk rate: %u Hz\n",
-			state->pdata.refclk_hz);
-		goto disable_clk;
-	}
+	// switch (state->pdata.refclk_hz) {
+	// case 26000000:
+	// case 27000000:
+	// case 42000000:
+	// 	state->pdata.pll_prd = state->pdata.refclk_hz / 6000000;
+	// 	break;
+	// default:
+	// 	dev_err(dev, "unsupported refclk rate: %u Hz\n",
+	// 		state->pdata.refclk_hz);
+	// 	goto disable_clk;
+	// }
 
 	/*
 	 * The CSI bps per lane must be between 62.5 Mbps and 1 Gbps.
 	 * The default is 594 Mbps for 4-lane 1080p60 or 2-lane 720p60.
 	 */
-	bps_pr_lane = 2 * endpoint.link_frequencies[0];
-	if (bps_pr_lane < 62500000U || bps_pr_lane > 1000000000U) {
-		dev_err(dev, "unsupported bps per lane: %u bps\n", bps_pr_lane);
-		ret = -EINVAL;
-		goto disable_clk;
-	}
+	// bps_pr_lane = 2 * endpoint.link_frequencies[0];
+	// if (bps_pr_lane < 62500000U || bps_pr_lane > 1000000000U) {
+	// 	dev_err(dev, "unsupported bps per lane: %u bps\n", bps_pr_lane);
+	// 	ret = -EINVAL;
+	// 	goto disable_clk;
+	// }
 
-	/* The CSI speed per lane is refclk / pll_prd * pll_fbd */
-	state->pdata.pll_fbd = bps_pr_lane /
-			       state->pdata.refclk_hz * state->pdata.pll_prd;
+	// /* The CSI speed per lane is refclk / pll_prd * pll_fbd */
+	// state->pdata.pll_fbd = bps_pr_lane /
+	// 		       state->pdata.refclk_hz * state->pdata.pll_prd;
 
 	/*
 	 * FIXME: These timings are from REF_02 for 594 Mbps per lane (297 MHz
 	 * link frequency). In principle it should be possible to calculate
 	 * them based on link frequency and resolution.
 	 */
-	if (bps_pr_lane != 594000000U)
-		dev_warn(dev, "untested bps per lane: %u bps\n", bps_pr_lane);
-	state->pdata.lineinitcnt = 0xe80;
-	state->pdata.lptxtimecnt = 0x003;
-	/* tclk-preparecnt: 3, tclk-zerocnt: 20 */
-	state->pdata.tclk_headercnt = 0x1403;
-	state->pdata.tclk_trailcnt = 0x00;
-	/* ths-preparecnt: 3, ths-zerocnt: 1 */
-	state->pdata.ths_headercnt = 0x0103;
-	state->pdata.twakeup = 0x4882;
-	state->pdata.tclk_postcnt = 0x008;
-	state->pdata.ths_trailcnt = 0x2;
-	state->pdata.hstxvregcnt = 0;
+	// if (bps_pr_lane != 594000000U)
+	// 	dev_warn(dev, "untested bps per lane: %u bps\n", bps_pr_lane);
+	// state->pdata.lineinitcnt = 0xe80;
+	// state->pdata.lptxtimecnt = 0x003;
+	// /* tclk-preparecnt: 3, tclk-zerocnt: 20 */
+	// state->pdata.tclk_headercnt = 0x1403;
+	// state->pdata.tclk_trailcnt = 0x00;
+	// /* ths-preparecnt: 3, ths-zerocnt: 1 */
+	// state->pdata.ths_headercnt = 0x0103;
+	// state->pdata.twakeup = 0x4882;
+	// state->pdata.tclk_postcnt = 0x008;
+	// state->pdata.ths_trailcnt = 0x2;
+	// state->pdata.hstxvregcnt = 0;
 
-	state->reset_gpio = devm_gpiod_get_optional(dev, "reset",
-						    GPIOD_OUT_LOW);
-	if (IS_ERR(state->reset_gpio)) {
-		dev_err(dev, "failed to get reset gpio\n");
-		ret = PTR_ERR(state->reset_gpio);
-		goto disable_clk;
-	}
+	// state->reset_gpio = devm_gpiod_get_optional(dev, "reset",
+	// 					    GPIOD_OUT_LOW);
+	// if (IS_ERR(state->reset_gpio)) {
+	// 	dev_err(dev, "failed to get reset gpio\n");
+	// 	ret = PTR_ERR(state->reset_gpio);
+	// 	goto disable_clk;
+	// }
 
 	// if (state->reset_gpio)
 	// 	tc358743_gpio_reset(state);
 
 	ret = 0;
+pr_info(TAG "bb 8 return ok");
 	goto free_endpoint;
 
 disable_clk:
@@ -1442,7 +1495,16 @@ static int i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
 
 
-	static struct v4l2_dv_timings default_timing = V4L2_DV_BT_CEA_640X480P59_94;
+	static struct v4l2_dv_timings default_timing = // V4L2_DV_BT_CEA_640X480P59_94;
+	{
+	.type = V4L2_DV_BT_656_1120,
+	V4L2_INIT_BT_TIMINGS(640, 480, 0, 0,
+		25175000 / 2, // $$
+		16, 96, 48, 10, 2, 33, 0, 0, 0,
+		V4L2_DV_BT_STD_DMT | V4L2_DV_BT_STD_CEA861,
+		V4L2_DV_FL_HAS_CEA861_VIC, { 0, 0 }, 1)
+};
+
 	struct tc358743_state *state;
 	struct tc358743_platform_data *pdata = client->dev.platform_data;
 	struct v4l2_subdev *sd;
@@ -1455,7 +1517,7 @@ static int i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
 	pr_info(TAG "probe driver I2C Toshiba TC358748 - 0x%02x address\n", client->addr);
 
-	tc358748_setup();
+	// tc358748_setup(); // $$
 
 
 
@@ -1476,19 +1538,19 @@ pr_info(TAG "aa");
 	state->i2c_client = client;
 
 	/* platform data */
-// 	if (pdata) {
-// pr_info(TAG "aa1a");
-// 		state->pdata = *pdata;
-// 		state->bus.flags = V4L2_MBUS_CSI2_CONTINUOUS_CLOCK;
-// 	} else {
-// pr_info(TAG "aa1b");
-// 		err = tc358743_probe_of(state);
-// pr_info(TAG "aa1b %d %d", err, ENODEV);
-// 		if (err == -ENODEV)
-// 			v4l_err(client, "No platform data!\n");
-// 		if (err)
-// 			return err;
-// 	}
+	if (pdata) {
+pr_info(TAG "aa1a");
+		state->pdata = *pdata;
+		state->bus.flags = V4L2_MBUS_CSI2_CONTINUOUS_CLOCK;
+	} else {
+pr_info(TAG "aa1b");
+		err = tc358743_probe_of(state);
+pr_info(TAG "aa1b %d %d", err, ENODEV);
+		if (err == -ENODEV)
+			v4l_err(client, "No platform data!\n");
+		if (err)
+			return err;
+	}
 pr_info(TAG "aa2");
 
 	sd = &state->sd;
@@ -1530,6 +1592,7 @@ pr_info(TAG "aa4");
 	// }
 
 	state->pad.flags = MEDIA_PAD_FL_SOURCE;
+	sd->entity.ops = &tc358743_sd_media_ops;
 	sd->entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 	err = media_entity_pads_init(&sd->entity, 1, &state->pad);
 	if (err < 0)
@@ -1608,7 +1671,7 @@ pr_info(TAG "aa8");
 pr_info(TAG "aa9");
 
 	v4l2_info(sd, "%s found @ 0x%x (%s)\n", client->name,
-		  client->addr << 1, client->adapter->name);
+		  client->addr << 0, client->adapter->name);
 
 	return 0;
 
@@ -1629,29 +1692,30 @@ static int i2c_remove(struct i2c_client *client)
 	pr_info(TAG "remove driver I2C Toshiba TC358748 - 0x%02x address\n", client->addr);
 
 
-		/* TXOPTIONCNTRL */
-	if (!i2c_write_reg32(tc358748_i2c_client, TXOPTIONCNTRL, 0))
-	{
-		pr_err(TAG "Can't write TXOPTIONCNTRL");
-		return false;
-	}
-	pr_info(TAG "TXOPTIONCNTRL (0x%04x) = 0", TXOPTIONCNTRL);
+	// 	/* TXOPTIONCNTRL */
+	// if (!i2c_write_reg32(tc358748_i2c_client, TXOPTIONCNTRL, 0))
+	// {
+	// 	pr_err(TAG "Can't write TXOPTIONCNTRL");
+	// 	return false;
+	// }
+	// pr_info(TAG "TXOPTIONCNTRL (0x%04x) = 0", TXOPTIONCNTRL);
 
-		/* STARTCNTRL */
-	if (!i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0))
-	{
-		pr_err(TAG "Can't write STARTCNTRL");
-		return false;
-	}
-	pr_info(TAG "STARTCNTRL (0x%04x) = 0", STARTCNTRL);
+	// 	/* STARTCNTRL */
+	// if (!i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0))
+	// {
+	// 	pr_err(TAG "Can't write STARTCNTRL");
+	// 	return false;
+	// }
+	// pr_info(TAG "STARTCNTRL (0x%04x) = 0", STARTCNTRL);
 
-		/* CSI_START */
-	if (!i2c_write_reg32(tc358748_i2c_client, CSI_START, 0))
-	{
-		pr_err(TAG "Can't write CSI_START");
-		return false;
-	}
-	pr_info(TAG "CSI_START (0x%04x) = 0", CSI_START);
+	// 	/* CSI_START */
+	// if (!i2c_write_reg32(tc358748_i2c_client, CSI_START, 0))
+	// {
+	// 	pr_err(TAG "Can't write CSI_START");
+	// 	return false;
+	// }
+	// pr_info(TAG "CSI_START (0x%04x) = 0", CSI_START);
+
 
 
 	// struct v4l2_subdev *sd = i2c_get_clientdata(client);
