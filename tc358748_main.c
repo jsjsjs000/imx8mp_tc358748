@@ -2276,7 +2276,7 @@ static int ar0521_s_ctrl(struct v4l2_ctrl *ctrl)
 	u16 val;
 	u16 mask;
 
-pr_info("-------- c 1");
+pr_info("-------- c 1");  // $$
 return 0;//$$
 
 	switch (ctrl->id) {
@@ -2450,7 +2450,7 @@ return 0;//$$
 		break;
 	}
 
-pr_info("-------- c 2: %d", ret);
+pr_info("-------- c 2: %d", ret);  // $$
 	return ret;
 }
 
@@ -3105,13 +3105,13 @@ static int ar0521_subdev_registered(struct v4l2_subdev *sd)
 	if (ret)
 		return ret;
 
-pr_info("-------- b 1");
+pr_info("-------- b 1");  // $$
 	ret = ar0521_create_ctrls(sensor);
 	if (ret)
 		return ret;
 
 	v4l2_ctrl_handler_setup(&sensor->ctrls);
-pr_info("-------- c 1");
+pr_info("-------- c 1");  // $$
 
 	return 0;
 }
@@ -3481,7 +3481,7 @@ static int ar0521_probe(struct i2c_client *i2c,
 	ret = ar0521_of_probe(&i2c->dev, sensor);
 	if (ret)
 		return ret;
-pr_info("-------- a 1");
+pr_info("-------- a 1");  // $$
 	mutex_init(&sensor->lock);
 
 	v4l2_i2c_subdev_init(sd, i2c, &ar0521_subdev_ops);
@@ -3496,7 +3496,7 @@ pr_info("-------- a 1");
 	if (ret)
 		goto out_media;
 
-pr_info("-------- a 2");
+pr_info("-------- a 2");  // $$
 	ret = v4l2_ctrl_handler_init(&sensor->ctrls, 10);
 	if (ret)
 		goto out;
@@ -3508,12 +3508,12 @@ pr_info("-------- a 2");
 	// if (ret)
 	// 	goto out;
 
-pr_info("-------- a 3");
+pr_info("-------- a 3");  // $$
 	ret = v4l2_async_register_subdev_sensor(&sensor->subdev);
 	if (ret)
 		goto out;
 
-pr_info("-------- a 4");
+pr_info("-------- a 4");  // $$
 	return 0;
 
 out:
