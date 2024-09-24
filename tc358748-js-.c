@@ -494,7 +494,7 @@ static bool tc358748_setup(void)
 			// (1 << 3) |  /* Parallel clock polarity inverted - $$ nVidia driver */
 			(1 << 4) |  /* H Sync active low */
 			// (1 << 5) |  /* V Sync active low */
-			(1 << 6) |  /* Parallel port enable - $$ nVidia driver */
+			// (1 << 6) |  /* Parallel port enable - $$ nVidia driver */
 			// (0 << 8);   /* Parallel data format - mode 0 */
 			(3 << 8);   /* Parallel data format - reserved - $$ nVidia driver */
 	if (!i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl))
@@ -514,6 +514,13 @@ i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
 i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
 // i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
 i2c_write_reg16(tc358748_i2c_client, WORDCNT, 640 * 3); // 640
+
+confctl |= (1 << 6);                                   /* Parallel port enable */
+i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
+
+i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
+usleep_range(10 * 1000, 10 * 1000);
+
 i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
 i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
 i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
@@ -534,7 +541,6 @@ i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
 i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, 0x1);
 i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
 i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
-i2c_write_reg32(tc358748_i2c_client, CSI_START, 0x1);
 i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
 return true;
 

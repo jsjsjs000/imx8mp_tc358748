@@ -35,8 +35,11 @@ clear; co && up && mod
 
 media-ctl -p; ls /dev/video*; ls /dev/media*
 
-	# usefull aliases for i.MX
+	# usefull aliases for i.MX - writing to .bashrc
 echo "alias a='media-ctl -p; ls /dev/video*; ls /dev/media*'" >> .bashrc
+echo "alias re='reboot'" >> .bashrc
+echo "alias g='gst-launch-1.0 -vvv v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480 ! autovideosink'" >> .bashrc
+
 
 depmod
 insmod /lib/modules/5.15.71-bsp-yocto-nxp-i.mx8mp-pd23.1.0/kernel/drivers/media/i2c/tc358748.ko
@@ -59,4 +62,18 @@ cat /proc/device-tree/soc\@0/bus\@30800000/i2c\@30a40000/tc358748\@0e/refclk | h
 cat /proc/device-tree/soc\@0/bus\@30800000/i2c\@30a40000/tc358748\@0e/refclk  | hexdump -e '1/1 "0x%02X "'
 
 
-scp ~/linux-imx-v5.15.71_2.2.2-phy/arch/arm64/boot/dts/freescale/overlays/imx8mp-tc358748-i2c3.dtbo root@192.168.3.11:/boot/
+
+gst-device-monitor-1.0
+
+media-ctl -p
+
+media-ctl -r
+media-ctl -l "'tc358748 2-000e':0->'mxc-mipi-csi2.0':0[1]"
+
+
+i.MX 8 GStreamer User Guide
+https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/imx-processors%40tkb/15/2/i.MX8GStreamerUserGuide.pdf
+
+
+ADV7180 driver
+

@@ -41,33 +41,12 @@ struct ar0521_format {
 	unsigned int bpp;
 };
 
-static const struct ar0521_format ar0521_mono_formats[] = {
+static const struct ar0521_format ar0521_col_formats = 
 	{
-		.code	= MEDIA_BUS_FMT_Y8_1X8,
+		// .code	= MEDIA_BUS_FMT_SGRBG8_1X8,
+		.code = MEDIA_BUS_FMT_RGB888_1X24,
 		.bpp	= 8,
-	}, {
-		.code	= MEDIA_BUS_FMT_Y10_1X10,
-		.bpp	= 10,
-	}, {
-		.code	= MEDIA_BUS_FMT_Y12_1X12,
-		.bpp	= 12,
-	},
-};
-
-static const struct ar0521_format ar0521_col_formats[] = {
-	{
-		.code	= MEDIA_BUS_FMT_SGRBG8_1X8,
-		.bpp	= 8,
-	}, {
-		.code	= MEDIA_BUS_FMT_SGRBG10_1X10,
-		.bpp	= 10,
-	// }, {
-	// 	.code	= MEDIA_BUS_FMT_SGRBG12_1X12,
-	// 	.bpp	= 12,
-	}, {
-		.code	= MEDIA_BUS_FMT_SGRBG8_1X8,
-		.bpp	= 8,
-	},
+	// },
 };
 
 struct limit_range {
@@ -129,8 +108,8 @@ struct ar0521 {
 	struct ar0521_businfo info;
 	struct ar0521_sensor_limits limits;
 
-	const struct ar0521_format *formats;
-	unsigned int num_fmts;
+	// const struct ar0521_format *formats;
+	// unsigned int num_fmts;
 
 	struct v4l2_ctrl *exp_ctrl;
 	struct v4l2_ctrl *vblank_ctrl;
@@ -190,18 +169,6 @@ static inline int bpp_to_index(unsigned int bpp)
 	return (bpp - 8) / 2;
 }
 
-static const struct ar0521_format *ar0521_find_format(struct ar0521 *sensor,
-						      u32 code)
-{
-	int i;
-
-	for (i = 0; i < sensor->num_fmts; i++)
-		if (sensor->formats[i].code == code)
-			return &sensor->formats[i];
-
-	return &sensor->formats[sensor->num_fmts - 1];
-}
-
 /* V4L2 subdev core ops */
 static int ar0521_s_power(struct v4l2_subdev *sd, int on)
 {
@@ -233,19 +200,22 @@ static int ar0521_g_register(struct v4l2_subdev *sd,
 /* V4L2 subdev video ops */
 static int ar0521_s_stream(struct v4l2_subdev *sd, int enable)
 {
+pr_info("--------------------- s_stream!!!!!!!!!!!!");
+
 	return 0;
 }
 
 static int ar0521_g_frame_interval(struct v4l2_subdev *sd,
 				   struct v4l2_subdev_frame_interval *interval)
 {
-	// struct ar0521 *sensor = to_ar0521(sd);
+	struct ar0521 *sensor = to_ar0521(sd);
 	// unsigned long pix_freq;
-	// int index;
+	int index;
 
 	// mutex_lock(&sensor->lock);
 
-	// index = bpp_to_index(sensor->bpp);
+	index = bpp_to_index(sensor->bpp);
+
 	// pix_freq = sensor->pll[index].pix_freq;
 
 	// interval->interval.numerator = 10;
@@ -300,6 +270,8 @@ static unsigned int ar0521_find_skipfactor(unsigned int input,
 	 * Skip 4
 	 */
 
+pr_info("--------------------- in/out %d %d", input, output);
+
 	for (i = 0; i < 2; i++)
 		if ((input >> i) <= output)
 			break;
@@ -312,14 +284,15 @@ static int ar0521_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *state,
 				 struct v4l2_subdev_mbus_code_enum *code)
 {
-	struct ar0521 *sensor = to_ar0521(sd);
+	// struct ar0521 *sensor = to_ar0521(sd);
 
-	if (code->index < sensor->num_fmts) {
-		code->code = sensor->formats[code->index].code;
+	// if (code->index < sensor->num_fmts) {
+		// code->code = sensor->formats[code->index].code;
+		code->code = 8;
 		return 0;
-	} else {
-		return -EINVAL;
-	}
+	// } else {
+	// 	return -EINVAL;
+	// }
 }
 
 static int ar0521_enum_frame_size(struct v4l2_subdev *sd,
@@ -331,12 +304,14 @@ static int ar0521_enum_frame_size(struct v4l2_subdev *sd,
 	struct v4l2_rect *crop;
 	int ret = 0;
 
+pr_info("--------------------- frame_size start: index %d", fse->index);
 	mutex_lock(&sensor->lock);
 
 	fmt = ar0521_get_pad_fmt(sensor, state, fse->pad, fse->which);
 	crop = ar0521_get_pad_crop(sensor, state, fse->pad, fse->which);
 
 	if (fse->index >= 4 || fse->code != fmt->code) {
+pr_info("--------------------- frame_size   err: index %d, code %d", fse->index, fse->code);
 		ret = -EINVAL;
 		goto out;
 	}
@@ -346,8 +321,18 @@ static int ar0521_enum_frame_size(struct v4l2_subdev *sd,
 	fse->min_height = crop->height / (1u << fse->index);
 	fse->max_height = fse->min_height;
 
+pr_info("--------------------- frame_size  crop %d %d %d %d",
+		crop->left, crop->top, crop->width, crop->height);
+pr_info("--------------------- frame_size  min max %d %d %d %d", 
+		fse->min_width, fse->max_width, fse->min_height, fse->max_height);
+
 	if (fse->min_width <= 1 || fse->min_height <= 1)
+	{
+pr_info("--------------------- frame_size   err: min_width %d, min_height %d",
+				fse->min_width, fse->min_height);
 		ret = -EINVAL;
+	}
+
 out:
 	mutex_unlock(&sensor->lock);
 	return ret;
@@ -417,13 +402,14 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_subdev_format *format)
 {
 	struct ar0521 *sensor = to_ar0521(sd);
-	const struct ar0521_format *sensor_format;
+	// const struct ar0521_format *sensor_format;
 	struct v4l2_mbus_framefmt *fmt;
 	struct v4l2_rect *crop;
 	unsigned int width, height;
 	unsigned int w_skip, h_skip;
 
 	dev_dbg(sd->dev, "%s\n", __func__);
+pr_info("--------------------- set_fmt start");
 
 	mutex_lock(&sensor->lock);
 
@@ -449,11 +435,12 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 							  fmt->colorspace,
 							  fmt->ycbcr_enc);
 
-	sensor_format = ar0521_find_format(sensor, format->format.code);
+	// sensor_format = ar0521_col_formats; // ar0521_find_format(sensor, format->format.code);
 	// fmt->code = sensor_format->code;
 
 // fmt->code = MEDIA_BUS_FMT_Y8_1X8;
-fmt->code = MEDIA_BUS_FMT_SGRBG8_1X8;
+// fmt->code = MEDIA_BUS_FMT_SGRBG8_1X8;
+fmt->code = MEDIA_BUS_FMT_RGB888_1X24;
 
 	width = clamp_t(unsigned int, format->format.width,
 			1, crop->width);
@@ -472,11 +459,14 @@ sensor->bpp = 8;
 		sensor->w_skip = w_skip;
 		sensor->h_skip = h_skip;
 
-		ar0521_update_blankings(sensor);
-		sensor->hlen = fmt->width + sensor->hblank_ctrl->cur.val;
-		sensor->vlen = fmt->height + sensor->vblank_ctrl->cur.val;
+		// ar0521_update_blankings(sensor);
+sensor->hlen = 800;
+		// sensor->hlen = fmt->width + sensor->hblank_ctrl->cur.val;
+		// sensor->vlen = fmt->height + sensor->vblank_ctrl->cur.val;
+sensor->vlen = 525;
 	}
 
+pr_info("--------------------- set_fmt end");
 	format->format = *fmt;
 
 	mutex_unlock(&sensor->lock);
@@ -496,6 +486,13 @@ static int ar0521_get_fmt(struct v4l2_subdev *sd,
 
 	fmt = ar0521_get_pad_fmt(sensor, state, format->pad, format->which);
 	format->format = *fmt;
+pr_info("--------------------- get_fmt width %d", fmt->width);
+pr_info("--------------------- get_fmt height %d", fmt->height);
+pr_info("--------------------- get_fmt code %d", fmt->code);
+pr_info("--------------------- get_fmt field %d", fmt->field);
+pr_info("--------------------- get_fmt colorspace %d", fmt->colorspace);
+pr_info("--------------------- get_fmt xfer_func %d", fmt->xfer_func);
+pr_info("--------------------- get_fmt flags %d", fmt->flags);
 
 	mutex_unlock(&sensor->lock);
 
@@ -574,27 +571,30 @@ static void ar0521_set_defaults(struct ar0521 *sensor)
 		.ext_clk		= {5000000,	64000000 },
 	};
 
-	sensor->crop.left = 4;
-	sensor->crop.top = 4;
+	sensor->crop.left = 0;
+	sensor->crop.top = 0;
 	sensor->crop.width = AR0521_DEF_WIDTH;
 	sensor->crop.height = AR0521_DEF_HEIGHT;
 
 	sensor->fmt.width = AR0521_DEF_WIDTH;
 	sensor->fmt.height = AR0521_DEF_HEIGHT;
 	sensor->fmt.field = V4L2_FIELD_NONE;
-	sensor->fmt.colorspace = V4L2_COLORSPACE_RAW;
+	// sensor->fmt.colorspace = V4L2_COLORSPACE_RAW;
+sensor->fmt.colorspace = V4L2_COLORSPACE_SRGB;
 
 	// if (sensor->model == AR0521_MODEL_MONOCHROME) {
 	// 	sensor->formats = ar0521_mono_formats;
 	// 	sensor->num_fmts = ARRAY_SIZE(ar0521_mono_formats);
 	// } else
 	{
-		sensor->formats = ar0521_col_formats;
-		sensor->num_fmts = ARRAY_SIZE(ar0521_col_formats);
+		// sensor->formats = ar0521_col_formats;
+		// sensor->num_fmts = ARRAY_SIZE(ar0521_col_formats);
 	}
 
-	sensor->fmt.code = sensor->formats[sensor->num_fmts - 1].code;
-	sensor->bpp = sensor->formats[sensor->num_fmts - 1].bpp;
+	// sensor->fmt.code = sensor->formats[sensor->num_fmts - 1].code;
+	// sensor->bpp = sensor->formats[sensor->num_fmts - 1].bpp;
+	sensor->fmt.code = ar0521_col_formats.code;
+	sensor->bpp = ar0521_col_formats.bpp;
 
 	sensor->w_skip = 1;
 	sensor->h_skip = 1;
@@ -616,7 +616,7 @@ static int ar0521_subdev_registered(struct v4l2_subdev *sd)
 	ar0521_debugfs_init(sensor);
 #endif /* ifdef DEBUG */
 
-pr_info("-------- c 1");  // $$
+pr_info("-------- ar0521_subdev_registered");  // $$
 
 	return 0;
 }
@@ -646,6 +646,8 @@ static int ar0521_parse_endpoint(struct device *dev, struct ar0521 *sensor,
 	sensor->info.num_lanes = buscfg.bus.mipi_csi2.num_data_lanes;
 	sensor->info.flags = buscfg.bus.mipi_csi2.flags;
 	sensor->info.flags |= V4L2_MBUS_CSI2_CHANNEL_0;
+pr_info("--------------------- num lanes %d", sensor->info.num_lanes);
+
 	switch (sensor->info.num_lanes) {
 	case 2:
 		sensor->info.flags |= V4L2_MBUS_CSI2_2_LANE;
@@ -748,7 +750,6 @@ static int ar0521_probe(struct i2c_client *i2c,
 	ret = ar0521_of_probe(&i2c->dev, sensor);
 	if (ret)
 		return ret;
-pr_info("-------- a 1");  // $$
 	mutex_init(&sensor->lock);
 
 	v4l2_i2c_subdev_init(sd, i2c, &ar0521_subdev_ops);
@@ -763,7 +764,6 @@ pr_info("-------- a 1");  // $$
 	if (ret)
 		goto out_media;
 
-pr_info("-------- a 2");  // $$
 	ret = v4l2_ctrl_handler_init(&sensor->ctrls, 10);
 	if (ret)
 		goto out;
@@ -771,16 +771,10 @@ pr_info("-------- a 2");  // $$
 	sensor->subdev.ctrl_handler = &sensor->ctrls;
 	sensor->ctrls.lock = &sensor->lock;
 
-	// ret = ar0521_check_chip_id(sensor);
-	// if (ret)
-	// 	goto out;
-
-pr_info("-------- a 3");  // $$
 	ret = v4l2_async_register_subdev_sensor(&sensor->subdev);
 	if (ret)
 		goto out;
 
-pr_info("-------- a 4");  // $$
 	return 0;
 
 out:
@@ -847,6 +841,12 @@ MODULE_AUTHOR("");
 		 crop.bounds:(0,0)/2604x1956
 		 crop:(4,4)/2592x1944]
 
-
+new:
+		[fmt:SGRBG8_1X8/640x480 field:none colorspace:raw
+		 crop.bounds:(0,0)/0x0
+		 crop:(0,0)/0x0
+		 compose.bounds:(0,0)/0x0
+		 compose:(0,0)/0x0]
+		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]
 
 */
