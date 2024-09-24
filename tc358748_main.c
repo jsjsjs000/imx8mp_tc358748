@@ -61,9 +61,12 @@ static const struct ar0521_format ar0521_col_formats[] = {
 	}, {
 		.code	= MEDIA_BUS_FMT_SGRBG10_1X10,
 		.bpp	= 10,
+	// }, {
+	// 	.code	= MEDIA_BUS_FMT_SGRBG12_1X12,
+	// 	.bpp	= 12,
 	}, {
-		.code	= MEDIA_BUS_FMT_SGRBG12_1X12,
-		.bpp	= 12,
+		.code	= MEDIA_BUS_FMT_SGRBG8_1X8,
+		.bpp	= 8,
 	},
 };
 
@@ -447,7 +450,10 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 							  fmt->ycbcr_enc);
 
 	sensor_format = ar0521_find_format(sensor, format->format.code);
-	fmt->code = sensor_format->code;
+	// fmt->code = sensor_format->code;
+
+// fmt->code = MEDIA_BUS_FMT_Y8_1X8;
+fmt->code = MEDIA_BUS_FMT_SGRBG8_1X8;
 
 	width = clamp_t(unsigned int, format->format.width,
 			1, crop->width);
@@ -461,7 +467,8 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 	fmt->height = crop->height / h_skip;
 
 	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
-		sensor->bpp = sensor_format->bpp;
+		// sensor->bpp = sensor_format->bpp;
+sensor->bpp = 8;
 		sensor->w_skip = w_skip;
 		sensor->h_skip = h_skip;
 
