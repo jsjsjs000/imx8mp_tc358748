@@ -32,6 +32,12 @@ alias mod='ssh root@192.168.3.11 "modprobe -r tc358748; sleep 1; modprobe tc3587
 
 clear; co && up && mod
 
+
+media-ctl -p; ls /dev/video*; ls /dev/media*
+
+	# usefull aliases for i.MX
+echo "alias a='media-ctl -p; ls /dev/video*; ls /dev/media*'" >> .bashrc
+
 depmod
 insmod /lib/modules/5.15.71-bsp-yocto-nxp-i.mx8mp-pd23.1.0/kernel/drivers/media/i2c/tc358748.ko
 rmmod tc358748

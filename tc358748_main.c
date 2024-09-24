@@ -29,184 +29,12 @@
 
 #include "tc358748_i2c.h"
 
-#define	AR0521_DATA_FORMAT_BITS			0x0112
-#define		BIT_DATA_FMT_IN(n)		((n) << 8)
-#define		BIT_DATA_FMT_OUT(n)		(n)
-#define	AR0521_VT_PIX_CLK_DIV			0x0300
-#define	AR0521_VT_SYS_CLK_DIV			0x0302
-#define	AR0521_PRE_PLL_CLK_DIV			0x0304
-#define		BIT_PLL_DIV2(n)			((n) << 8)
-#define		BIT_PLL_DIV1(n)			(n)
-#define	AR0521_PLL_MUL				0x0306
-#define		BIT_PLL_MUL2(n)			((n) << 8)
-#define		BIT_PLL_MUL1(n)			(n)
-#define	AR0521_OP_PIX_CLK_DIV			0x0308
-#define	AR0521_OP_SYS_CLK_DIV			0x030a
-#define	AR0521_X_ADDR_START			0x0344
-#define	AR0521_Y_ADDR_START			0x0346
-#define	AR0521_X_ADRR_END			0x0348
-#define	AR0521_Y_ADRR_END			0x034a
-#define	AR0521_X_OUTPUT_SIZE			0x034c
-#define	AR0521_Y_OUTPUT_SIZE			0x034e
-
-#define	AR0521_MODEL_ID				0x3000
-#define	AR0521_FRAME_LENGTH_LINES		0x300a
-#define	AR0521_LINE_LENGTH_PCK			0x300c
-#define	AR0521_COARSE_INT_TIME			0x3012
-#define	AR0521_EXTRA_DELAY			0x3018
-#define	AR0521_RESET_REGISTER			0x301a
-#define		BIT_GROUPED_PARAM_HOLD		BIT(15)
-#define		BIT_GAIN_INSERT_ALL		BIT(14)
-#define		BIT_SMIA_SER_DIS		BIT(12)
-#define		BIT_FORCED_PLL_ON		BIT(11)
-#define		BIT_RESTART_BAD			BIT(10)
-#define		BIT_MASK_BAD			BIT(9)
-#define		BIT_GPI_EN			BIT(8)
-#define		BIT_LOCK_REG			BIT(3)
-#define		BIT_STREAM			BIT(2)
-#define		BIT_RESTART			BIT(1)
-#define		BIT_RESET			BIT(0)
-#define	AR0521_DATA_PEDESTAL			0x301e
-#define	AR0521_GPI_STATUS			0x3026
-#define		BIT_TRIGGER_PIN_SEL(n)		((n) << 7)
-#define		BIT_TRIGGER_PIN_SEL_MASK	GENMASK(9, 7)
-#define	AR0521_FRAME_STATUS			0x303c
-#define		BIT_PLL_LOCKED			BIT(3)
-#define		BIT_FRAME_START_DURING_GPH	BIT(2)
-#define		BIT_STANDBY_STATUS		BIT(1)
-#define		BIT_FRAMESYNC			BIT(0)
-#define	AR0521_READ_MODE			0x3040
-#define		BIT_VERT_FLIP			BIT(15)
-#define		BIT_HORIZ_MIRR			BIT(14)
-#define		BIT_X_BIN_EN			BIT(11)
-#define	AR0521_FLASH				0x3046
-#define		BIT_XENON_FLASH			BIT(13)
-#define		BIT_LED_FLASH			BIT(8)
-#define		BIT_INVERT_FLASH		BIT(7)
-#define	AR0521_FLASH_COUNT			0x3048
-#define	AR0521_GREENR_GAIN			0x3056
-#define	AR0521_BLUE_GAIN			0x3058
-#define	AR0521_RED_GAIN				0x305a
-#define	AR0521_GREENB_GAIN			0x305c
-#define	AR0521_GLOBAL_GAIN			0x305e
-#define		BIT_DIGITAL_GAIN(n)		((n) << 7)
-#define		BIT_DIGITAL_GAIN_MASK		GENMASK(15, 7)
-#define		BIT_ANA_COARSE_GAIN(n)		((n) << 4)
-#define		BIT_ANA_COARSE_GAIN_MASK	GENMASK(6, 4)
-#define		BIT_ANA_FINE_GAIN(n)		(n)
-#define		BIT_ANA_FINE_GAIN_MASK		GENMASK(3, 0)
-#define	AR0521_TEST_PATTERN			0x3070
-#define	AR0521_TEST_DATA_RED			0x3072
-#define	AR0521_TEST_DATA_GREENR			0x3074
-#define	AR0521_TEST_DATA_BLUE			0x3076
-#define	AR0521_TEST_DATA_GREENB			0x3078
-#define	AR0521_X_ODD_INC			0x30a2
-#define	AR0521_Y_ODD_INC			0x30a6
-
-#define	AR0521_SLAVE_MODE_CTRL			0x3158
-#define		BIT_VD_TRIG_NEW_FRAME		BIT(15)
-#define		BIT_VD_TRIG_GRST		BIT(13)
-#define		BIT_VD_NEW_FRAME_ONLY		BIT(11)
-#define	AR0521_GLOBAL_SEQ_TRIGGER		0x315e
-#define		BIT_GLOBAL_TRIGGER		BIT(0)
-#define		BIT_SEQ_TRIGGER_GLOBAL_FLASH	BIT(2)
-#define	AR0521_SERIAL_FORMAT			0x31ae
-#define		BIT_TYPE(n)			((n) << 8)
-#define		BIT_LANES(n)			(n)
-#define	AR0521_MIPI_TIMING_0			0x31b4
-#define		BIT_HS_PREP(n)			((n) << 12)
-#define		BIT_HS_ZERO(n)			((n) << 6)
-#define		BIT_HS_TRAIL(n)			((n) << 1)
-#define	AR0521_MIPI_TIMING_1			0x31b6
-#define		BIT_CLK_PREP(n)			((n) << 12)
-#define		BIT_CLK_ZERO(n)			((n) << 5)
-#define		BIT_CLK_TRAIL(n)		(n)
-#define	AR0521_MIPI_TIMING_2			0x31b8
-#define		BIT_BGAP(n)			((n) << 10)
-#define		BIT_CLK_PRE(n)			((n) << 4)
-#define		BIT_CLK_POST_MSBS(n)		(n)
-#define	AR0521_MIPI_TIMING_3			0x31ba
-#define		BIT_LPX(n)			((n) << 10)
-#define		BIT_WAKEUP(n)			((n) << 3)
-#define		BIT_CLK_POST(n)			(n)
-#define	AR0521_MIPI_TIMING_4			0x31bc
-#define		BIT_CONT_TX_CLK			BIT(15)
-#define		BIT_VREG_MODE			BIT(13)
-#define		BIT_HS_EXIT(n)			((n) << 7)
-#define		BIT_INIT(n)			(n)
-#define	AR0521_SER_CTRL_STAT			0x31c6
-#define		BIT_FRAMER_TEST_MODE		BIT(7)
-#define	AR0521_SERIAL_TEST			0x3066
-#define	AR0521_PIX_DEF_ID			0x31e0
-#define		BIT_PIX_DEF_2D_COUPLE_EN	BIT(10)
-#define		BIT_PIX_DEF_2D_SINGLE_EN	BIT(9)
-#define		BIT_PIX_DEF_2D_FUSE_EN		BIT(8)
-#define		BIT_PIX_DEF_ID_LOC_CORR_EN	BIT(7)
-#define		BIT_PIX_DEF_ID_EN		BIT(0)
-#define	AR0521_CUSTOMER_REV			0x31fe
-
-#define AR0521_MIPI_CNTRL			0x3354
-
-#define AR0521_TP_NO_TESTPATTERN	0
-#define AR0521_TP_SOLIDCOLOR		1
-#define AR0521_TP_FULL_COLOR_BAR	2
-#define AR0521_TP_FADE_TO_GRAY		3
-#define AR0521_TP_PN9_LINK_INT		4
-#define AR0521_TP_WALKING_ONES_10BIT	256
-#define AR0521_TP_WALKING_ONES_8BIT	257
-
-#define AR0521_TYPE_MIPI		2
-
-#define AR0521_TEST_LANE_0		(0x1 << 6)
-#define AR0521_TEST_LANE_1		(0x2 << 6)
-#define AR0521_TEST_LANE_2		(0x4 << 6)
-#define AR0521_TEST_LANE_3		(0x8 << 6)
-#define AR0521_TEST_MODE_LP11		(0x1 << 2)
-
 #define AR0521_MAX_LINK_FREQ		600000000ULL
 
-#define AR0521_CSI2_DT_RAW8		0x2a
-#define AR0521_CSI2_DT_RAW10		0x2b
-#define AR0521_CSI2_DT_RAW12		0x2c
-
-#define AR0521_CHIP_ID			0x0457
-#define AR0522_CHIP_ID			0x1457
-#define AR0521_DEF_WIDTH		2592
-#define AR0521_DEF_HEIGHT		1944
-
-#define AR0521_TRIGGER_OFF		0
-#define AR0521_TRIGGER_GRR		1
-#define AR0521_TRIGGER_ERS		2
-
-#define AR0521_FREQ_MENU_8BIT		0
-#define AR0521_FREQ_MENU_10BIT		1
-#define AR0521_FREQ_MENU_12BIT		2
-
-
-enum {
-	V4L2_CID_USER_BASE_AR0521		= V4L2_CID_USER_BASE + 0x2500,
-
-	V4L2_CID_X_BINNING_COL,
-	V4L2_CID_X_EXTRA_BLANKING,
-
-	V4L2_CID_X_DIGITAL_GAIN_RED,
-	V4L2_CID_X_DIGITAL_GAIN_GREENR,
-	V4L2_CID_X_DIGITAL_GAIN_BLUE,
-	V4L2_CID_X_DIGITAL_GAIN_GREENB,
-
-	V4L2_CID_X_DYNAMIC_PIXEL_CORRECTION,
-
-	V4L2_CID_X_FLASH_INVERT,
-	V4L2_CID_X_FLASH_XENON_WIDTH,
-	V4L2_CID_X_TRIGGER_MODE,
-	V4L2_CID_X_TRIGGER_PIN,
-};
-
-enum ar0521_model {
-	AR0521_MODEL_UNKNOWN,
-	AR0521_MODEL_COLOR,
-	AR0521_MODEL_MONOCHROME,
-};
+// #define AR0521_DEF_WIDTH		2592
+// #define AR0521_DEF_HEIGHT		1944
+#define AR0521_DEF_WIDTH		640
+#define AR0521_DEF_HEIGHT		480
 
 struct ar0521_format {
 	unsigned int code;
@@ -282,34 +110,6 @@ struct ar0521_register {
 	u16 val;
 };
 
-struct ar0521_pll_config {
-	unsigned int pll2_div;
-	unsigned int pll2_mul;
-	unsigned int pll_div;
-	unsigned int pll_mul;
-	unsigned int vt_sys_div;
-	unsigned int vt_pix_div;
-	unsigned int op_sys_div;
-	unsigned int op_pix_div;
-	unsigned long vco_freq;
-	unsigned long pix_freq;
-	unsigned long ser_freq;
-};
-
-struct ar0521_gains {
-	struct v4l2_ctrl *dig_ctrl;
-	struct v4l2_ctrl *ana_ctrl;
-	struct v4l2_ctrl *red_ctrl;
-	struct v4l2_ctrl *greenb_ctrl;
-	struct v4l2_ctrl *greenr_ctrl;
-	struct v4l2_ctrl *blue_ctrl;
-	unsigned int red;
-	unsigned int greenb;
-	unsigned int greenr;
-	unsigned int blue;
-	unsigned int min_ref;
-};
-
 struct ar0521 {
 	struct v4l2_subdev subdev;
 	struct v4l2_ctrl_handler ctrls;
@@ -324,9 +124,7 @@ struct ar0521 {
 	unsigned int vlen;
 
 	struct ar0521_businfo info;
-	struct ar0521_pll_config pll[4];
 	struct ar0521_sensor_limits limits;
-	enum ar0521_model model;
 
 	const struct ar0521_format *formats;
 	unsigned int num_fmts;
@@ -334,7 +132,6 @@ struct ar0521 {
 	struct v4l2_ctrl *exp_ctrl;
 	struct v4l2_ctrl *vblank_ctrl;
 	struct v4l2_ctrl *hblank_ctrl;
-	struct ar0521_gains gains;
 
 	struct vvcam_mode_info_s vvcam_mode;
 	unsigned int vvcam_cur_mode_index;
@@ -360,7 +157,6 @@ struct priv_ioctl {
 	const char * const name;
 };
 
-
 static inline struct ar0521 *to_ar0521(struct v4l2_subdev *sd);
 static inline int bpp_to_index(unsigned int bpp);
 static int ar0521_set_selection(struct v4l2_subdev *sd,
@@ -369,7 +165,6 @@ static int ar0521_set_selection(struct v4l2_subdev *sd,
 static int ar0521_set_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_subdev_state *state,
 			  struct v4l2_subdev_format *format);
-
 
 static long ar0521_priv_ioctl(struct v4l2_subdev *sd, unsigned int cmd,
 			      void *arg)
@@ -639,9 +434,9 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 	crop = ar0521_get_pad_crop(sensor, state, format->pad,
 				   V4L2_SUBDEV_FORMAT_ACTIVE);
 
-	if (sensor->model == AR0521_MODEL_COLOR)
-		fmt->colorspace = V4L2_COLORSPACE_RAW;
-	else
+	// if (sensor->model == AR0521_MODEL_COLOR)
+	// 	fmt->colorspace = V4L2_COLORSPACE_RAW;
+	// else
 		fmt->colorspace = V4L2_COLORSPACE_SRGB;
 
 	fmt->field = V4L2_FIELD_NONE;
@@ -782,10 +577,11 @@ static void ar0521_set_defaults(struct ar0521 *sensor)
 	sensor->fmt.field = V4L2_FIELD_NONE;
 	sensor->fmt.colorspace = V4L2_COLORSPACE_RAW;
 
-	if (sensor->model == AR0521_MODEL_MONOCHROME) {
-		sensor->formats = ar0521_mono_formats;
-		sensor->num_fmts = ARRAY_SIZE(ar0521_mono_formats);
-	} else {
+	// if (sensor->model == AR0521_MODEL_MONOCHROME) {
+	// 	sensor->formats = ar0521_mono_formats;
+	// 	sensor->num_fmts = ARRAY_SIZE(ar0521_mono_formats);
+	// } else
+	{
 		sensor->formats = ar0521_col_formats;
 		sensor->num_fmts = ARRAY_SIZE(ar0521_col_formats);
 	}
@@ -797,11 +593,6 @@ static void ar0521_set_defaults(struct ar0521 *sensor)
 	sensor->h_skip = 1;
 	sensor->hlen = sensor->limits.hlen.min;
 	sensor->vlen = sensor->fmt.height + sensor->limits.vblank.min;
-	sensor->gains.red = 1000;
-	sensor->gains.greenr = 1000;
-	sensor->gains.greenb = 1000;
-	sensor->gains.blue = 1000;
-	sensor->gains.min_ref = 1000;
 
 #ifdef DEBUG
 	sensor->manual_pll = false;
@@ -827,129 +618,6 @@ static const struct v4l2_subdev_internal_ops ar0521_subdev_internal_ops = {
 	.registered		= ar0521_subdev_registered,
 };
 
-static unsigned long ar0521_clk_mul_div(unsigned long freq,
-					unsigned int mul,
-					unsigned int div)
-{
-	uint64_t result;
-
-	if (WARN_ON(div == 0))
-		return 0;
-
-	result = freq;
-	result *= mul;
-	result = div_u64(result, div);
-
-	return result;
-}
-
-static int ar0521_calculate_pll(struct device *dev,
-				struct ar0521_pll_config *pll,
-				unsigned long ext_freq,
-				u64 link_freq,
-				unsigned int bpp,
-				unsigned int lanes)
-{
-	unsigned long op_clk;
-	unsigned long vco;
-	unsigned long pix_clk;
-	unsigned long pix_clk_target;
-	unsigned long diff, diff_old;
-	unsigned int div, mul;
-	const struct limit_range div_lim = {.min = 1, .max = 63};
-	const struct limit_range mul_lim = {.min = 32, .max = 254};
-	const struct limit_range pix_lim = {.min = 84000000, .max = 207000000};
-	const struct limit_range vco_lim = {
-		.min = 320000000,
-		.max = 1280000000
-	};
-
-	pix_clk_target = ar0521_clk_mul_div(link_freq, 2 * lanes, bpp);
-	diff_old = pix_clk_target;
-
-	pll->pll_div = 3;
-	pll->pll_mul = 89;
-	pll->pll2_div = 1;
-	pll->pll2_mul = 0;
-	pll->op_sys_div = 1;
-	pll->op_pix_div = 2;
-	pll->vt_sys_div = 1;
-	pll->vt_pix_div = bpp / 2;
-
-	div = div_lim.min;
-	mul = mul_lim.min;
-
-	if (pix_clk_target < (2 * pix_lim.min)) {
-		dev_warn(dev, "Link target too small, %d bit pll not valid\n",
-			 bpp);
-		return 0;
-	}
-
-	while (div <= div_lim.max) {
-		if (mul % 2 != 0)
-			mul++;
-
-		if (mul > mul_lim.max) {
-			mul = mul_lim.min;
-			div++;
-			if (div > div_lim.max)
-				break;
-		}
-
-		vco = ar0521_clk_mul_div(ext_freq, mul, div);
-
-		if (vco < vco_lim.min || vco > vco_lim.max) {
-			mul++;
-			continue;
-		}
-
-		pix_clk = ar0521_clk_mul_div(vco, 2, pll->vt_pix_div);
-		op_clk = ar0521_clk_mul_div(pix_clk, 1, 4);
-
-		if (pix_clk < (2 * pix_lim.min) ||
-		    pix_clk > (2 * pix_lim.max)) {
-			mul++;
-			continue;
-		}
-
-		if (pix_clk > pix_clk_target) {
-			mul++;
-			continue;
-		}
-
-		diff = pix_clk_target - pix_clk;
-		if (diff >= diff_old) {
-			mul++;
-			continue;
-		}
-
-		dev_dbg(dev, "%s: vco: %lu pix_clk: %lu op_clk: %lu\n",
-			__func__, vco, pix_clk, op_clk);
-		dev_dbg(dev, "%s pll2_div: %d pll2_mul: %d\n",
-			__func__, div, mul);
-
-		diff_old = diff;
-
-		pll->pll2_div = div;
-		pll->pll2_mul = mul;
-		pll->vco_freq = vco;
-		pll->pix_freq = pix_clk;
-		pll->ser_freq = ar0521_clk_mul_div(pix_clk, bpp, 2 * lanes);
-
-		mul++;
-	}
-
-	if (pll->pll2_mul == 0) {
-		dev_err(dev, "Unable to find matching pll config\n");
-		return -EINVAL;
-	}
-
-	dev_dbg(dev, "PLL: bpp: %u VCO: %lu, PIX: %lu, SER: %lu\n",
-		bpp, pll->vco_freq, pll->pix_freq, pll->ser_freq);
-
-	return 0;
-}
-
 static int ar0521_parse_endpoint(struct device *dev, struct ar0521 *sensor,
 				 struct fwnode_handle *ep)
 {
@@ -957,9 +625,9 @@ static int ar0521_parse_endpoint(struct device *dev, struct ar0521 *sensor,
 		.bus_type = V4L2_MBUS_CSI2_DPHY
 	};
 	u64 *link_freqs;
-	unsigned long ext_freq = clk_get_rate(sensor->extclk);
-	unsigned int tmp;
-	int i;
+	// unsigned long ext_freq = clk_get_rate(sensor->extclk);
+	// unsigned int tmp;
+	// int i;
 	int ret;
 
 	ret = v4l2_fwnode_endpoint_alloc_parse(ep, &buscfg);
@@ -1003,83 +671,83 @@ static int ar0521_parse_endpoint(struct device *dev, struct ar0521 *sensor,
 		goto out;
 	}
 
-	for (i = 0; i < 3; i++) {
-		ret = ar0521_calculate_pll(dev, &sensor->pll[i], ext_freq,
-					   buscfg.link_frequencies[0],
-					   index_to_bpp(i),
-					   sensor->info.num_lanes);
-		if (ret)
-			goto out;
+	// for (i = 0; i < 3; i++) {
+	// 	ret = ar0521_calculate_pll(dev, &sensor->pll[i], ext_freq,
+	// 				   buscfg.link_frequencies[0],
+	// 				   index_to_bpp(i),
+	// 				   sensor->info.num_lanes);
+	// 	if (ret)
+	// 		goto out;
 
-		link_freqs[i] = sensor->pll[i].ser_freq;
-	}
+	// 	link_freqs[i] = sensor->pll[i].ser_freq;
+	// }
 
-	sensor->info.link_freqs = link_freqs;
-	sensor->pll[3] = sensor->pll[AR0521_FREQ_MENU_12BIT];
+	// sensor->info.link_freqs = link_freqs;
+	// sensor->pll[3] = sensor->pll[AR0521_FREQ_MENU_12BIT];
 
-	tmp = 2;
-	fwnode_property_read_u32(ep, "onsemi,t-hs-prep", &tmp);
-	sensor->info.t_hs_prep = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 2;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-prep", &tmp);
+	// sensor->info.t_hs_prep = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 15;
-	fwnode_property_read_u32(ep, "onsemi,t-hs-zero", &tmp);
-	sensor->info.t_hs_zero = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 15;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-zero", &tmp);
+	// sensor->info.t_hs_zero = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 9;
-	fwnode_property_read_u32(ep, "onsemi,t-hs-trail", &tmp);
-	sensor->info.t_hs_trail = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 9;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-trail", &tmp);
+	// sensor->info.t_hs_trail = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 2;
-	fwnode_property_read_u32(ep, "onsemi,t-clk-prep", &tmp);
-	sensor->info.t_clk_prep = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 2;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-prep", &tmp);
+	// sensor->info.t_clk_prep = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 34;
-	fwnode_property_read_u32(ep, "onsemi,t-clk-zero", &tmp);
-	sensor->info.t_clk_zero = clamp_t(unsigned int, tmp, 0, 0x3f);
+	// tmp = 34;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-zero", &tmp);
+	// sensor->info.t_clk_zero = clamp_t(unsigned int, tmp, 0, 0x3f);
 
-	tmp = 10;
-	fwnode_property_read_u32(ep, "onsemi,t-clk-trail", &tmp);
-	sensor->info.t_clk_trail = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 10;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-trail", &tmp);
+	// sensor->info.t_clk_trail = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 10;
-	fwnode_property_read_u32(ep, "onsemi,t-bgap", &tmp);
-	sensor->info.t_bgap = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 10;
+	// fwnode_property_read_u32(ep, "onsemi,t-bgap", &tmp);
+	// sensor->info.t_bgap = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 1;
-	fwnode_property_read_u32(ep, "onsemi,t-clk-pre", &tmp);
-	sensor->info.t_clk_pre = clamp_t(unsigned int, tmp, 0, 0x3f);
+	// tmp = 1;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-pre", &tmp);
+	// sensor->info.t_clk_pre = clamp_t(unsigned int, tmp, 0, 0x3f);
 
-	tmp = 3;
-	fwnode_property_read_u32(ep, "onsemi,t-clk-post-msbs", &tmp);
-	sensor->info.t_clk_post_msbs = clamp_t(unsigned int, tmp, 0, 0xf);
+	// tmp = 3;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-post-msbs", &tmp);
+	// sensor->info.t_clk_post_msbs = clamp_t(unsigned int, tmp, 0, 0xf);
 
-	tmp = 7;
-	fwnode_property_read_u32(ep, "onsemi,t-lpx", &tmp);
-	sensor->info.t_lpx = clamp_t(unsigned int, tmp, 0, 0x3f);
+	// tmp = 7;
+	// fwnode_property_read_u32(ep, "onsemi,t-lpx", &tmp);
+	// sensor->info.t_lpx = clamp_t(unsigned int, tmp, 0, 0x3f);
 
-	tmp = 15;
-	fwnode_property_read_u32(ep, "onsemi,t-wakeup", &tmp);
-	sensor->info.t_wakeup = clamp_t(unsigned int, tmp, 0, 0x7f);
+	// tmp = 15;
+	// fwnode_property_read_u32(ep, "onsemi,t-wakeup", &tmp);
+	// sensor->info.t_wakeup = clamp_t(unsigned int, tmp, 0, 0x7f);
 
-	tmp = 1;
-	fwnode_property_read_u32(ep, "onsemi,t-clk-post", &tmp);
-	sensor->info.t_clk_post = clamp_t(unsigned int, tmp, 0, 0x3);
+	// tmp = 1;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-post", &tmp);
+	// sensor->info.t_clk_post = clamp_t(unsigned int, tmp, 0, 0x3);
 
-	tmp = 1;
-	fwnode_property_read_u32(ep, "onsemi,cont-tx-clk", &tmp);
-	sensor->info.cont_tx_clk = tmp ? true : false;
+	// tmp = 1;
+	// fwnode_property_read_u32(ep, "onsemi,cont-tx-clk", &tmp);
+	// sensor->info.cont_tx_clk = tmp ? true : false;
 
-	tmp = 0;
-	fwnode_property_read_u32(ep, "onsemi,vreg-mode", &tmp);
-	sensor->info.vreg_mode = tmp ? true : false;
+	// tmp = 0;
+	// fwnode_property_read_u32(ep, "onsemi,vreg-mode", &tmp);
+	// sensor->info.vreg_mode = tmp ? true : false;
 
-	tmp = 13;
-	fwnode_property_read_u32(ep, "onsemi,t-hs-exit", &tmp);
-	sensor->info.t_hs_exit = clamp_t(unsigned int, tmp, 0, 0x3f);
+	// tmp = 13;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-exit", &tmp);
+	// sensor->info.t_hs_exit = clamp_t(unsigned int, tmp, 0, 0x3f);
 
-	tmp = 12;
-	fwnode_property_read_u32(ep, "onsemi,t-init", &tmp);
-	sensor->info.t_init = clamp_t(unsigned int, tmp, 0, 0x7f);
+	// tmp = 12;
+	// fwnode_property_read_u32(ep, "onsemi,t-init", &tmp);
+	// sensor->info.t_init = clamp_t(unsigned int, tmp, 0, 0x7f);
 
 out:
 	v4l2_fwnode_endpoint_free(&buscfg);
@@ -1146,7 +814,7 @@ static int ar0521_probe(struct i2c_client *i2c,
 	dev_info(&i2c->dev, "Probing ar0521 Driver\n");
 
 	sd = &sensor->subdev;
-	sensor->model = did->driver_data;
+	// sensor->model = did->driver_data;
 
 	ret = ar0521_of_probe(&i2c->dev, sensor);
 	if (ret)
@@ -1214,7 +882,7 @@ static int ar0521_remove(struct i2c_client *i2c)
 }
 
 static const struct i2c_device_id ar0521_id_table[] = {
-	{ "tc358748_driver", AR0521_MODEL_UNKNOWN },
+	{ "tc358748_driver" },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(i2c, ar0521_id_table);
