@@ -389,10 +389,10 @@ i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
 i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
 i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
 
-i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
 i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 1);
-i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
-// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0x0101);
+// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0x0101);
 
 i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
 i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
