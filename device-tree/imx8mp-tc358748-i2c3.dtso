@@ -11,6 +11,24 @@
 	compatible = "phytec,imx8mp-phyboard-pollux";
 };
 
+
+/* I2C3 * /   // only I2C driver
+&i2c3 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	clock-frequency = <400000>;
+	status = "okay";
+
+	tc358748@0e {
+		compatible = "pco,tc358748_driver";
+		reg = <0x0e>;
+		status = "okay";
+	};
+};
+*/
+
+
 /* I2C3 * /   // my from tc358743
 &i2c3 {
 	#address-cells = <1>;
@@ -96,7 +114,7 @@
 
 
 
-// from AR0521
+/* from AR0521 */
 &{/} {
 	vm017_csi1_clk: vm017-csi1-ext-clk {
 		#clock-cells = <0>;
@@ -124,7 +142,7 @@
 
 			vm017_csi1_ep: endpoint {
 				remote-endpoint = <&mipi_csi0_ep>;
-				bus-type = <4>; /* MIPI CSI-2 D-PHY */
+				bus-type = <4>;                            // MIPI CSI-2 D-PHY
 				link-frequencies = /bits/ 64 <504000000>;  // 504 MHz
 				data-lanes = <1 2 3 4>;
 				clock-lanes = <0>;
@@ -173,91 +191,8 @@
 };
 
 
-
-
-
-
-
-
-
 /*
 https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-CSI2-video-bridge/td-p/1846172?attachment-id=173630
-
-
-&i2c3 {
-
-	csi_bridge: tc358748@e {
-		compatible = "toshiba,tc358748";	  
-		reg = <0xe>;
-		status = "okay";
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&pinctrl_csibridge>;
-		// reset-gpios = <&gpio1 11 GPIO_ACTIVE_LOW>;
-
-		refclk = <10000000>;
-		pixclk = <74250000>;
-		csi_id = <0x00>; 
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@1 {  / * Output * /
-				reg = <1>;
-				tc358748_mipi_tx: endpoint {
-					data-lanes = <1 2 3 4>;
-					clock-lanes = <0>;
-					// clock-continuous;
-					clock-noncontinuous;
-					link-frequencies = /bits/ 64 <222500000>; 
-					remote-endpoint = <&mipi_csi_0_in>;			    
-				};
-			};
-		};
-	};
-};
-
-&cameradev {
-	status = "okay";
-};
-
-&isp_0 {
-	status = "disabled";
-};
-
-&isi_0 {
-	status = "okay";
-
-	cap_device {
-		status = "okay";
-	};
-
-	ports {
-		port@0 {
-			isi_in_0: endpoint {
-				remote-endpoint = <&mipi_csi_0_out>;
-			};
-		};
-	};  
-};
-
-&mipi_csi_0 {
-	status = "okay";
-
-	port@0 {
-		mipi_csi_0_in: endpoint {
-			remote-endpoint = <&tc358748_mipi_tx>;
-			data-lanes = <4>;
-			csis-hs-settle = <13>;
-		};
-	};
-
-	port@1 {
-		mipi_csi_0_out: endpoint {
-			 remote-endpoint = <&isi_in_0>;
-		};
-	};
-};
 
 
 		.name		= "RGB24",
