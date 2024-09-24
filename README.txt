@@ -77,3 +77,15 @@ https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/imx-processors%40tkb
 
 ADV7180 driver
 
+clock
+  - dokładna częstotliwość
+  - continues clock
+#define ADV_DEBUG registers
+
+i2c_wr32(sd, TXOPTIONCNTRL, 0); i2c_wr32(sd, TXOPTIONCNTRL, MASK_CONTCLKMODE);
+
+https://gist.github.com/olesia-kochergina/c2af863c250c748c3c58dbb7acfe84bf
+
+https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-CSI2-video-bridge/td-p/1846172
+
+https://github.com/avionic-design/linux-l4t/blob/meerkat/l4t-r21-5/drivers/media/i2c/tc358748.c#L793
