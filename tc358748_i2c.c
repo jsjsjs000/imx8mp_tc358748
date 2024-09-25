@@ -8,7 +8,14 @@
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 
+	/* for debug only */
+#define DEBUG_MODE_COLOR_BAR
+
 #define TAG "tc358748: "
+
+#ifndef UNUSED
+	#define UNUSED  __attribute__((__unused__))
+#endif
 
 #define CHIPID          0x0000
 #define SYSCTL          0x0002
@@ -156,38 +163,38 @@ static unsigned int clk_ns(unsigned long rate, u64 count)
 	/* setup PLL in Toshiba TC358748 by I2C */
 static bool tc358748_set_pll(void)
 {
-	/*
-			CSI clock dla PCLK = 12'676'060 Hz
-		Pixel clock:           800 * 525 * 30,181095238 = 12'676'060 Hz
-		Bandwich:              12'676'060 * 24 = 304'225'440 bps
-		Data Rate Per Line:    304'225'440 / 4 = 76'056'360 bps
-		MIPI D-PHY Clock Rate: 76'056'360 / 2 = 38'028'180 Hz    # / 2 - Double Data Rate (?)
+/*
+		CSI clock dla PCLK = 12'676'060 Hz
+	Pixel clock:           800 * 525 * 30,181095238 = 12'676'060 Hz
+	Bandwich:              12'676'060 * 24 = 304'225'440 bps
+	Data Rate Per Line:    304'225'440 / 4 = 76'056'360 bps
+	MIPI D-PHY Clock Rate: 76'056'360 / 2 = 38'028'180 Hz    # / 2 - Double Data Rate (?)
 
-		CSITxClk is obtained by dividing pll_clk by 2.
-		Pll_clk = CSITxClk * 2
-		Pll_clk = 38'028'180 * 2 = 76'056'360 Hz   # dla DDR - Double Data Rate
-		Pll_clk = 76'056'360 * 2 = 152'112'720 Hz  # bez DDR
+	CSITxClk is obtained by dividing pll_clk by 2.
+	Pll_clk = CSITxClk * 2
+	Pll_clk = 38'028'180 * 2 = 76'056'360 Hz   # dla DDR - Double Data Rate
+	Pll_clk = 76'056'360 * 2 = 152'112'720 Hz  # bez DDR
 
-		In CSI 2 Tx mode, RefClk can be tie to ground.
-		In this case, PClk / 4 will be used to drive PLL, Figure 5-3.
-		REFCLK = 12'676'060 / 4 = 3'169'015 Hz
+	In CSI 2 Tx mode, RefClk can be tie to ground.
+	In this case, PClk / 4 will be used to drive PLL, Figure 5-3.
+	REFCLK = 12'676'060 / 4 = 3'169'015 Hz
 
-		REFCLK * ((FBD + 1) / (PRD + 1)) * (1 / (2 ^ FRS)) = Pll_clk
-		3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 3)) =  76'056'360  # z DDR
-		3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 2)) = 152'112'720  # bez DDR
-		see 'Toshiba PLL calculation.ods'	
+	REFCLK * ((FBD + 1) / (PRD + 1)) * (1 / (2 ^ FRS)) = Pll_clk
+	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 3)) =  76'056'360  # z DDR
+	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 2)) = 152'112'720  # bez DDR
+	see 'Toshiba PLL calculation.ods'	
 
-		For FRS (HSCK = pll_clk):
-		Frequency range setting (post divider) for HSCK frequency
-		2’b00: 500MHz – 1GHz HSCK frequency
-		2’b01: 250MHz – 500MHz HSCK frequency
-		2’b10: 125 MHz – 250MHz HSCK frequency
-		2’b11: 62.5MHz – 125MHz HSCK frequency
+	For FRS (HSCK = pll_clk):
+	Frequency range setting (post divider) for HSCK frequency
+	2’b00: 500MHz – 1GHz HSCK frequency
+	2’b01: 250MHz – 500MHz HSCK frequency
+	2’b10: 125 MHz – 250MHz HSCK frequency
+	2’b11: 62.5MHz – 125MHz HSCK frequency
 
-		example in datasheet:
-		16600000 * (255 + 1) / (7 + 1) * (1 / (2 ^ 1)) = 265600000
-		16600000 * (319 + 1) / (5 + 1) * (1 / (2 ^ 2)) = 221333333
-	*/
+	example in datasheet:
+	16600000 * (255 + 1) / (7 + 1) * (1 / (2 ^ 1)) = 265600000
+	16600000 * (319 + 1) / (5 + 1) * (1 / (2 ^ 2)) = 221333333
+*/
 
 	const u16 fbd = 383;
 	const u8 prd = 1;
@@ -255,16 +262,16 @@ bool tc358748_setup(struct i2c_client *client)
 	u16 datafmt;
 	u16 wordcnt;
 
-	const u16 width = 640;
-	// const u16 height = 480;
-	// const u16 total_width = 800;
-	// // const u16 total_height = 525;
-	// // const u16 h_front_porch = 16;
-	// // const u16 h_sync = 96;
-	// // const u16 h_back_porch = 48;
-	// // const u16 v_front_porch = 10;
-	// const u16 v_sync = 2;
-	// // const u16 v_back_porch = 33;
+	const u16 UNUSED width = 640;
+	const u16 UNUSED height = 480;
+	const u16 UNUSED total_width = 800;
+	const u16 UNUSED total_height = 525;
+	const u16 UNUSED h_front_porch = 16;
+	const u16 UNUSED h_sync = 96;
+	const u16 UNUSED h_back_porch = 48;
+	const u16 UNUSED v_front_porch = 10;
+	const u16 UNUSED v_sync = 2;
+	const u16 UNUSED v_back_porch = 33;
 
 	const u8 bpp = 24;
 	const u8 num_data_lanes = 4;
@@ -291,9 +298,10 @@ bool tc358748_setup(struct i2c_client *client)
 	u32 hstxvregcnt;
 	u32 hstxvregen;
 	u32 csi_confw;
-	// u16 dbg_cnt;
-	// u32 dbg_width;
-	// u16 dbg_vblank;
+	u32 continuous_clock_mode;
+	u16 dbg_cnt;
+	u32 dbg_width;
+	u16 dbg_vblank;
 
 	tc358748_i2c_client = client;
 
@@ -325,7 +333,7 @@ bool tc358748_setup(struct i2c_client *client)
 	}
 	pr_info(TAG "SYSCTL (0x%04x) = 1 - Reset", SYSCTL);
 
-	usleep_range(50 * 1000, 50 * 1000);
+	msleep(50);
 	pr_info(TAG "Wait 50ms");
 
 		/* End of reset */
@@ -336,7 +344,7 @@ bool tc358748_setup(struct i2c_client *client)
 	}
 	pr_info(TAG "SYSCTL (0x%04x) = 0 - End of reset", SYSCTL);
 
-	usleep_range(50 * 1000, 50 * 1000);
+	msleep(50);
 	pr_info(TAG "Wait 50ms");
 
 		/* setup PLL */
@@ -349,12 +357,10 @@ bool tc358748_setup(struct i2c_client *client)
 	confctl = num_data_lanes - 1;
 	confctl |=
 			(1 << 2) |  /* I2C slave index increment */
-			// (1 << 3) |  /* Parallel clock polarity inverted - $$ nVidia driver */
+			// (1 << 3) |  /* Parallel clock polarity inverted */
 			(1 << 4) |  /* H Sync active low */
 			// (1 << 5) |  /* V Sync active low */
-			// (1 << 6) |  /* Parallel port enable - $$ nVidia driver */
-			// (0 << 8);   /* Parallel data format - mode 0 */
-			(3 << 8);   /* Parallel data format - reserved - $$ nVidia driver */
+			(3 << 8);   /* Parallel data format - reserved */
 	if (!i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl))
 	{
 		pr_err(TAG "Can't write CONFCTL");
@@ -364,65 +370,299 @@ bool tc358748_setup(struct i2c_client *client)
 
 
 
-// $$ działa za każdym razem w 640 RGB888, ale nie działa reset software'owy - resetować zasilaniem
+// // i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x60);
+// i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x30);   // RGB888
+// i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
+// i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
+// // i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
+// i2c_write_reg16(tc358748_i2c_client, WORDCNT, 640 * 3); // 640
+// i2c_write_reg32(tc358748_i2c_client, CSI_RESET, 0);
 
-// i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x60);
-i2c_write_reg16(tc358748_i2c_client, DATAFMT, 0x30);   // RGB888
-i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
-i2c_write_reg16(tc358748_i2c_client, FIFOCTL, 0x20);
-// i2c_write_reg16(tc358748_i2c_client, WORDCNT, 0xf00);
-i2c_write_reg16(tc358748_i2c_client, WORDCNT, 640 * 3); // 640
-i2c_write_reg32(tc358748_i2c_client, CSI_RESET, 0);
+// confctl |= (1 << 6);                                   /* Parallel port enable */
+// i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
 
-confctl |= (1 << 6);                                   /* Parallel port enable */
-i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl);
+// i2c_write_reg32(tc358748_i2c_client, CSI_START, 1);    /* Start CSI module before writ its registers */
+// msleep(10);
 
-i2c_write_reg32(tc358748_i2c_client, CSI_START, 1);    /* Start CSI module before writ its registers */
-usleep_range(10 * 1000, 10 * 1000);
+// i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
+// i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
+// i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
+// i2c_write_reg32(tc358748_i2c_client, D2W_CNTRL, 0x14c);
+// i2c_write_reg32(tc358748_i2c_client, D3W_CNTRL, 0x150);
+// i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
+// i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
 
-i2c_write_reg32(tc358748_i2c_client, CLW_CNTRL, 0x140);
-i2c_write_reg32(tc358748_i2c_client, D0W_CNTRL, 0x144);
-i2c_write_reg32(tc358748_i2c_client, D1W_CNTRL, 0x148);
-i2c_write_reg32(tc358748_i2c_client, D2W_CNTRL, 0x14c);
-i2c_write_reg32(tc358748_i2c_client, D3W_CNTRL, 0x150);
-i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, 0x15ba);
-i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, 0x2);
-i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, 0xa03);
+// // i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 1);
+// // i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
+// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0x0101);
 
-// i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 0xffffffff);
-i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, 1);
-// i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0xffffee03);
-i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, 0x0101);
+// i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
+// i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
+// i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, 0x1);
+// i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
+// i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
+// i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
+// return true;
 
-i2c_write_reg32(tc358748_i2c_client, TWAKEUP, 0x49e0);
-i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, 0x7);
-i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, 0x1);
-i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, 0x1f);
-i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0x1);
-i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, 2734719110);
-return true;
-}
+		/* FIFOCTL - FiFo level */
+	fifoctl = 16; // 12 RGB888 ;//16;  // $$
+	if (!i2c_write_reg16(tc358748_i2c_client, FIFOCTL, fifoctl))
+	{
+		pr_err(TAG "Can't write FIFOCTL");
+		return false;
+	}
+	pr_info(TAG "FIFOCTL (0x%04x) = %d - FiFo Level", FIFOCTL, fifoctl);
 
-bool tc358748_stop(struct i2c_client *client)
-{
-	// i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0);  // writing 0 is not allowed
-	// i2c_write_reg32(tc358748_i2c_client, CSI_START, 0);   // writing 0 is not allowed
-	i2c_write_reg32(tc358748_i2c_client, CSI_RESET, 0x03);
-	i2c_write_reg16(tc358748_i2c_client, SYSCTL, 1);
+		/* DATAFMT - Data Format */
+	datafmt = (3 << 4);  /* 3 - RGB888 */
+	if (!i2c_write_reg16(tc358748_i2c_client, DATAFMT, datafmt))
+	{
+		pr_err(TAG "Can't write DATAFMT");
+		return false;
+	}
+	pr_info(TAG "DATAFMT (0x%04x) = 0x%04x - Data Format", DATAFMT, datafmt);
+
+		/* WORDCNT */
+	wordcnt = width * bpp / 8;
+	if (!i2c_write_reg16(tc358748_i2c_client, WORDCNT, wordcnt))
+	{
+		pr_err(TAG "Can't write WORDCNT");
+		return false;
+	}
+	pr_info(TAG "WORDCNT (0x%04x) = %d - Word count", WORDCNT, wordcnt);
+
+		/* Parallel port enable */
+	confctl |= (1 << 6);
+	if (!i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl))
+	{
+		pr_err(TAG "Can't write CONFCTL");
+		return false;
+	}
+	pr_info(TAG "CONFCTL (0x%04x) = 0x%04x", CONFCTL, confctl);
+
+		/* CSI_START */
+	if (!i2c_write_reg32(tc358748_i2c_client, CSI_START, 1))
+	{
+		pr_err(TAG "Can't write CSI_START");
+		return false;
+	}
+	pr_info(TAG "CSI_START (0x%04x) = 1", CSI_START);
+	msleep(10);
+
+
+		/* Compute the D-PHY settings */
+	hsbyte_clk = csi_lane_rate / 8;
+
+		/* LINEINITCOUNT >= 100us */
+	linecnt = clk_count(hsbyte_clk / 2, 100000);
+
+		/* LPTX clk must be less than 20MHz -> LPTXTIMECNT >= 50 ns */
+	lptxtime = clk_count(hsbyte_clk, 50);
+
+		/* TWAKEUP >= 1ms (in LPTX clock count) */
+	t_wakeup = clk_count(hsbyte_clk / lptxtime, 1000000);
+
+		/* 38ns <= TCLK_PREPARE <= 95ns */
+	tclk_prepare = clk_count(hsbyte_clk, 38);
+	if (tclk_prepare > clk_count(hsbyte_clk, 95))
+		pr_warn(TAG "TCLK_PREPARE is too long (%u ns)\n", clk_ns(hsbyte_clk, tclk_prepare));
+	// TODO: Check that TCLK_PREPARE <= 95ns
+
+		/* TCLK_ZERO + TCLK_PREPARE >= 300ns */
+	tclk_zero = clk_count(hsbyte_clk, 300) - tclk_prepare;
+
+		/* TCLK_TRAIL >= 60ns */
+	tclk_trail = clk_count(hsbyte_clk, 60);
+
+		/* TCLK_POST >= 60ns + 52*UI */
+	tclk_post = clk_count(hsbyte_clk, 60 + clk_ns(csi_lane_rate, 52));
+
+		/* 40ns + 4*UI <= THS_PREPARE <= 85ns + 6*UI */
+	ths_prepare = clk_count(hsbyte_clk, 40 + clk_ns(csi_lane_rate, 4));
+	if (ths_prepare > 85 + clk_ns(csi_lane_rate, 6))
+		pr_warn(TAG "THS_PREPARE is too long (%u ns)\n", clk_ns(hsbyte_clk, ths_prepare));
+
+		/* THS_ZERO + THS_PREPARE >= 145ns + 10*UI */
+	ths_zero = clk_count(hsbyte_clk, 145 +
+			clk_ns(csi_lane_rate, 10)) - ths_prepare;
+
+		/* 105ns + 12*UI > THS_TRAIL >= max(8*UI, 60ns + 4*UI) */
+	ths_trail = clk_count(hsbyte_clk,
+			max(clk_ns(csi_lane_rate, 8), 60 + clk_ns(csi_lane_rate, 4)));
+
+	pr_info(TAG "  hsbyte_clk = %u", hsbyte_clk);
+	pr_info(TAG "  linecnt = %u", linecnt);
+	pr_info(TAG "  lptxtime = %u", lptxtime);
+	pr_info(TAG "  t_wakeup = %u", t_wakeup);
+	pr_info(TAG "  tclk_prepare = %u", tclk_prepare);
+	pr_info(TAG "  tclk_zero = %u", tclk_zero);
+	pr_info(TAG "  tclk_trail = %u", tclk_trail);
+	pr_info(TAG "  tclk_post = %u", tclk_post);
+	pr_info(TAG "  ths_prepare = %u", ths_prepare);
+	pr_info(TAG "  ths_zero = %u", ths_zero);
+	pr_info(TAG "  ths_trail = %u", ths_trail);
+
+		/* Setup D-PHY */
+		/* LINEINITCNT */
+	if (!i2c_write_reg32(tc358748_i2c_client, LINEINITCNT, linecnt))
+	{
+		pr_err(TAG "Can't write LINEINITCNT");
+		return false;
+	}
+	pr_info(TAG "LINEINITCNT (0x%04x) = %u", LINEINITCNT, linecnt);
+
+		/* LPTXTIMECNT */
+	if (!i2c_write_reg32(tc358748_i2c_client, LPTXTIMECNT, lptxtime))
+	{
+		pr_err(TAG "Can't write LPTXTIMECNT");
+		return false;
+	}
+	pr_info(TAG "LPTXTIMECNT (0x%04x) = %u", LPTXTIMECNT, lptxtime);
+
+		/* TCLK_HEADERCNT */
+	tclk_headercnt = tclk_prepare | (tclk_zero << 8);
+	if (!i2c_write_reg32(tc358748_i2c_client, TCLK_HEADERCNT, tclk_headercnt))
+	{
+		pr_err(TAG "Can't write TCLK_HEADERCNT");
+		return false;
+	}
+	pr_info(TAG "TCLK_HEADERCNT (0x%04x) = 0x%08x", TCLK_HEADERCNT, tclk_headercnt);
+
+		/* TCLK_TRAILCNT */
+	if (!i2c_write_reg32(tc358748_i2c_client, TCLK_TRAILCNT, tclk_trail))
+	{
+		pr_err(TAG "Can't write TCLK_TRAILCNT");
+		return false;
+	}
+	pr_info(TAG "TCLK_TRAILCNT (0x%04x) = %u", TCLK_TRAILCNT, tclk_trail);
+
+		/* THS_HEADERCNT */
+	ths_headercnt = ths_prepare | (ths_zero << 8);
+	if (!i2c_write_reg32(tc358748_i2c_client, THS_HEADERCNT, ths_headercnt))
+	{
+		pr_err(TAG "Can't write THS_HEADERCNT");
+		return false;
+	}
+	pr_info(TAG "THS_HEADERCNT (0x%04x) = 0x%08x", THS_HEADERCNT, ths_headercnt);
+
+		/* TWAKEUP */
+	if (!i2c_write_reg32(tc358748_i2c_client, TWAKEUP, t_wakeup))
+	{
+		pr_err(TAG "Can't write TWAKEUP");
+		return false;
+	}
+	pr_info(TAG "TWAKEUP (0x%04x) = %u", TWAKEUP, t_wakeup);
+
+		/* TCLK_POSTCNT */
+	if (!i2c_write_reg32(tc358748_i2c_client, TCLK_POSTCNT, tclk_post))
+	{
+		pr_err(TAG "Can't write TCLK_POSTCNT");
+		return false;
+	}
+	pr_info(TAG "TCLK_POSTCNT (0x%04x) = %u", TCLK_POSTCNT, tclk_post);
+
+		/* THS_TRAILCNT */
+	if (!i2c_write_reg32(tc358748_i2c_client, THS_TRAILCNT, ths_trail))
+	{
+		pr_err(TAG "Can't write THS_TRAILCNT");
+		return false;
+	}
+	pr_info(TAG "THS_TRAILCNT (0x%04x) = %u", THS_TRAILCNT, ths_trail);
+
+		/* HSTXVREGCNT */
+	hstxvregcnt = 5;
+	if (!i2c_write_reg32(tc358748_i2c_client, HSTXVREGCNT, hstxvregcnt))
+	{
+		pr_err(TAG "Can't write HSTXVREGCNT");
+		return false;
+	}
+	pr_info(TAG "HSTXVREGCNT (0x%04x) = %u", HSTXVREGCNT, hstxvregcnt);
+
+		/* HSTXVREGEN */
+	hstxvregen = (((1 << num_data_lanes) - 1) << 1) | (1 << 0);
+	if (!i2c_write_reg32(tc358748_i2c_client, HSTXVREGEN, hstxvregen))
+	{
+		pr_err(TAG "Can't write HSTXVREGEN");
+		return false;
+	}
+	pr_info(TAG "HSTXVREGEN (0x%04x) = 0x%08x", HSTXVREGEN, hstxvregen);
+
+		/* TXOPTIONCNTRL */
+	continuous_clock_mode = 0;
+	if (!i2c_write_reg32(tc358748_i2c_client, TXOPTIONCNTRL, continuous_clock_mode))
+	{
+		pr_err(TAG "Can't write TXOPTIONCNTRL");
+		return false;
+	}
+	pr_info(TAG "TXOPTIONCNTRL (0x%04x) = 1", TXOPTIONCNTRL);
+
+
+		/* Setup the debug output */
+#ifdef DEBUG_MODE_COLOR_BAR
+		/* DBG_LCNT */
+	dbg_cnt = 1 << 14;
+	// dbg_cnt = height - 1;
+	if (!i2c_write_reg16(tc358748_i2c_client, DBG_LCNT, dbg_cnt))
+	{
+		pr_err(TAG "Can't write DBG_LCNT");
+		return false;
+	}
+	pr_info(TAG "DBG_LCNT (0x%04x) = %d", DBG_LCNT, dbg_cnt);
+
+		/* DBG_WIDTH */
+	dbg_width = total_width * bpp / 8;
+	if (!i2c_write_reg16(tc358748_i2c_client, DBG_WIDTH, (u16)dbg_width))
+	{
+		pr_err(TAG "Can't write DBG_WIDTH");
+		return false;
+	}
+	pr_info(TAG "DBG_WIDTH (0x%04x) = %d", DBG_WIDTH, dbg_width);
+
+		/* DBG_VBLANK */
+	dbg_vblank = v_sync - 1;
+	if (!i2c_write_reg16(tc358748_i2c_client, DBG_VBLANK, dbg_vblank))
+	{
+		pr_err(TAG "Can't write DBG_VBLANK");
+		return false;
+	}
+	pr_info(TAG "DBG_VBLANK (0x%04x) = %d", DBG_VBLANK, dbg_vblank);
+#endif
+
+		/* STARTCNTRL */
+	if (!i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 1))
+	{
+		pr_err(TAG "Can't write STARTCNTRL");
+		return false;
+	}
+	pr_info(TAG "STARTCNTRL (0x%04x) = 1", STARTCNTRL);
+
+		/* CSI_CONFW */
+	csi_confw = CSI_SET_REGISTER | CSI_CONTROL_REG |
+				((num_data_lanes - 1) << 1) |
+				(1 << 7) |   /* High-speed mode */
+				(1 << 15);   /* CSI mode */
+	if (!i2c_write_reg32(tc358748_i2c_client, CSI_CONFW, csi_confw))
+	{
+		pr_err(TAG "Can't write CSI_CONFW");
+		return false;
+	}
+	pr_info(TAG "CSI_CONFW (0x%04x) = 0x%08x", CSI_CONFW, csi_confw);
+
 	return true;
 }
 
-/*
+	/* software reset is not working - reset chip by power off */
+bool tc358748_stop(struct i2c_client *client)
+{
+	bool ok;
+	// i2c_write_reg32(tc358748_i2c_client, STARTCNTRL, 0);  // writing 0 is not allowed (datasheet)
+	// i2c_write_reg32(tc358748_i2c_client, CSI_START, 0);   // writing 0 is not allowed (datasheet)
+	ok = i2c_write_reg32(tc358748_i2c_client, CSI_RESET, 3);
+	ok &= i2c_write_reg16(tc358748_i2c_client, SYSCTL, 1);
+	if (!ok)
+		pr_info(TAG "Can't reset TC358748");
 
-reset z stm32 dopiero po włączeniu zegara od FPGA
-
-
-(PP_MISC)  0x0032
-Clear RstPtr and FrmStop to 1’b0
-0xc000 reset -> 0 normal
-
-
-(ConfCtl: 0x0004)
-PPEn - 6 bit włączać dopiero na końcu inicjalizacji
-
-*/
+	return true;
+}
