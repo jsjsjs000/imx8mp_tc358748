@@ -62,8 +62,36 @@ cat /proc/device-tree/soc\@0/bus\@30800000/i2c\@30a40000/tc358748\@0e/refclk | h
 cat /proc/device-tree/soc\@0/bus\@30800000/i2c\@30a40000/tc358748\@0e/refclk  | hexdump -e '1/1 "0x%02X "'
 
 
+gst-launch-1.0 -vvv v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480 ! autovideosink
+gst-launch-1.0 -vvv v4l2src device=/dev/video0 ! video/x-raw,format=RGB,width=640,height=480 ! autovideosink
+
+gst-launch-1.0 videotestsrc ! video/x-raw,width=640,height=480 ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480 ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+gst-launch-1.0 -v tcpclientsrc port=8888 host=192.168.3.11 ! tsdemux ! h264parse ! openh264dec ! glimagesink sync=false
+
 
 gst-device-monitor-1.0
+
+v4l2-ctl --device /dev/video0 --get-fmt-video
+v4l2-ctl --device /dev/video0 --set-fmt-video=width=640,height=480,pixelformat=YUY2 --stream-mmap --stream-count=1 --stream-to=image.bin
+v4l2-ctl --device /dev/video0 --set-fmt-video=width=640,height=480,pixelformat=RGB --stream-mmap --stream-count=1 --stream-to=image.bin
+v4l2-ctl --device /dev/video0 --set-fmt-video=width=640,height=480 --stream-mmap --stream-count=1 --stream-to=image.bin
+
+
+setup-pipeline-csi1 -f SGRBG8_1X8 -s 640x480 -o '(0,0)' -c 640x480
+#> No camera found on CSI1     !!!!!!!!!!!!!!!!!!!! $$
+
+setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+#> No camera found on CSI1     !!!!!!!!!!!!!!!!!!!! $$
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.bin
+
+
+dmesg | grep "No remote pad found!"
+[    2.891892] : mipi_csis_imx8mp_phy_reset, No remote pad found!
+[    6.670282] mxc_isi.0: is_entity_link_setup, No remote pad found!
+
+
+# --------------------------------------------------------------------------------
 
 media-ctl -p
 
@@ -79,7 +107,7 @@ ADV7180 driver
 
 clock
   - dokładna częstotliwość
-  - continues clock
+  - (non)continues clock
 #define ADV_DEBUG registers
 
 i2c_wr32(sd, TXOPTIONCNTRL, 0); i2c_wr32(sd, TXOPTIONCNTRL, MASK_CONTCLKMODE);
@@ -89,3 +117,69 @@ https://gist.github.com/olesia-kochergina/c2af863c250c748c3c58dbb7acfe84bf
 https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-CSI2-video-bridge/td-p/1846172
 
 https://github.com/avionic-design/linux-l4t/blob/meerkat/l4t-r21-5/drivers/media/i2c/tc358748.c#L793
+
+
+# ---------------------------------------- AR051
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=1920,height=1080,framerate=60/1,pixel-aspect-ratio=1/1 ! bayer2rgbneon ! autovideosink
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=1920,height=1080,framerate=60/1,pixel-aspect-ratio=1/1 ! bayer2rgbneon ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+
+	# PC:
+gst-launch-1.0 -v tcpclientsrc port=8888 host=192.168.3.11 ! tsdemux ! h264parse ! openh264dec ! glimagesink sync=false
+
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=2592,height=1944 ! bayer2rgbneon ! videoconvert ! jpegenc ! multifilesink location=image.jpg
+	# PC:
+scp root@192.168.3.11:/root/image.jpg . && xdg-open image.jpg
+
+
+setup-pipeline-csi1 -f SGRBG8_1X8 -s 1920x1080 -o '(336,432)' -c 1920x1080
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=1920,height=1080 ! bayer2rgbneon ! videoconvert ! jpegenc ! multifilesink location=image.jpg
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=1920,height=1080 ! multifilesink location=image.bin
+	# PC:
+scp root@192.168.3.11:/root/image.bin . && ghex image.bin &
+
+
+
+setup-pipeline-csi1 -f SGRBG8_1X8 -s 800x480 -o '(896,732)' -c 800x480
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=800,height=480,framerate=60/1,pixel-aspect-ratio=1/1 ! bayer2rgbneon ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+
+
+setup-pipeline-csi1 -f SGRBG8_1X8 -s 640x480 -o '(0,0)' -c 640x480
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=640,height=480,framerate=60/1,pixel-aspect-ratio=1/1 ! bayer2rgbneon ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+
+	# 64x64
+setup-pipeline-csi1 -f SGRBG8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=64,height=64 ! multifilesink location=image.bin
+
+#> Setting pipeline to PAUSED ...
+#> Pipeline is live and does not need PREROLL ...
+#> Pipeline is PREROLLED ...
+#> Setting pipeline to PLAYING ...
+#> New clock: GstSy[   28.301518] bypass csc
+#> stemClock
+#> [   28.304896] input fmt RGB4
+#> [   28.308599] output fmt GRBG
+#> [   28.311426] mxc-isi 32e00000.isi: input_size(648,486), output_size(64,64)
+#> [   28.870227] get_swap_device: Bad swap file entry 10020f1b0d180e1b
+
+	# 64x64 mono
+setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-bayer,format=grbg,depth=8,width=64,height=64 ! multifilesink location=image.bin
+
+	# 64x64 mono RAW
+setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+#> Setting Y8_1X8/64x64 (0,0)/64x64 for ar0521 2-0036
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.bin
+#> RGB4 to YUYV - file 8KB - 64*64*2=8192
+
+scp root@192.168.3.11:/root/image.bin . && ghex image.bin &
+
+	# w AR0521:
+[    2.890677] : mipi_csis_imx8mp_phy_reset, No remote pad found!
+

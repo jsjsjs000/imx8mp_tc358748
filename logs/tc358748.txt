@@ -1,0 +1,63 @@
+media-ctl -p
+Media controller API version 5.15.71
+
+Media device information
+------------------------
+driver          mxc-md
+model           FSL Capture Media Device
+serial          
+bus info        
+hw revision     0x0
+driver version  5.15.71
+
+Device topology
+- entity 1: mxc_isi.0 (16 pads, 2 links)
+            type V4L2 subdev subtype Unknown flags 0
+	pad0: Sink
+		<- "mxc-mipi-csi2.0":4 [ENABLED]
+	pad1: Sink
+	pad2: Sink
+	pad3: Sink
+	pad4: Sink
+	pad5: Sink
+	pad6: Sink
+	pad7: Sink
+	pad8: Sink
+	pad9: Sink
+	pad10: Sink
+	pad11: Sink
+	pad12: Source
+		-> "mxc_isi.0.capture":0 [ENABLED]
+	pad13: Source
+	pad14: Source
+	pad15: Sink
+
+- entity 18: mxc_isi.0.capture (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video0
+	pad0: Sink
+		<- "mxc_isi.0":12 [ENABLED]
+
+- entity 22: mxc-mipi-csi2.0 (8 pads, 2 links)
+             type Node subtype V4L flags 0
+             device node name /dev/v4l-subdev0
+	pad0: Sink
+		<- "tc358748 2-000e":0 [ENABLED,IMMUTABLE]
+	pad1: Sink
+	pad2: Sink
+	pad3: Sink
+	pad4: Source
+		-> "mxc_isi.0":0 [ENABLED]
+	pad5: Source
+	pad6: Source
+	pad7: Source
+
+- entity 31: tc358748 2-000e (1 pad, 1 link)
+             type V4L2 subdev subtype Unknown flags 0
+             device node name /dev/v4l-subdev1
+	pad0: Source
+		[fmt:RGB888_1X24/640x480 field:none colorspace:srgb]
+		[dv.caps:BT.656/1120 min:640x350@13000000 max:1920x1200@165000000 stds:CEA-861,DMT,CVT,GTF caps:progressive,reduced-blanking,custom]
+		[dv.query:out-of-range]
+		[dv.current:BT.656/1120 640x480p59 (800x525) stds:CEA-861,DMT flags:has-cea861-vic]
+		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]

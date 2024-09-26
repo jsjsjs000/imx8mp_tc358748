@@ -1,0 +1,88 @@
+{
+	"version": "2.0.0",
+		/* Configure Yocto SDK Constants from settings.json */
+	"options": {
+		"env": {
+			"CXX": "${config:CXX}",
+			"CC": "${config:CC}",
+		}
+	},
+		/* Configure integrated VS Code Terminal */
+	"presentation": {
+		"echo": false,
+		"reveal": "always",
+		"focus": true,
+		"panel": "dedicated",
+		"showReuseMessage": true,
+	},
+	"tasks": [
+			/* Configure launch.json (debug) preLaunchTask Task */
+		{
+			"label": "var-deploy-gdb",
+			"isBackground": true,
+			"problemMatcher":{
+				"base": "$gcc",
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern":  "Deploying to target",
+					"endsPattern":  "Starting GDB Server on Target"
+				}
+			},
+			"type": "shell",
+			"command": "sh",
+			"args": [
+				"var-deploy-gdb.sh",
+				"${config:TARGET_IP}",
+				"${config:BUILD_PATH}",
+				"${config:PROGRAM}",
+				"${config:REMOTE_DIR}"
+			],
+			"dependsOn": ["build"],
+		},
+			/* Configure Build Task */
+			/* Default not cross-compile make */
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "mkdir -p ${config:BUILD_PATH}; make clean; make -j$(nproc) && scp ${config:BUILD_PATH}/${config:PROGRAM} root@${config:TARGET_IP}:${config:REMOTE_DIR} && ssh root@${config:TARGET_IP} ${config:REMOTE_DIR}/${config:PROGRAM}",
+			"problemMatcher": ["$gcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+			/* Cross-compile for i.MX */
+		{
+			"label": "cross-compile-i.MX",
+			"type": "shell",
+			"command": "source ${config:YOCTO_ENVIRONMENT}; set sysroot ${config:SDKTARGETSYSROOT}; make -j $(nproc)",
+			"problemMatcher": ["$gcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+			/* Cross-compile and upload to i.MX */
+		{
+			"label": "cross-compile-and-upload-to-i.MX",
+			"type": "shell",
+			"command": "source ${config:YOCTO_ENVIRONMENT}; set sysroot ${config:SDKTARGETSYSROOT}; make -j $(nproc) && scp ${config:PROGRAM} ${config:REMOTE_USER}@${config:TARGET_IP}:${config:REMOTE_DIR}",
+			"problemMatcher": ["$gcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+			/* Cross-compile, upload to i.MX and restart i.MX */
+		{
+			"label": "cross-compile-upload-to-i.MX-and-restart-i.MX",
+			"type": "shell",
+			"command": "source ${config:YOCTO_ENVIRONMENT}; set sysroot ${config:SDKTARGETSYSROOT}; make -j $(nproc) && scp ${config:PROGRAM} ${config:REMOTE_USER}@${config:TARGET_IP}:${config:REMOTE_DIR} && ssh ${config:REMOTE_USER}@${config:TARGET_IP} 'reboot &'",
+			"problemMatcher": ["$gcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+	]
+}
