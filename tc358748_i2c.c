@@ -9,7 +9,7 @@
 #include <linux/i2c.h>
 
 	/* for debug only */
-#define DEBUG_MODE_COLOR_BAR
+// #define DEBUG_MODE_COLOR_BAR
 
 #define TAG "tc358748: "
 
@@ -180,9 +180,11 @@ static bool tc358748_set_pll(void)
 	REFCLK = 12'676'060 / 4 = 3'169'015 Hz
 
 	REFCLK * ((FBD + 1) / (PRD + 1)) * (1 / (2 ^ FRS)) = Pll_clk
-	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 3)) =  76'056'360  # z DDR
-	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 2)) = 152'112'720  # bez DDR
-	see 'Toshiba PLL calculation.ods'	
+	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 3)) =  76'056'360  #    with DDR 4 lanes
+	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 2)) = 152'112'720  # without DDR 4 lanes
+	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 1)) = 304'225'440  #    with DDR 1 lane
+	3'169'015 * ((383 + 1) / (1 + 1)) * (1 / (2 ^ 0)) = 608'450'880  # without DDR 1 lane
+	see 'Toshiba PLL calculation.ods'
 
 	For FRS (HSCK = pll_clk):
 	Frequency range setting (post divider) for HSCK frequency
@@ -198,8 +200,11 @@ static bool tc358748_set_pll(void)
 
 	const u16 fbd = 383;
 	const u8 prd = 1;
-	const u8 frs = 3;      // Pll_clk =  76'056'360   z DDR
-	// const u8 frs = 2;   // Pll_clk = 152'112'720 bez DDR  $$
+
+	const u8 frs = 3;      // Pll_clk =  76'056'360    with DDR 4 lanes
+	// const u8 frs = 2;      // Pll_clk = 152'112'720 without DDR 4 lanes  $$
+	// const u8 frs = 1;         // Pll_clk = 304'225'440    with DDR 1 lane   $$
+	                          // CSI TX Clk = Pll_clk / 2
 	const u8 sclk_div = frs > 2 ? 2 : frs;
 	const u8 clk_div = sclk_div;
 
@@ -218,9 +223,9 @@ static bool tc358748_set_pll(void)
 
 		/* Start PLL */
 	pllctl1 = (frs << 10) |
-			(2 << 8) |  /* loop bandwidth 50% */
-			(1 << 1) |  /* PLL not reset */
-			(1 << 0);   /* PLL enable */
+			(2 << 8) |               /* loop bandwidth 50% */
+			(1 << 1) |               /* PLL not reset */
+			(1 << 0);                /* PLL enable */
 	if (!i2c_write_reg16(tc358748_i2c_client, PLLCTL1, pllctl1))
 	{
 		pr_err(TAG "Can't write PLLCTL1");
@@ -256,30 +261,33 @@ static bool tc358748_set_pll(void)
 	/* setup Toshiba TC358748 by I2C */
 bool tc358748_setup(struct i2c_client *client)
 {
+	UNUSED const u16 width = 640;
+// UNUSED const u16 width = 320;
+	UNUSED const u16 height = 480;
+	UNUSED const u16 total_width = 800;
+	UNUSED const u16 total_height = 525;
+	UNUSED const u16 h_front_porch = 16;
+	UNUSED const u16 h_sync = 96;
+	UNUSED const u16 h_back_porch = 48;
+	UNUSED const u16 v_front_porch = 10;
+	UNUSED const u16 v_sync = 2;
+	UNUSED const u16 v_back_porch = 33;
+
+	const u8 bpp = 24;
+	const u8 num_data_lanes = 4;  // $$
+	// const u8 num_data_lanes = 1;
+	const u32 pixelclock = 12676060;                      // 800 * 525 * 30,181095238 = 12'676'060
+	const u32 csi_bus = 38028180;                      // 38'028'180 with DDR 4 lanes
+	// const u32 csi_bus = 76056360;                      // 76'056'360 without DDR 4 lanes  $$
+	// const u32 csi_bus = 152112720;                        // 152'112'720 with DDR 1 lane  $$
+	const u32 csi_rate = bpp * pixelclock;                // 304'225'440 bps
+	const u32 csi_lane_rate = csi_rate / num_data_lanes;  // 76'056'360 (min 62'500'000, max 1G)
+
 	u16 chip_id;
 	u16 confctl;
 	u16 fifoctl;
 	u16 datafmt;
 	u16 wordcnt;
-
-	const u16 UNUSED width = 640;
-	const u16 UNUSED height = 480;
-	const u16 UNUSED total_width = 800;
-	const u16 UNUSED total_height = 525;
-	const u16 UNUSED h_front_porch = 16;
-	const u16 UNUSED h_sync = 96;
-	const u16 UNUSED h_back_porch = 48;
-	const u16 UNUSED v_front_porch = 10;
-	const u16 UNUSED v_sync = 2;
-	const u16 UNUSED v_back_porch = 33;
-
-	const u8 bpp = 24;
-	const u8 num_data_lanes = 4;
-	const u32 pixelclock = 12676060;                      // 800 * 525 * 30,181095238 = 12'676'060
-	const u32 csi_bus = 38028180;                         // 38'028'180 z DDR  $$
-	// const u32 csi_bus = 76056360;                         // 76'056'360 bez DDR
-	const u32 csi_rate = bpp * pixelclock;                // 304'225'440 bps
-	const u32 csi_lane_rate = csi_rate / num_data_lanes;  // 76'056'360 (min 62'500'000, max 1G)
 
 	u32 hsbyte_clk;
 	u32 linecnt;
@@ -299,9 +307,9 @@ bool tc358748_setup(struct i2c_client *client)
 	u32 hstxvregen;
 	u32 csi_confw;
 	u32 continuous_clock_mode;
-	u16 dbg_cnt;
-	u32 dbg_width;
-	u16 dbg_vblank;
+	UNUSED u32 dbg_cnt;
+	UNUSED u32 dbg_width;
+	UNUSED u32 dbg_vblank;
 
 	tc358748_i2c_client = client;
 
@@ -358,7 +366,7 @@ bool tc358748_setup(struct i2c_client *client)
 	confctl |=
 			(1 << 2) |  /* I2C slave index increment */
 			// (1 << 3) |  /* Parallel clock polarity inverted */
-			(1 << 4) |  /* H Sync active low */
+			// (1 << 4) |  /* H Sync active low */
 			// (1 << 5) |  /* V Sync active low */
 			(3 << 8);   /* Parallel data format - reserved */
 	if (!i2c_write_reg16(tc358748_i2c_client, CONFCTL, confctl))
@@ -408,6 +416,8 @@ bool tc358748_setup(struct i2c_client *client)
 
 		/* FIFOCTL - FiFo level */
 	fifoctl = 16; // 12 RGB888 ;//16;  // $$
+	// fifoctl = 16; // 12 RGB888 ;//16;  // $$
+// fifoctl = 0x20; // for YUV422 $$
 	if (!i2c_write_reg16(tc358748_i2c_client, FIFOCTL, fifoctl))
 	{
 		pr_err(TAG "Can't write FIFOCTL");
@@ -417,6 +427,7 @@ bool tc358748_setup(struct i2c_client *client)
 
 		/* DATAFMT - Data Format */
 	datafmt = (3 << 4);  /* 3 - RGB888 */
+// datafmt = (6 << 4);  /* 6 - YUV422 8-bit $$ */
 	if (!i2c_write_reg16(tc358748_i2c_client, DATAFMT, datafmt))
 	{
 		pr_err(TAG "Can't write DATAFMT");

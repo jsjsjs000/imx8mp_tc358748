@@ -29,6 +29,8 @@
 
 #include "tc358748_i2c.h"
 
+// #define CONFIG_VIDEO_ADV_DEBUG
+
 #define AR0521_MAX_LINK_FREQ		600000000ULL
 
 // #define AR0521_DEF_WIDTH		2592
@@ -172,6 +174,7 @@ static inline int bpp_to_index(unsigned int bpp)
 /* V4L2 subdev core ops */
 static int ar0521_s_power(struct v4l2_subdev *sd, int on)
 {
+pr_info("----------------------- s_power");
 	return 0;
 }
 
@@ -183,7 +186,8 @@ static int ar0521_s_register(struct v4l2_subdev *sd,
 
 	dev_dbg(sd->dev, "%s\n", __func__);
 
-	return ar0521_write(sensor, reg->reg, reg->val);
+	// return ar0521_write(sensor, reg->reg, reg->val);
+	return 0;
 }
 
 static int ar0521_g_register(struct v4l2_subdev *sd,
@@ -193,7 +197,8 @@ static int ar0521_g_register(struct v4l2_subdev *sd,
 
 	dev_dbg(sd->dev, "%s\n", __func__);
 
-	return ar0521_read(sensor, reg->reg, (u16 *)&reg->val);
+	// return ar0521_read(sensor, reg->reg, (u16 *)&reg->val);
+	return 0;
 }
 #endif
 
@@ -338,64 +343,64 @@ out:
 	return ret;
 }
 
-static void ar0521_update_blankings(struct ar0521 *sensor)
-{
-	const struct ar0521_sensor_limits *limits = &sensor->limits;
-	unsigned int width = sensor->fmt.width;
-	unsigned int height = sensor->fmt.height;
-	unsigned int hblank_min, hblank_max;
-	unsigned int vblank_min, vblank_max;
-	unsigned int hblank_value, hblank_default;
-	unsigned int vblank_value, vblank_default;
+// static void ar0521_update_blankings(struct ar0521 *sensor)
+// {
+// 	const struct ar0521_sensor_limits *limits = &sensor->limits;
+// 	unsigned int width = sensor->fmt.width;
+// 	unsigned int height = sensor->fmt.height;
+// 	unsigned int hblank_min, hblank_max;
+// 	unsigned int vblank_min, vblank_max;
+// 	unsigned int hblank_value, hblank_default;
+// 	unsigned int vblank_value, vblank_default;
 
-	hblank_min = limits->hblank.min;
-	if (width + limits->hblank.min < limits->hlen.min)
-		hblank_min = limits->hlen.min - width;
+// 	hblank_min = limits->hblank.min;
+// 	if (width + limits->hblank.min < limits->hlen.min)
+// 		hblank_min = limits->hlen.min - width;
 
-	vblank_min = limits->vblank.min;
-	if (height + limits->vblank.min < limits->vlen.min)
-		vblank_min = limits->vlen.min - height;
+// 	vblank_min = limits->vblank.min;
+// 	if (height + limits->vblank.min < limits->vlen.min)
+// 		vblank_min = limits->vlen.min - height;
 
-	hblank_max = limits->hlen.max - width;
-	vblank_max = limits->vlen.max - height;
+// 	hblank_max = limits->hlen.max - width;
+// 	vblank_max = limits->vlen.max - height;
 
-	hblank_value = sensor->hblank_ctrl->cur.val;
-	hblank_default = sensor->hblank_ctrl->default_value;
+// 	hblank_value = sensor->hblank_ctrl->cur.val;
+// 	hblank_default = sensor->hblank_ctrl->default_value;
 
-	vblank_value = sensor->vblank_ctrl->cur.val;
-	vblank_default = sensor->vblank_ctrl->default_value;
+// 	vblank_value = sensor->vblank_ctrl->cur.val;
+// 	vblank_default = sensor->vblank_ctrl->default_value;
 
-	if (hblank_value < hblank_min)
-		__v4l2_ctrl_s_ctrl(sensor->hblank_ctrl, hblank_min);
+// 	if (hblank_value < hblank_min)
+// 		__v4l2_ctrl_s_ctrl(sensor->hblank_ctrl, hblank_min);
 
-	if (hblank_value > hblank_max)
-		__v4l2_ctrl_s_ctrl(sensor->hblank_ctrl, hblank_max);
+// 	if (hblank_value > hblank_max)
+// 		__v4l2_ctrl_s_ctrl(sensor->hblank_ctrl, hblank_max);
 
-	if (vblank_value < vblank_min)
-		__v4l2_ctrl_s_ctrl(sensor->vblank_ctrl, vblank_min);
+// 	if (vblank_value < vblank_min)
+// 		__v4l2_ctrl_s_ctrl(sensor->vblank_ctrl, vblank_min);
 
-	if (vblank_value > vblank_max)
-		__v4l2_ctrl_s_ctrl(sensor->vblank_ctrl, vblank_max);
+// 	if (vblank_value > vblank_max)
+// 		__v4l2_ctrl_s_ctrl(sensor->vblank_ctrl, vblank_max);
 
-	__v4l2_ctrl_modify_range(sensor->hblank_ctrl, hblank_min, hblank_max,
-				 sensor->hblank_ctrl->step,
-				 hblank_min);
+// 	__v4l2_ctrl_modify_range(sensor->hblank_ctrl, hblank_min, hblank_max,
+// 				 sensor->hblank_ctrl->step,
+// 				 hblank_min);
 
-	__v4l2_ctrl_modify_range(sensor->vblank_ctrl, vblank_min, vblank_max,
-				 sensor->vblank_ctrl->step,
-				 vblank_min);
+// 	__v4l2_ctrl_modify_range(sensor->vblank_ctrl, vblank_min, vblank_max,
+// 				 sensor->vblank_ctrl->step,
+// 				 vblank_min);
 
 
-	/*
-	 * If the previous value was equal the previous default value, readjust
-	 * the updated value to the new default value as well.
-	 */
-	if (hblank_value == hblank_default)
-		__v4l2_ctrl_s_ctrl(sensor->hblank_ctrl, hblank_min);
+// 	/*
+// 	 * If the previous value was equal the previous default value, readjust
+// 	 * the updated value to the new default value as well.
+// 	 */
+// 	if (hblank_value == hblank_default)
+// 		__v4l2_ctrl_s_ctrl(sensor->hblank_ctrl, hblank_min);
 
-	if (vblank_value == vblank_default)
-		__v4l2_ctrl_s_ctrl(sensor->vblank_ctrl, vblank_min);
-}
+// 	if (vblank_value == vblank_default)
+// 		__v4l2_ctrl_s_ctrl(sensor->vblank_ctrl, vblank_min);
+// }
 
 static int ar0521_set_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_subdev_state *state,
@@ -424,9 +429,8 @@ pr_info("--------------------- set_fmt start");
 				   V4L2_SUBDEV_FORMAT_ACTIVE);
 
 	// if (sensor->model == AR0521_MODEL_COLOR)
-	// 	fmt->colorspace = V4L2_COLORSPACE_RAW;
-	// else
-		fmt->colorspace = V4L2_COLORSPACE_SRGB;
+		fmt->colorspace = V4L2_COLORSPACE_RAW;
+		// fmt->colorspace = V4L2_COLORSPACE_SRGB;
 
 	fmt->field = V4L2_FIELD_NONE;
 	fmt->xfer_func = V4L2_MAP_XFER_FUNC_DEFAULT(fmt->colorspace);
@@ -579,8 +583,8 @@ static void ar0521_set_defaults(struct ar0521 *sensor)
 	sensor->fmt.width = AR0521_DEF_WIDTH;
 	sensor->fmt.height = AR0521_DEF_HEIGHT;
 	sensor->fmt.field = V4L2_FIELD_NONE;
-	// sensor->fmt.colorspace = V4L2_COLORSPACE_RAW;
-sensor->fmt.colorspace = V4L2_COLORSPACE_SRGB;
+	sensor->fmt.colorspace = V4L2_COLORSPACE_RAW;
+// sensor->fmt.colorspace = V4L2_COLORSPACE_SRGB;
 
 	// if (sensor->model == AR0521_MODEL_MONOCHROME) {
 	// 	sensor->formats = ar0521_mono_formats;
@@ -649,6 +653,9 @@ static int ar0521_parse_endpoint(struct device *dev, struct ar0521 *sensor,
 pr_info("--------------------- num lanes %d", sensor->info.num_lanes);
 
 	switch (sensor->info.num_lanes) {
+	case 1:
+		sensor->info.flags |= V4L2_MBUS_CSI2_1_LANE;
+		break;
 	case 2:
 		sensor->info.flags |= V4L2_MBUS_CSI2_2_LANE;
 		break;
@@ -680,8 +687,92 @@ pr_info("--------------------- num lanes %d", sensor->info.num_lanes);
 		goto out;
 	}
 
+pr_info("--------------------- link_frequencies %llu", buscfg.link_frequencies[0]);
+// pr_info("--------------------- link_frequencies %llu", *link_freqs);
+
+	// for (i = 0; i < 3; i++) {
+	// 	ret = ar0521_calculate_pll(dev, &sensor->pll[i], ext_freq,
+	// 				   buscfg.link_frequencies[0],
+	// 				   index_to_bpp(i),
+	// 				   sensor->info.num_lanes);
+	// 	if (ret)
+	// 		goto out;
+
+	// 	link_freqs[i] = sensor->pll[i].ser_freq;
+	// }
+
+	sensor->info.link_freqs = link_freqs;
+
+	// sensor->pll[3] = sensor->pll[AR0521_FREQ_MENU_12BIT];
+// pr_info("--------------------- link_frequencies %d", sensor->info.link_freqs);
+
+	// tmp = 2;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-prep", &tmp);
+	// sensor->info.t_hs_prep = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 15;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-zero", &tmp);
+	// sensor->info.t_hs_zero = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 9;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-trail", &tmp);
+	// sensor->info.t_hs_trail = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 2;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-prep", &tmp);
+	// sensor->info.t_clk_prep = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 34;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-zero", &tmp);
+	// sensor->info.t_clk_zero = clamp_t(unsigned int, tmp, 0, 0x3f);
+
+	// tmp = 10;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-trail", &tmp);
+	// sensor->info.t_clk_trail = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 10;
+	// fwnode_property_read_u32(ep, "onsemi,t-bgap", &tmp);
+	// sensor->info.t_bgap = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 1;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-pre", &tmp);
+	// sensor->info.t_clk_pre = clamp_t(unsigned int, tmp, 0, 0x3f);
+
+	// tmp = 3;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-post-msbs", &tmp);
+	// sensor->info.t_clk_post_msbs = clamp_t(unsigned int, tmp, 0, 0xf);
+
+	// tmp = 7;
+	// fwnode_property_read_u32(ep, "onsemi,t-lpx", &tmp);
+	// sensor->info.t_lpx = clamp_t(unsigned int, tmp, 0, 0x3f);
+
+	// tmp = 15;
+	// fwnode_property_read_u32(ep, "onsemi,t-wakeup", &tmp);
+	// sensor->info.t_wakeup = clamp_t(unsigned int, tmp, 0, 0x7f);
+
+	// tmp = 1;
+	// fwnode_property_read_u32(ep, "onsemi,t-clk-post", &tmp);
+	// sensor->info.t_clk_post = clamp_t(unsigned int, tmp, 0, 0x3);
+
+	// tmp = 1;
+	// fwnode_property_read_u32(ep, "onsemi,cont-tx-clk", &tmp);
+	// sensor->info.cont_tx_clk = tmp ? true : false;
+
+	// tmp = 0;
+	// fwnode_property_read_u32(ep, "onsemi,vreg-mode", &tmp);
+	// sensor->info.vreg_mode = tmp ? true : false;
+
+	// tmp = 13;
+	// fwnode_property_read_u32(ep, "onsemi,t-hs-exit", &tmp);
+	// sensor->info.t_hs_exit = clamp_t(unsigned int, tmp, 0, 0x3f);
+
+	// tmp = 12;
+	// fwnode_property_read_u32(ep, "onsemi,t-init", &tmp);
+	// sensor->info.t_init = clamp_t(unsigned int, tmp, 0, 0x7f);
+
 out:
 	v4l2_fwnode_endpoint_free(&buscfg);
+pr_info("--------------------- link_frequencies out");
 	return ret;
 }
 
@@ -848,5 +939,26 @@ new:
 		 compose.bounds:(0,0)/0x0
 		 compose:(0,0)/0x0]
 		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]
+
+tc358748-358743-.c:
+		[fmt:RGB888_1X24/640x480 field:none colorspace:srgb]
+		[dv.caps:BT.656/1120 min:640x350@13000000 max:1920x1200@165000000 stds:CEA-861,DMT,CVT,GTF caps:progressive,reduced-blanking,custom]
+		[dv.query:out-of-range]
+		[dv.current:BT.656/1120 640x480p59 (800x525) stds:CEA-861,DMT flags:has-cea861-vic]
+		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]
+
+Format Video Capture Multiplanar:
+	Width/Height      : 640/480
+	Pixel Format      : 'YUYV' (YUYV 4:2:2)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : sRGB
+	Transfer Function : Default
+	YCbCr/HSV Encoding: ITU-R 601
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 1280
+	   Size Image     : 614400
 
 */

@@ -61,3 +61,78 @@ Device topology
 		[dv.query:out-of-range]
 		[dv.current:BT.656/1120 640x480p59 (800x525) stds:CEA-861,DMT flags:has-cea861-vic]
 		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+v4l2-ctl --all
+Driver Info:
+	Driver name      : mxc-isi-cap
+	Card type        : mxc-isi-cap
+	Bus info         : platform:32e00000.isi:cap_devic
+	Driver version   : 5.15.71
+	Capabilities     : 0x84201000
+		Video Capture Multiplanar
+		Streaming
+		Extended Pix Format
+		Device Capabilities
+	Device Caps      : 0x04201000
+		Video Capture Multiplanar
+		Streaming
+		Extended Pix Format
+Media Driver Info:
+	Driver name      : mxc-md
+	Model            : FSL Capture Media Device
+	Serial           : 
+	Bus info         : 
+	Media version    : 5.15.71
+	Hardware revision: 0x00000000 (0)
+	Driver version   : 5.15.71
+Interface Info:
+	ID               : 0x03000014
+	Type             : V4L Video
+Entity Info:
+	ID               : 0x00000012 (18)
+	Name             : mxc_isi.0.capture
+	Function         : V4L2 I/O
+	Pad 0x01000013   : 0: Sink
+	  Link 0x02000021: from remote pad 0x100000e of entity 'mxc_isi.0' (Video Pixel Formatter): Data, Enabled
+Priority: 2
+Format Video Capture Multiplanar:
+	Width/Height      : 64/64
+	Pixel Format      : 'YUYV' (YUYV 4:2:2)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : sRGB
+	Transfer Function : Default
+	YCbCr/HSV Encoding: ITU-R 601
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 128
+	   Size Image     : 8192
+Crop Capability Video Output:
+	Bounds      : Left 0, Top 0, Width 64, Height 64
+	Default     : Left 0, Top 0, Width 64, Height 64
+	Pixel Aspect: 1/1
+Selection Video Output: compose, Left 0, Top 0, Width 64, Height 64, Flags: 
+Selection Video Output: compose_default, Left 0, Top 0, Width 64, Height 64, Flags: 
+Selection Video Output: compose_bounds, Left 0, Top 0, Width 64, Height 64, Flags: 
+
+User Controls
+
+                horizontal_flip 0x00980914 (bool)   : default=0 value=0
+                  vertical_flip 0x00980915 (bool)   : default=0 value=0
+                alpha_component 0x00980929 (int)    : min=0 max=255 step=1 default=0 value=0

@@ -35,13 +35,14 @@
 
 // #include <media/i2c/tc358743.h>
 // #include "tc358743_regs.h"
+#include "tc358748_i2c.h"
 #include "tc358743.h"
 
 
 
-static int debug;
-module_param(debug, int, 0644);
-MODULE_PARM_DESC(debug, "debug level (0-3)");
+static int debug = 3;
+// module_param(debug, int, 0644);
+// MODULE_PARM_DESC(debug, "debug level (0-3)");
 
 MODULE_DESCRIPTION("Toshiba TC358743 HDMI to CSI-2 bridge driver");
 MODULE_AUTHOR("Ramakrishnan Muthukrishnan <ram@rkrishnan.org>");
@@ -317,6 +318,8 @@ static int tc358743_get_detected_timings(struct v4l2_subdev *sd,
 	unsigned width, height, frame_width, frame_height, fps;
 	// unsigned frame_interval;
 
+pr_info("------------------------ get_detected_timings");
+
 	memset(timings, 0, sizeof(struct v4l2_dv_timings));
 
 	// if (no_signal(sd)) {
@@ -347,6 +350,12 @@ static int tc358743_get_detected_timings(struct v4l2_subdev *sd,
 	// fps = (frame_interval > 0) ?
 	// 	DIV_ROUND_CLOSEST(10000, frame_interval) : 0;
 
+	width = 640;
+	height = 480;
+	frame_width = 800;
+	height = 525;
+	fps = 30;
+
 	bt->width = width;
 	bt->height = height;
 	bt->vsync = frame_height - height;
@@ -356,6 +365,7 @@ static int tc358743_get_detected_timings(struct v4l2_subdev *sd,
 		bt->height *= 2;
 		bt->il_vsync = bt->vsync + 1;
 		bt->pixelclock /= 2;
+pr_info("------------------------ INTERLACED !!!");
 	}
 
 	return 0;
@@ -642,6 +652,7 @@ static void tc358743_set_ref_clk(struct v4l2_subdev *sd)
 static void tc358743_set_csi_color_space(struct v4l2_subdev *sd)
 {
 	struct tc358743_state *state = to_state(sd);
+pr_info("--------------------- set_csi_color_space %d", state->mbus_fmt_code);
 
 	switch (state->mbus_fmt_code) {
 	case MEDIA_BUS_FMT_UYVY8_1X16:
@@ -1340,6 +1351,11 @@ static int tc358743_log_status(struct v4l2_subdev *sd)
 	return 0;
 }
 
+static int tc358743_s_power(struct v4l2_subdev *sd, int on)
+{
+	return 0;
+}
+
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static void tc358743_print_register_map(struct v4l2_subdev *sd)
 {
@@ -1653,6 +1669,7 @@ static int tc358743_s_stream(struct v4l2_subdev *sd, int enable)
 		tc358743_set_csi(sd);
 	}
 
+pr_info("--------------------- s_stream");
 	return 0;
 }
 
@@ -1662,6 +1679,7 @@ static int tc358743_enum_mbus_code(struct v4l2_subdev *sd,
 		struct v4l2_subdev_state *sd_state,
 		struct v4l2_subdev_mbus_code_enum *code)
 {
+pr_info("--------------------- enum_mbus_code %d", code->index);
 	switch (code->index) {
 	case 0:
 		code->code = MEDIA_BUS_FMT_RGB888_1X24;
@@ -1689,6 +1707,9 @@ static int tc358743_get_fmt(struct v4l2_subdev *sd,
 	format->format.width = state->timings.bt.width;
 	format->format.height = state->timings.bt.height;
 	format->format.field = V4L2_FIELD_NONE;
+
+pr_info("--------------------- get_fmt %d %d %d", state->mbus_fmt_code,
+		state->timings.bt.width, state->timings.bt.height);
 
 	// switch (vi_rep & MASK_VOUT_COLOR_SEL) {
 	// case MASK_VOUT_COLOR_RGB_FULL:
@@ -1720,29 +1741,40 @@ static int tc358743_set_fmt(struct v4l2_subdev *sd,
 	u32 code = format->format.code; /* is overwritten by get_fmt */
 	int ret = tc358743_get_fmt(sd, sd_state, format);
 
+pr_info("--------------------- set_fmt code 0x%x", code);
+
 	format->format.code = code;
 
 	if (ret)
+	{
+pr_info("--------------------- set_fmt   error 1");
 		return ret;
+	}
 
 	switch (code) {
 	case MEDIA_BUS_FMT_RGB888_1X24:
+return -EINVAL;
 	case MEDIA_BUS_FMT_UYVY8_1X16:
 		break;
 	default:
-		return -EINVAL;
+pr_info("--------------------- set_fmt   error 2");
+		// return -EINVAL;
 	}
 
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+	{
+pr_info("--------------------- set_fmt ok 1");
 		return 0;
+	}
 
 	state->mbus_fmt_code = format->format.code;
 
-	enable_stream(sd, false);
-	tc358743_set_pll(sd);
-	tc358743_set_csi(sd);
-	tc358743_set_csi_color_space(sd);
+	// enable_stream(sd, false);
+	// tc358743_set_pll(sd);
+	// tc358743_set_csi(sd);
+	// tc358743_set_csi_color_space(sd);
 
+pr_info("--------------------- set_fmt ok 2");
 	return 0;
 }
 
@@ -1825,7 +1857,7 @@ static int tc358743_s_edid(struct v4l2_subdev *sd,
 
 	cec_s_phys_addr(state->cec_adap, pa, false);
 
-	if (tx_5v_power_present(sd))
+	// if (tx_5v_power_present(sd))
 		tc358743_enable_edid(sd);
 
 	return 0;
@@ -1835,6 +1867,7 @@ static int tc358743_s_edid(struct v4l2_subdev *sd,
 
 static const struct v4l2_subdev_core_ops tc358743_core_ops = {
 	.log_status = tc358743_log_status,
+	.s_power = tc358743_s_power,
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.g_register = tc358743_g_register,
 	.s_register = tc358743_s_register,
@@ -2050,6 +2083,11 @@ static int tc358743_probe(struct i2c_client *client)
 	u16 irq_mask = 0;//MASK_HDMI_MSK | MASK_CSI_MSK;
 	int err;
 
+pr_info("--------------------- probe 1 js");
+
+	if (!tc358748_setup(client))
+		return -1;
+
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 	v4l_dbg(1, debug, client, "chip found @ 0x%x (%s)\n",
@@ -2060,6 +2098,7 @@ static int tc358743_probe(struct i2c_client *client)
 	if (!state)
 		return -ENOMEM;
 
+pr_info("--------------------- probe 2");
 	state->i2c_client = client;
 
 	/* platform data */
@@ -2078,6 +2117,7 @@ static int tc358743_probe(struct i2c_client *client)
 	v4l2_i2c_subdev_init(sd, client, &tc358743_ops);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE | V4L2_SUBDEV_FL_HAS_EVENTS;
 
+pr_info("--------------------- probe 3");
 	/* i2c access */
 	// if ((i2c_rd16(sd, CHIPID) & MASK_CHIPID) != 0) {
 	// 	v4l2_info(sd, "not a TC358743 on address 0x%x\n",
@@ -2181,6 +2221,7 @@ static int tc358743_probe(struct i2c_client *client)
 	v4l2_info(sd, "%s found @ 0x%x (%s)\n", client->name,
 		  client->addr << 1, client->adapter->name);
 
+pr_info("--------------------- probe ok");
 	return 0;
 
 err_work_queues:

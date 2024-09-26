@@ -1,6 +1,7 @@
 # obj-m := tc358748.o
 
-tc358748-objs := tc358748_main.o tc358748_i2c.o
+# tc358748-objs := tc358748_main.o tc358748_i2c.o
+tc358748-objs := tc358748-358743-.o tc358748_i2c.o
 obj-m += tc358748.o
 
 KDIR = ~/linux-imx-v5.15.71_2.2.2-phy/
