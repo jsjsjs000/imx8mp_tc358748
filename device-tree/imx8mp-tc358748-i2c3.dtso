@@ -143,7 +143,14 @@
 			vm017_csi1_ep: endpoint {
 				remote-endpoint = <&mipi_csi0_ep>;
 				bus-type = <4>;                            // MIPI CSI-2 D-PHY
-				link-frequencies = /bits/ 64 <504000000>;  // 504 MHz
+				link-frequencies = /bits/ 64 <504000000>;  // 504 MHz AR0521 wykrywa i działa
+				// link-frequencies = /bits/ 64 <252000000>;  // 252 MHz AR0521 wykrywa i działa
+				// link-frequencies = /bits/ 64 <200000000>;  // 200 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
+				// link-frequencies = /bits/ 64 <189000000>;  // 200 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
+				// link-frequencies = /bits/ 64 <126000000>;  // 126 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
+				// link-frequencies = /bits/ 64 <80000000>;  // 80 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
+				// link-frequencies = /bits/ 64 <63000000>;  // 63 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
+				// link-frequencies = /bits/ 64 <38028180>;  // 38 MHz
 				data-lanes = <1 2 3 4>;
 				clock-lanes = <0>;
 				clock-noncontinuous = <1>;
