@@ -126,6 +126,7 @@
 &csi1_i2c {
 	#address-cells = <1>;
 	#size-cells = <0>;
+	status = "okay";
 
 	camera@0e {
 		#address-cells = <0x1>;
@@ -142,7 +143,8 @@
 
 			vm017_csi1_ep: endpoint {
 				remote-endpoint = <&mipi_csi0_ep>;
-				bus-type = <4>;                            // MIPI CSI-2 D-PHY
+				bus-type = <4>;                               // MIPI CSI-2 D-PHY
+
 				link-frequencies = /bits/ 64 <504000000>;  // 504 MHz AR0521 wykrywa i działa
 				// link-frequencies = /bits/ 64 <252000000>;  // 252 MHz AR0521 wykrywa i działa
 				// link-frequencies = /bits/ 64 <200000000>;  // 200 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
@@ -151,9 +153,16 @@
 				// link-frequencies = /bits/ 64 <80000000>;  // 80 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
 				// link-frequencies = /bits/ 64 <63000000>;  // 63 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
 				// link-frequencies = /bits/ 64 <38028180>;  // 38 MHz
-				data-lanes = <1 2 3 4>;
+
+				// link-frequencies = /bits/ 64 <38028180>;      // 38 MHz
+				// link-frequencies = /bits/ 64 <76056360>;   // 38 * 2 MHz
+				// link-frequencies = /bits/ 64 <152112720>;     // 38 * 4 MHz
+
 				clock-lanes = <0>;
 				clock-noncontinuous = <1>;
+
+				data-lanes = <1 2 3 4>;   // 4 lanes
+				// data-lanes = <1>;      // 1 lane
 			};
 		};
 	};
@@ -167,22 +176,31 @@
 		reg = <0>;
 		mipi_csi0_ep: endpoint {
 			remote-endpoint = <&vm017_csi1_ep>;
+
 			data-lanes = <4>;
-			csis-hs-settle = <16>;
-			csis-clk-settle = <2>;
-			csis-wclk;
+
+			// csis-hs-settle = <16>;  // dla VM-017
+			// csis-hs-settle = <13>;  // dla VM-016, VM-020
+			// csis-clk-settle = <2>;
+
+			csis-hs-settle = <0>;   // dla 80-90 Mbps - 4 lanes 38 MHz
+			csis-clk-settle = <0>;  // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
+
+			// data-lanes = <1>;
+			// csis-hs-settle = <3>;    // dla 140-180 Mbps - 1 lane 152 MHz
+			// csis-clk-settle = <0>;   // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
+
+			csis-wclk;               // WRAP_CLK - EXTCLK - external clock
 		};
 	};
 };
 
 
+/* */
 &cameradev {
 	status = "okay";
 };
 
-&csi1_i2c {
-	status = "okay";
-};
 
 &isi_0 {
 	dma-coherent;
@@ -212,9 +230,6 @@ https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-C
 		.mbus_code  = MEDIA_BUS_FMT_RGB888_1X24,
 
 
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480 ! autovideosink
-
-
 
 
 [ 7.992257] mx8-img-md: Registered sensor subdevice: tc358748 2-000e (1)
@@ -222,13 +237,6 @@ gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480 ! a
 [ 8.018980] mx8-img-md: created link [mxc-mipi-csi2.0] => [mxc_isi.0]
 [ 8.025519] mx8-img-md: created link [tc358748 2-000e] => [mxc-mipi-csi2.0]
 [ 8.032634] mxc-md 32c00000.bus:camera: mxc_md_create_links
-
-
-media-ctl -p
-
-media-ctl -r
-media-ctl -l "'tc358748 2-000e':0->'mxc-mipi-csi2.0':0[1]"
-
 
 
 

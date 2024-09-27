@@ -1,0 +1,387 @@
+media-ctl -p
+Media controller API version 5.15.71
+
+Media device information
+------------------------
+driver          mxc-md
+model           FSL Capture Media Device
+serial          
+bus info        
+hw revision     0x0
+driver version  5.15.71
+
+Device topology
+- entity 1: mxc_isi.0 (16 pads, 2 links)
+            type V4L2 subdev subtype Unknown flags 0
+	pad0: Sink
+		<- "mxc-mipi-csi2.0":4 [ENABLED]
+	pad1: Sink
+	pad2: Sink
+	pad3: Sink
+	pad4: Sink
+	pad5: Sink
+	pad6: Sink
+	pad7: Sink
+	pad8: Sink
+	pad9: Sink
+	pad10: Sink
+	pad11: Sink
+	pad12: Source
+		-> "mxc_isi.0.capture":0 [ENABLED]
+	pad13: Source
+	pad14: Source
+	pad15: Sink
+
+- entity 18: mxc_isi.0.capture (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video0
+	pad0: Sink
+		<- "mxc_isi.0":12 [ENABLED]
+
+- entity 22: mxc-mipi-csi2.0 (8 pads, 2 links)
+             type Node subtype V4L flags 0
+             device node name /dev/v4l-subdev0
+	pad0: Sink
+		<- "tc358748 2-000e":0 [ENABLED,IMMUTABLE]
+	pad1: Sink
+	pad2: Sink
+	pad3: Sink
+	pad4: Source
+		-> "mxc_isi.0":0 [ENABLED]
+	pad5: Source
+	pad6: Source
+	pad7: Source
+
+- entity 31: tc358748 2-000e (1 pad, 1 link)
+             type V4L2 subdev subtype Sensor flags 0
+             device node name /dev/v4l-subdev1
+	pad0: Source
+		[fmt:RGB888_1X24/640x480 field:none colorspace:raw
+		 crop.bounds:(0,0)/0x0
+		 crop:(0,0)/0x0
+		 compose.bounds:(0,0)/0x0
+		 compose:(0,0)/0x0]
+		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+v4l2-ctl --all
+Driver Info:
+	Driver name      : mxc-isi-cap
+	Card type        : mxc-isi-cap
+	Bus info         : platform:32e00000.isi:cap_devic
+	Driver version   : 5.15.71
+	Capabilities     : 0x84201000
+		Video Capture Multiplanar
+		Streaming
+		Extended Pix Format
+		Device Capabilities
+	Device Caps      : 0x04201000
+		Video Capture Multiplanar
+		Streaming
+		Extended Pix Format
+Media Driver Info:
+	Driver name      : mxc-md
+	Model            : FSL Capture Media Device
+	Serial           : 
+	Bus info         : 
+	Media version    : 5.15.71
+	Hardware revision: 0x00000000 (0)
+	Driver version   : 5.15.71
+Interface Info:
+	ID               : 0x03000014
+	Type             : V4L Video
+Entity Info:
+	ID               : 0x00000012 (18)
+	Name             : mxc_isi.0.capture
+	Function         : V4L2 I/O
+	Pad 0x01000013   : 0: Sink
+	  Link 0x02000021: from remote pad 0x100000e of entity 'mxc_isi.0' (Video Pixel Formatter): Data, Enabled
+Priority: 2
+Format Video Capture Multiplanar:
+	Width/Height      : 640/480
+	Pixel Format      : 'GREY' (8-bit Greyscale)
+	Field             : None
+	Number of planes  : 1
+	Flags             : 
+	Colorspace        : sRGB
+	Transfer Function : Default
+	YCbCr/HSV Encoding: ITU-R 601
+	Quantization      : Full Range
+	Plane 0           :
+	   Bytes per Line : 640
+	   Size Image     : 307200
+Crop Capability Video Output:
+	Bounds      : Left 0, Top 0, Width 640, Height 480
+	Default     : Left 0, Top 0, Width 640, Height 480
+	Pixel Aspect: 1/1
+Selection Video Output: compose, Left 0, Top 0, Width 640, Height 480, Flags: 
+Selection Video Output: compose_default, Left 0, Top 0, Width 640, Height 480, Flags: 
+Selection Video Output: compose_bounds, Left 0, Top 0, Width 640, Height 480, Flags: 
+Streaming Parameters Video Capture:
+	Capabilities     : timeperframe
+	Frames per second: invalid (0/0)
+	Read buffers     : 0
+
+User Controls
+
+                horizontal_flip 0x00980914 (bool)   : default=0 value=0
+                  vertical_flip 0x00980915 (bool)   : default=0 value=0
+                alpha_component 0x00980929 (int)    : min=0 max=255 step=1 default=0 value=0
+
+
+
+
+
+dmesg | grep -i 'tc358748\|video\|csi\|isi\|media\|mx8-img-md\|mxc-isi'
+SCSI subsystem initialized
+mc: Linux media interface: v0.10
+videodev: Linux video capture interface: v2.00
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+SoC: i.MX8MP revision 1.1
+hns3: Hisilicon Ethernet Network Driver for Hip08 Family - version
+Synopsys Designware Multimedia Card Interface Driver
+optee: revision 4.1 (18b424c2)
+i2c 2-000e: Fixing up cyclic dependency with 32e40000.csi
+mxc-mipi-csi2-sam 32e40000.csi: supply mipi-phy not found, using dummy regulator
+: mipi_csis_imx8mp_phy_reset, No remote pad found!
+mxc-mipi-csi2-sam 32e40000.csi: lanes: 4, hs_settle: 16, clk_settle: 2, wclk: 1, freq: 500000000
+isi-capture 32e00000.isi:cap_device: deferring 32e00000.isi:cap_device device registration
+mxc-isi 32e00000.isi: mxc_isi.0 registered successfully
+imx8_media_dev: module is from the staging directory, the quality is unknown, you have been warned.
+mx8-img-md: Registered mxc_isi.0.capture as /dev/video0
+tc358748 2-000e: Probing ar0521 Driver
+mx8-img-md: Registered sensor subdevice: tc358748 2-000e (1)
+mx8-img-md: created link [mxc_isi.0] => [mxc_isi.0.capture]
+mx8-img-md: created link [mxc-mipi-csi2.0] => [mxc_isi.0]
+mx8-img-md: created link [tc358748 2-000e] => [mxc-mipi-csi2.0]
+mxc-md 32c00000.bus:camera: mxc_md_create_links
+
+
+
+
+
+
+
+v4l2-ctl --list-devices
+v4l2-ctl --list-devices
+[   15.417109] --------------------- get_fmt flags 0
+[  746.374194] --------------------- get_fmt width 640
+[  746.378930] --------------------- get_fmt height 480
+[  746.383907] --------------------- get_fmt code 4106
+[  746.388916] --------------------- get_fmt field 1
+[  746.393861] --------------------- get_fmt colorspace 11
+[  746.398598] --------------------- get_fmt xfer_func 0
+[  746.403859] --------------------- get_fmt flags 0
+[  746.414178] --------------------- get_fmt width 640
+[  746.418894] --------------------- get_fmt height 480
+[  746.423779] --------------------- get_fmt code 4106
+[  746.428747] --------------------- get_fmt field 1
+[  746.433630] --------------------- get_fmt colorspace 11
+[  746.438339] --------------------- get_fmt xfer_func 0
+[  746.443568] --------------------- get_fmt flags 0
+[  746.449084] --------------------- get_fmt width 640
+[  746.456581] --------------------- get_fmt height 480
+[  746.464340] --------------------- get_fmt code 4106
+[  746.472153] --------------------- get_fmt field 1
+[  746.479895] --------------------- get_fmt colorspace 11
+[  746.487451] --------------------- get_fmt xfer_func 0
+ ():
+	/dev/v4l-subdev0
+	/dev/v4l-subdev1
+
+mxc-isi-cap (platform:32e00000.isi:cap_devic):
+	/dev/video0
+
+FSL Capture Media Device (platform:mxc-md):
+	/dev/media0
+
+
+
+
+
+
+
+
+lsmod
+imx8_media_dev         20480  0
+ar0144                 45056  0
+ar0521                 40960  0
+tc358748               24576  1
+
+
+
+
+
+strace setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+execve("/usr/bin/setup-pipeline-csi1", ["setup-pipeline-csi1", "-f", "Y8_1X8", "-s", "64x64", "-o", "(0,0)", "-c", "64x64"], 0xffffe20f1c10 /* 23 vars */) = 0
+brk(NULL)                               = 0xaaaad49c6000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff90934000
+faccessat(AT_FDCWD, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=26167, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 26167, PROT_READ, MAP_PRIVATE, 3, 0) = 0xffff9092d000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/libtinfo.so.5", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=195608, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 326256, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff908af000
+mmap(0xffff908b0000, 260720, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffff908b0000
+munmap(0xffff908af000, 4096)            = 0
+munmap(0xffff908f0000, 60016)           = 0
+mprotect(0xffff908db000, 65536, PROT_NONE) = 0
+mmap(0xffff908eb000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2b000) = 0xffff908eb000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\300\263\2\0\0\0\0\0"..., 832) = 832
+pread64(3, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0/\200\266\341!qkc\250\366L\232\337\2606\361"..., 68, 768) = 68
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=1634112, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 1809352, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff906f6000
+mmap(0xffff90700000, 1743816, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffff90700000
+munmap(0xffff906f6000, 40960)           = 0
+munmap(0xffff908aa000, 23496)           = 0
+mprotect(0xffff90888000, 65536, PROT_NONE) = 0
+mmap(0xffff90898000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x188000) = 0xffff90898000
+mmap(0xffff9089e000, 48072, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xffff9089e000
+close(3)                                = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9092b000
+set_tid_address(0xffff9092b0f0)         = 1285
+set_robust_list(0xffff9092b100, 24)     = 0
+rseq(0xffff9092b7c0, 0x20, 0, 0xd428bc00) = 0
+mprotect(0xffff90898000, 12288, PROT_READ) = 0
+mprotect(0xffff908eb000, 16384, PROT_READ) = 0
+mprotect(0xaaaac527e000, 20480, PROT_READ) = 0
+mprotect(0xffff90939000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0xffff9092d000, 26167)           = 0
+openat(AT_FDCWD, "/dev/tty", O_RDWR|O_NONBLOCK) = 3
+close(3)                                = 0
+getrandom("\x05\x8c\xd9\x79\x6e\xe8\x0c\x86", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0xaaaad49c6000
+brk(0xaaaad49e7000)                     = 0xaaaad49e7000
+getuid()                                = 0
+getgid()                                = 0
+geteuid()                               = 0
+getegid()                               = 0
+ioctl(-1, TIOCGPGRP, 0xffffd79f449c)    = -1 EBADF (Bad file descriptor)
+sysinfo({uptime=1849, loads=[0, 0, 0], totalram=1740771328, freeram=1226653696, sharedram=10264576, bufferram=6774784, totalswap=0, freeswap=0, procs=134, totalhigh=0, freehigh=0, mem_unit=1}) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTART}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+uname({sysname="Linux", nodename="phyboard-pollux-imx8mp-3", ...}) = 0
+newfstatat(AT_FDCWD, "/root", {st_mode=S_IFDIR|0700, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, ".", {st_mode=S_IFDIR|0700, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/root", {st_mode=S_IFDIR|0700, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/dev", {st_mode=S_IFDIR|0755, st_size=4620, ...}, 0) = 0
+getpid()                                = 1285
+getppid()                               = 1281
+getpid()                                = 1285
+getppid()                               = 1281
+getpid()                                = 1285
+getppid()                               = 1281
+getpgid(0)                              = 1281
+ioctl(2, TIOCGPGRP, [1281])             = 0
+rt_sigaction(SIGCHLD, {sa_handler=0xaaaac51a1280, sa_mask=[], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTART}, 8) = 0
+prlimit64(0, RLIMIT_NPROC, NULL, {rlim_cur=4068, rlim_max=4068}) = 0
+openat(AT_FDCWD, "/usr/bin/setup-pipeline-csi1", O_RDONLY) = 3
+newfstatat(AT_FDCWD, "/usr/bin/setup-pipeline-csi1", {st_mode=S_IFREG|0755, st_size=3758, ...}, 0) = 0
+ioctl(3, TCGETS, 0xffffd79f4458)        = -1 ENOTTY (Inappropriate ioctl for device)
+lseek(3, 0, SEEK_CUR)                   = 0
+read(3, "#!/bin/sh\n\ndisplay_help() {\n\tech"..., 80) = 80
+lseek(3, 0, SEEK_SET)                   = 0
+prlimit64(0, RLIMIT_NOFILE, NULL, {rlim_cur=1024, rlim_max=512*1024}) = 0
+fcntl(255, F_GETFD)                     = -1 EBADF (Bad file descriptor)
+dup3(3, 255, 0)                         = 255
+close(3)                                = 0
+fcntl(255, F_SETFD, FD_CLOEXEC)         = 0
+fcntl(255, F_GETFL)                     = 0x20000 (flags O_RDONLY|O_LARGEFILE)
+newfstatat(255, "", {st_mode=S_IFREG|0755, st_size=3758, ...}, AT_EMPTY_PATH) = 0
+lseek(255, 0, SEEK_CUR)                 = 0
+read(255, "#!/bin/sh\n\ndisplay_help() {\n\tech"..., 3758) = 3758
+newfstatat(AT_FDCWD, "/dev/cam-csi1", {st_mode=S_IFLNK|0777, st_size=11, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/dev/phycam-serializer-port0-csi1", 0xffffd79f4028, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/dev/phycam-serializer-port1-csi1", 0xffffd79f4028, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/dev/phycam-deserializer-csi1", 0xffffd79f4028, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+pipe2([3, 4], 0)                        = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+rt_sigprocmask(SIG_BLOCK, [INT TERM CHLD], [], 8) = 0
+lseek(255, -2182, SEEK_CUR)             = 1576
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffff9092b0f0) = 1286
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=0xaaaac51a1280, sa_mask=[], sa_flags=SA_RESTART}, {sa_handler=0xaaaac51a1280, sa_mask=[], sa_flags=SA_RESTART}, 8) = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=1286, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], WNOHANG, NULL) = 1286
+wait4(-1, 0xffffd79f2450, WNOHANG, NULL) = -1 ECHILD (No child processes)
+rt_sigreturn({mask=[]})                 = 0
+close(4)                                = 0
+rt_sigprocmask(SIG_BLOCK, [INT], [], 8) = 0
+read(3, "tc358748 2-000e\n", 512)       = 16
+read(3, "", 512)                        = 0
+close(3)                                = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigaction(SIGINT, {sa_handler=0xaaaac519e140, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=0xaaaac519e140, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+read(255, "case $(echo ${CAM_ENT} | cut -d\""..., 3758) = 2182
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+pipe2([3, 4], 0)                        = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, NULL, [], 8)  = 0
+rt_sigprocmask(SIG_BLOCK, [INT TERM CHLD], [], 8) = 0
+lseek(255, -1760, SEEK_CUR)             = 1998
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffff9092b0f0) = 1288
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigaction(SIGCHLD, {sa_handler=0xaaaac51a1280, sa_mask=[], sa_flags=SA_RESTART}, {sa_handler=0xaaaac51a1280, sa_mask=[], sa_flags=SA_RESTART}, 8) = 0
+close(4)                                = 0
+rt_sigprocmask(SIG_BLOCK, [INT], [], 8) = 0
+read(3, "tc358748\n", 512)              = 9
+read(3, "", 512)                        = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=1288, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], WNOHANG, NULL) = 1288
+wait4(-1, 0xffffd79f29a0, WNOHANG, NULL) = -1 ECHILD (No child processes)
+rt_sigreturn({mask=[INT]})              = 0
+close(3)                                = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigaction(SIGINT, {sa_handler=0xaaaac519e140, sa_mask=[], sa_flags=0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, {sa_handler=0xaaaac519e140, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+newfstatat(1, "", {st_mode=S_IFCHR|0600, st_rdev=makedev(0xcf, 0x10), ...}, AT_EMPTY_PATH) = 0
+ioctl(1, TCGETS, {B115200 opost isig icanon echo ...}) = 0
+write(1, "Unknown camera\n", 15Unknown camera
+)        = 15
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+exit_group(1)                           = ?
++++ exited with 1 +++

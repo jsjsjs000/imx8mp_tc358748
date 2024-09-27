@@ -136,3 +136,35 @@ User Controls
                 horizontal_flip 0x00980914 (bool)   : default=0 value=0
                   vertical_flip 0x00980915 (bool)   : default=0 value=0
                 alpha_component 0x00980929 (int)    : min=0 max=255 step=1 default=0 value=0
+
+
+
+
+
+
+
+
+
+
+
+SCSI subsystem initialized
+mc: Linux media interface: v0.10
+videodev: Linux video capture interface: v2.00
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+SoC: i.MX8MP revision 1.1
+hns3: Hisilicon Ethernet Network Driver for Hip08 Family - version
+Synopsys Designware Multimedia Card Interface Driver
+optee: revision 4.1 (18b424c2)
+i2c 2-000e: Fixing up cyclic dependency with 32e40000.csi
+mxc-mipi-csi2-sam 32e40000.csi: supply mipi-phy not found, using dummy regulator
+: mipi_csis_imx8mp_phy_reset, No remote pad found!
+mxc-mipi-csi2-sam 32e40000.csi: lanes: 4, hs_settle: 16, clk_settle: 2, wclk: 1, freq: 500000000
+isi-capture 32e00000.isi:cap_device: deferring 32e00000.isi:cap_device device registration
+mxc-isi 32e00000.isi: mxc_isi.0 registered successfully
+imx8_media_dev: module is from the staging directory, the quality is unknown, you have been warned.
+mx8-img-md: Registered mxc_isi.0.capture as /dev/video0
+mx8-img-md: Registered sensor subdevice: tc358748 2-000e (1)
+mx8-img-md: created link [mxc_isi.0] => [mxc_isi.0.capture]
+mx8-img-md: created link [mxc-mipi-csi2.0] => [mxc_isi.0]
+mx8-img-md: created link [tc358748 2-000e] => [mxc-mipi-csi2.0]
+mxc-md 32c00000.bus:camera: mxc_md_create_links

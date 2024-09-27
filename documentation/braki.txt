@@ -1,0 +1,105 @@
+/usr/bin/setup-pipeline-csi1
+/dev/cam-csi1-port0
+/dev/cam-csi1-port1
+
+
+
+/dev/cam-csi1", {st_mode=S_IFLNK|0777, st_size=11, ...}, AT_SYMLINK_NOFOLLOW) = 0
+/dev/phycam-serializer-port0-csi1", 0xffffed2d8338, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+/dev/phycam-serializer-port1-csi1", 0xffffed2d8338, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+/dev/phycam-deserializer-csi1", 0xffffed2d8338, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+
+/usr/bin/media-ctl
+
+
+v4l2-ctl --list-devices
+
+
+	# Brak:
+/dev/cam-csi1 -> v4l-subdev1
+/dev/media1
+
+	# Jest:
+/dev/media0
+/dev/video-isi-csi1 -> video0
+/dev/video0
+/dev/v4l-subdev0
+/dev/v4l-subdev1
+/dev/v4l/by-path/platform-32c00000.bus\:camera-video-index0
+
+	# v4l2-ctl --all - brak w tc358748_main:
+Streaming Parameters Video Capture:
+	Capabilities     : timeperframe
+	Frames per second: 68.100 (681/10)
+	Read buffers     : 0
+
+	# v4l2-ctl --all - tc358748-358743-:
+Streaming Parameters Video Capture:
+	Capabilities     : timeperframe
+	Frames per second: invalid (0/0)
+	Read buffers     : 0
+
+	# dmesg - brak w tc358748_main:
+enter viv_dwe_init_module
+enter viv_video_init_module
+
+	# dmesg - brak w tc358748-358743-:
+enter viv_dwe_init_module
+enter viv_video_init_module
+
+
+/usr/bin/setup-pipeline-csi1
+
+modprobe -r ar0144                                                 
+modprobe -r ar0521
+
+modprobe vvcam_dwe
+#> enter viv_dwe_init_module
+modprobe vvcam_video
+#> enter viv_video_init_module
+
+lsmod
+vvcam_video            36864  0
+vvcam_dwe              28672  1 vvcam_video
+
+ls /dev/media*
+/dev/media0
+/dev/media1
+
+cd /dev/
+ln -s v4l-subdev1 cam-csi1
+cd -
+
+setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+#> cat: /sys/class/video4linux/v4l-subdev1/name: No such file or directory
+#> Unknown camera
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.bin
+
+
+echo 1 > /sys/class/video4linux/video0/dev_debug
+
+cat /sys/class/video4linux/video0/name
+#> mxc_isi.0.capture
+cat /sys/class/video4linux/video0/dev
+#> 81:0
+
+
+setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
+#> Setting Y8_1X8/64x64 (0,0)/64x64 for tc358748 2-000e
+#> media-ctl -l 'mxc-mipi-csi2.0':4->'mxc_isi.0':0[1]
+#> media-ctl -l 'mxc_isi.0':12->'mxc_isi.0.capture':0[1]
+#> media-ctl -V 'tc358748 2-000e':0[fmt:Y8_1X8/64x64 (0,0)/64x64]
+#> media-ctl -V 'mxc-mipi-csi2.0':0[fmt:Y8_1X8/64x64]
+
+
+media-ctl -r
+media-ctl -l 'tc358748 2-000e':0->'mxc-mipi-csi2.0':0[1]
+media-ctl -l 'mxc-mipi-csi2.0':4->'mxc_isi.0':0[1]
+media-ctl -l 'mxc_isi.0':12->'mxc_isi.0.capture':0[1]
+media-ctl -V "'tc358748 2-000e':0[fmt:Y8_1X8/64x64 (0,0)/64x64]"
+media-ctl -V "'mxc-mipi-csi2.0':0[fmt:Y8_1X8/64x64]"
+media-ctl -V "'mxc_isi.0':12 [fmt:Y8_1X8/64x64 field:none]"
+media-ctl -p
+
+
+v4l2-ctl -d0 --stream-mmap --stream-count 1 --stream-to=raw_image1.raw

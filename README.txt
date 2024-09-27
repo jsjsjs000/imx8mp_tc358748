@@ -35,6 +35,9 @@ clear; co && up && mod
 
 media-ctl -p; ls /dev/video*; ls /dev/media*
 
+v4l2-ctl --list-devices
+
+
 	# usefull aliases for i.MX - writing to .bashrc
 echo "alias a='media-ctl -p; ls /dev/video*; ls /dev/media*'" >> .bashrc
 echo "alias re='reboot'" >> .bashrc
