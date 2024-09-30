@@ -50,7 +50,7 @@ enter viv_video_init_module
 
 /usr/bin/setup-pipeline-csi1
 
-modprobe -r ar0144                                                 
+modprobe -r ar0144
 modprobe -r ar0521
 
 modprobe vvcam_dwe
@@ -73,7 +73,7 @@ cd -
 setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
 #> cat: /sys/class/video4linux/v4l-subdev1/name: No such file or directory
 #> Unknown camera
-gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.bin
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw
 
 
 echo 1 > /sys/class/video4linux/video0/dev_debug
@@ -86,10 +86,10 @@ cat /sys/class/video4linux/video0/dev
 
 setup-pipeline-csi1 -f Y8_1X8 -s 64x64 -o '(0,0)' -c 64x64
 #> Setting Y8_1X8/64x64 (0,0)/64x64 for tc358748 2-000e
-#> media-ctl -l 'mxc-mipi-csi2.0':4->'mxc_isi.0':0[1]
-#> media-ctl -l 'mxc_isi.0':12->'mxc_isi.0.capture':0[1]
-#> media-ctl -V 'tc358748 2-000e':0[fmt:Y8_1X8/64x64 (0,0)/64x64]
-#> media-ctl -V 'mxc-mipi-csi2.0':0[fmt:Y8_1X8/64x64]
+media-ctl -l 'mxc-mipi-csi2.0':4->'mxc_isi.0':0[1]
+media-ctl -l 'mxc_isi.0':12->'mxc_isi.0.capture':0[1]
+media-ctl -V "'tc358748 2-000e':0[fmt:Y8_1X8/64x64 (0,0)/64x64]"
+media-ctl -V "'mxc-mipi-csi2.0':0[fmt:Y8_1X8/64x64]"
 
 
 media-ctl -r
@@ -102,4 +102,57 @@ media-ctl -V "'mxc_isi.0':12 [fmt:Y8_1X8/64x64 field:none]"
 media-ctl -p
 
 
-v4l2-ctl -d0 --stream-mmap --stream-count 1 --stream-to=raw_image1.raw
+v4l2-ctl -d0 --stream-mmap --stream-count 1 --stream-to=image.raw
+
+
+
+brak w media-ctl -p
+- entity 31: tc358748 2-000e (1 pad, 1 link)
+             type V4L2 subdev subtype Unknown flags 0
+             device node name /dev/v4l-subdev1
+	pad0: Source
+		[fmt:RGB888_1X24/640x480 field:none colorspace:srgb]
+		[dv.caps:BT.656/1120 min:640x350@13000000 max:1920x1200@165000000 stds:CEA-861,DMT,CVT,GTF caps:progressive,reduced-blanking,custom]
+		[dv.query:out-of-range]
+		[dv.current:BT.656/1120 640x480p59 (800x525) stds:CEA-861,DMT flags:has-cea861-vic]
+		-> "mxc-mipi-csi2.0":0 [ENABLED,IMMUTABLE]
+
+------------------------------------------------------------ mono
+modprobe -r ar0144
+modprobe -r ar0521
+
+modprobe vvcam_dwe
+modprobe vvcam_video
+
+media-ctl -l 'mxc-mipi-csi2.0':4->'mxc_isi.0':0[1]
+media-ctl -l 'mxc_isi.0':12->'mxc_isi.0.capture':0[1]
+# for ar5 driver name
+media-ctl -V "'ar5 2-000e':0[fmt:Y8_1X8/64x64 (0,0)/64x64]"
+media-ctl -V "'mxc-mipi-csi2.0':0[fmt:Y8_1X8/64x64]"
+
+v4l2-ctl -d0 --stream-mmap --stream-count 1 --stream-to=image.raw
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw
+hexdump image.raw
+
+------------------------------------------------------------ color
+modprobe -r ar0144
+modprobe -r ar0521
+
+modprobe vvcam_dwe
+modprobe vvcam_video
+
+media-ctl -l 'mxc-mipi-csi2.0':4->'mxc_isi.0':0[1]
+media-ctl -l 'mxc_isi.0':12->'mxc_isi.0.capture':0[1]
+# for ar5 driver name
+# SGRBG8_1X8 - original AR0521 bayer format
+media-ctl -V "'ar5 2-000e':0[fmt:RGB888_1X24/64x64 (0,0)/64x64]"
+media-ctl -V "'mxc-mipi-csi2.0':0[fmt:RGB888_1X24/64x64]"
+
+v4l2-ctl -d0 --stream-mmap --stream-count 1 --stream-to=image.raw
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw
+hexdump image.raw
+
+------------------------------------------------------------
+
