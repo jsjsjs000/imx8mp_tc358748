@@ -278,6 +278,38 @@ https://community.nxp.com/t5/i-MX-Processors/TC358743-HDMI-CSI-Bridge-Driver-for
 https://github.com/torvalds/linux/blob/v6.2/drivers/media/i2c/tc358746.c
 
 
+
+
+	Kernel debug
+echo 3 > /sys/module/mxc_mipi_csi/parameters/debug
+echo 3 > /sys/module/mxc_mipi_csi2_yav/parameters/debug
+echo 0xff > /sys/class/video4linux/video0/dev_debug
+echo 0xff > /sys/class/video4linux/v4l-subdev1/dev_debug
+
+dmesg | grep 'video0\|videodev'
+
+Makefile:
+pr_debug("debug variable = %d\n", 3);
+CFLAGS_filename.o := -DDEBUG
+# https://stackoverflow.com/questions/28936199/why-is-pr-debug-of-the-linux-kernel-not-giving-any-output
+
+
+============================================================
+https://forums.developer.nvidia.com/t/how-to-check-v4l2-dbg-message-in-the-console/57749/12
+
+please refer to below code snippet in the tc358840 kernel driver.
+
+static int debug;
+module_param(debug, int, 0644);
+MODULE_PARM_DESC(debug, "debug level (0-3)");
+above paragraph will create the debug flags under its module.
+and you should be able to control the value following below.
+
+ehco 1 > /sys/module/tc358840/parameters/debug
+please refer to v4l2_dbg function definition in comment #5, you should be able to saw below message while setting the debug flags.
+
+v4l2_dbg(1, debug, sd, "%s: no valid signal\n", __func__);
+
 ============================================================
 RTC ?
 https://github.com/phytec/linux-phytec/blob/v5.15.71/drivers/rtc/rtc-mcp795.c

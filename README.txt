@@ -186,3 +186,30 @@ scp root@192.168.3.11:/root/image.bin . && ghex image.bin &
 	# w AR0521:
 [    2.890677] : mipi_csis_imx8mp_phy_reset, No remote pad found!
 
+
+
+# ------------------------------------------------------------ debug V4L2 driver:
+/home/p2119/linux-imx-v5.15.71_2.2.2-phy/drivers/media/v4l2-core/v4l2-ioctl.c
+static void v4l_print_buffer(const void *arg, bool write_only)
+
+	# ok:
+video0: VIDIOC_STREAMON: type=vid-cap-mplane
+videodev: v4l2_poll: video0: poll: 00000000 00000039
+videodev: v4l2_poll: video0: poll: 00000041 00000039
+video0: VIDIOC_DQBUF: 00:00:30.838612 index=0, type=vid-cap-mplane, request_fd=0, flags=0x00002001, field=none, sequence=1, memory=mmap
+plane 0: bytesused=8192, data_offset=0x00000000, offset/userptr=0x0, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_QBUF: 00:00:00.000000 index=0, type=vid-cap-mplane, request_fd=0, flags=0x00002003, field=none, sequence=0, memory=mmap
+plane 0: bytesused=8192, data_offset=0x00000000, offset/userptr=0x0, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_STREAMOFF: type=vid-cap-mplane
+video0: VIDIOC_REQBUFS: count=0, type=vid-cap-mplane, memory=mmap
+videodev: v4l2_release: video0: release
+
+	# not ok:
+video0: VIDIOC_STREAMON: type=vid-cap-mplane
+videodev: v4l2_poll: video0: poll: 00000000 00000039
+videodev: v4l2_poll: video0: poll: 00000000 00000039
+video0: VIDIOC_STREAMOFF: type=vid-cap-mplane
+video0: VIDIOC_REQBUFS: count=0, type=vid-cap-mplane, memory=mmap
+videodev: v4l2_release: video0: release

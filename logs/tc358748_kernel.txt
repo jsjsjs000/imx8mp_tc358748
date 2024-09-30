@@ -1,0 +1,169 @@
+echo 0xff > /sys/class/video4linux/video0/dev_debug
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw
+dmesg
+videodev: v4l2_open: video0: open (0)
+video0: VIDIOC_QUERYCAP: driver=mxc-isi-cap, card=mxc-isi-cap, bus=platform:32e00000.isi:cap_devic, version=0x00050f47, capabilities=0x84201000, device_caps=0x04201000
+videodev: v4l2_release: video0: release
+videodev: v4l2_open: video0: open (0)
+video0: VIDIOC_QUERYCAP: driver=mxc-isi-cap, card=mxc-isi-cap, bus=platform:32e00000.isi:cap_devic, version=0x00050f47, capabilities=0x84201000, device_caps=0x04201000
+videodev: v4l2_release: video0: release
+videodev: v4l2_open: video0: open (0)
+video0: VIDIOC_QUERYCAP: driver=mxc-isi-cap, card=mxc-isi-cap, bus=platform:32e00000.isi:cap_devic, version=0x00050f47, capabilities=0x84201000, device_caps=0x04201000
+video0: VIDIOC_ENUMINPUT: error -25: index=0, name=, type=0, audioset=0x0, tuner=0, std=0x00000000, status=0x0, capabilities=0x0
+video0: VIDIOC_ENUMSTD: error -25: index=0, id=0x0, name=, fps=0/0, framelines=0
+video0: VIDIOC_QUERYCTRL: id=0x980001, type=6, name=User Controls, min/max=0/0, step=0, default=0, flags=0x00000044
+video0: VIDIOC_QUERYCTRL: id=0x980914, type=2, name=Horizontal Flip, min/max=0/1, step=1, default=0, flags=0x00000000
+video0: VIDIOC_QUERYCTRL: id=0x980915, type=2, name=Vertical Flip, min/max=0/1, step=1, default=0, flags=0x00000000
+video0: VIDIOC_QUERYCTRL: id=0x980929, type=1, name=Alpha Component, min/max=0/255, step=1, default=0, flags=0x00000000
+video0: VIDIOC_QUERYCTRL: error -22: id=0x80980929, type=0, name=, min/max=0/0, step=0, default=0, flags=0x00000000
+video0: VIDIOC_G_STD: error -25: std=0x00000000
+video0: VIDIOC_G_INPUT: error -25: value=0
+video0: VIDIOC_G_INPUT: error -25: value=0
+video0: VIDIOC_ENUM_FMT: index=0, type=vid-cap-mplane, flags=0x0, pixelformat=GREY little-endian (0x59455247), mbus_code=0x0000, description='8-bit Greyscale'
+video0: VIDIOC_ENUM_FMT: index=1, type=vid-cap-mplane, flags=0x0, pixelformat=Y10  little-endian (0x20303159), mbus_code=0x0000, description='10-bit Greyscale'
+video0: VIDIOC_ENUM_FMT: index=2, type=vid-cap-mplane, flags=0x0, pixelformat=Y12  little-endian (0x20323159), mbus_code=0x0000, description='12-bit Greyscale'
+video0: VIDIOC_ENUM_FMT: index=3, type=vid-cap-mplane, flags=0x0, pixelformat=BA81 little-endian (0x31384142), mbus_code=0x0000, description='8-bit Bayer BGBG/GRGR'
+video0: VIDIOC_ENUM_FMT: index=4, type=vid-cap-mplane, flags=0x0, pixelformat=GBRG little-endian (0x47524247), mbus_code=0x0000, description='8-bit Bayer GBGB/RGRG'
+video0: VIDIOC_ENUM_FMT: index=5, type=vid-cap-mplane, flags=0x0, pixelformat=GRBG little-endian (0x47425247), mbus_code=0x0000, description='8-bit Bayer GRGR/BGBG'
+video0: VIDIOC_ENUM_FMT: index=6, type=vid-cap-mplane, flags=0x0, pixelformat=RGGB little-endian (0x42474752), mbus_code=0x0000, description='8-bit Bayer RGRG/GBGB'
+video0: VIDIOC_ENUM_FMT: index=7, type=vid-cap-mplane, flags=0x0, pixelformat=BG10 little-endian (0x30314742), mbus_code=0x0000, description='10-bit Bayer BGBG/GRGR'
+video0: VIDIOC_ENUM_FMT: index=8, type=vid-cap-mplane, flags=0x0, pixelformat=GB10 little-endian (0x30314247), mbus_code=0x0000, description='10-bit Bayer GBGB/RGRG'
+video0: VIDIOC_ENUM_FMT: index=9, type=vid-cap-mplane, flags=0x0, pixelformat=BA10 little-endian (0x30314142), mbus_code=0x0000, description='10-bit Bayer GRGR/BGBG'
+video0: VIDIOC_ENUM_FMT: index=10, type=vid-cap-mplane, flags=0x0, pixelformat=RG10 little-endian (0x30314752), mbus_code=0x0000, description='10-bit Bayer RGRG/GBGB'
+video0: VIDIOC_ENUM_FMT: index=11, type=vid-cap-mplane, flags=0x0, pixelformat=BG12 little-endian (0x32314742), mbus_code=0x0000, description='12-bit Bayer BGBG/GRGR'
+video0: VIDIOC_ENUM_FMT: index=12, type=vid-cap-mplane, flags=0x0, pixelformat=GB12 little-endian (0x32314247), mbus_code=0x0000, description='12-bit Bayer GBGB/RGRG'
+video0: VIDIOC_ENUM_FMT: index=13, type=vid-cap-mplane, flags=0x0, pixelformat=BA12 little-endian (0x32314142), mbus_code=0x0000, description='12-bit Bayer GRGR/BGBG'
+video0: VIDIOC_ENUM_FMT: index=14, type=vid-cap-mplane, flags=0x0, pixelformat=RG12 little-endian (0x32314752), mbus_code=0x0000, description='12-bit Bayer RGRG/GBGB'
+video0: VIDIOC_ENUM_FMT: index=15, type=vid-cap-mplane, flags=0x0, pixelformat=RGBP little-endian (0x50424752), mbus_code=0x0000, description='16-bit RGB 5-6-5'
+video0: VIDIOC_ENUM_FMT: index=16, type=vid-cap-mplane, flags=0x0, pixelformat=RGB3 little-endian (0x33424752), mbus_code=0x0000, description='24-bit RGB 8-8-8'
+video0: VIDIOC_ENUM_FMT: index=17, type=vid-cap-mplane, flags=0x0, pixelformat=BGR3 little-endian (0x33524742), mbus_code=0x0000, description='24-bit BGR 8-8-8'
+video0: VIDIOC_ENUM_FMT: index=18, type=vid-cap-mplane, flags=0x0, pixelformat=YUYV little-endian (0x56595559), mbus_code=0x0000, description='YUYV 4:2:2'
+video0: VIDIOC_ENUM_FMT: index=19, type=vid-cap-mplane, flags=0x0, pixelformat=YUV4 little-endian (0x34565559), mbus_code=0x0000, description='32-bit A/XYUV 8-8-8-8'
+video0: VIDIOC_ENUM_FMT: index=20, type=vid-cap-mplane, flags=0x0, pixelformat=NV12 little-endian (0x3231564e), mbus_code=0x0000, description='Y/CbCr 4:2:0'
+video0: VIDIOC_ENUM_FMT: index=21, type=vid-cap-mplane, flags=0x0, pixelformat=NM12 little-endian (0x32314d4e), mbus_code=0x0000, description='Y/CbCr 4:2:0 (N-C)'
+video0: VIDIOC_ENUM_FMT: index=22, type=vid-cap-mplane, flags=0x0, pixelformat=YM24 little-endian (0x34324d59), mbus_code=0x0000, description='Planar YUV 4:4:4 (N-C)'
+video0: VIDIOC_ENUM_FMT: index=23, type=vid-cap-mplane, flags=0x0, pixelformat=XR24 little-endian (0x34325258), mbus_code=0x0000, description='32-bit BGRX 8-8-8-8'
+video0: VIDIOC_ENUM_FMT: index=24, type=vid-cap-mplane, flags=0x0, pixelformat=AR24 little-endian (0x34325241), mbus_code=0x0000, description='32-bit BGRA 8-8-8-8'
+video0: VIDIOC_ENUM_FMT: error -22: index=25, type=vid-cap-mplane, flags=0x0, pixelformat=.... little-endian (0x00000000), mbus_code=0x0000, description=''
+video0: VIDIOC_CROPCAP: error -22: type=vid-cap-mplane, bounds wxh=0x0, x,y=0,0, defrect wxh=0x0, x,y=0,0, pixelaspect 1/1
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=YUYV little-endian (0x56595559), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=YUYV little-endian (0x56595559), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=32 sizeimage=512
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=YUYV little-endian (0x56595559), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=8192 sizeimage=33554432
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=NM12 little-endian (0x32314d4e), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=NM12 little-endian (0x32314d4e), field=none, colorspace=8, num_planes=2, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16 sizeimage=256
+plane 1: bytesperline=16 sizeimage=128
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=NM12 little-endian (0x32314d4e), field=none, colorspace=8, num_planes=2, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=4096 sizeimage=16777216
+plane 1: bytesperline=4096 sizeimage=8388608
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=NV12 little-endian (0x3231564e), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=NV12 little-endian (0x3231564e), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16 sizeimage=256
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=NV12 little-endian (0x3231564e), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=4096 sizeimage=16777216
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=AR24 little-endian (0x34325241), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=AR24 little-endian (0x34325241), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=64 sizeimage=1024
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=AR24 little-endian (0x34325241), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16384 sizeimage=67108864
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=XR24 little-endian (0x34325258), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=XR24 little-endian (0x34325258), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=64 sizeimage=1024
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=XR24 little-endian (0x34325258), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16384 sizeimage=67108864
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=BGR3 little-endian (0x33524742), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=BGR3 little-endian (0x33524742), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=48 sizeimage=768
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=BGR3 little-endian (0x33524742), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=12288 sizeimage=50331648
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=RGB3 little-endian (0x33424752), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=RGB3 little-endian (0x33424752), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=48 sizeimage=768
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=RGB3 little-endian (0x33424752), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=12288 sizeimage=50331648
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=RGBP little-endian (0x50424752), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=RGBP little-endian (0x50424752), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=32 sizeimage=512
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=RGBP little-endian (0x50424752), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=8192 sizeimage=33554432
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=RGGB little-endian (0x42474752), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=RGGB little-endian (0x42474752), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16 sizeimage=256
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=RGGB little-endian (0x42474752), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=4096 sizeimage=16777216
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=GRBG little-endian (0x47425247), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=GRBG little-endian (0x47425247), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16 sizeimage=256
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=GRBG little-endian (0x47425247), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=4096 sizeimage=16777216
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=GBRG little-endian (0x47524247), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=GBRG little-endian (0x47524247), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16 sizeimage=256
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=GBRG little-endian (0x47524247), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=4096 sizeimage=16777216
+video0: VIDIOC_ENUM_FRAMESIZES: error -22: index=0, pixelformat=BA81 little-endian (0x31384142), type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=16, height=16, format=BA81 little-endian (0x31384142), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=16 sizeimage=256
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=4096, height=4096, format=BA81 little-endian (0x31384142), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=0
+plane 0: bytesperline=4096 sizeimage=16777216
+video0: VIDIOC_ENUM_FRAMESIZES: index=0, pixelformat=GREY little-endian (0x59455247), type=3, min=64x64, max=640x480, step=1x1
+video0: VIDIOC_ENUM_FRAMEINTERVALS: error -515: index=0, pixelformat=GREY little-endian (0x59455247), wxh=640x480, type=0
+video0: VIDIOC_TRY_FMT: type=vid-cap-mplane, width=64, height=64, format=YUYV little-endian (0x56595559), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=1
+plane 0: bytesperline=128 sizeimage=8192
+video0: VIDIOC_S_FMT: type=vid-cap-mplane, width=64, height=64, format=YUYV little-endian (0x56595559), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=1
+plane 0: bytesperline=128 sizeimage=8192
+video0: VIDIOC_G_PARM: error -515: type=vid-cap-mplane, capability=0x1000, capturemode=0x0, timeperframe=0/0, extendedmode=0, readbuffers=0
+video0: VIDIOC_EXPBUF: error -22: fd=0, type=vid-cap-mplane, index=4294967295, plane=4294967295, flags=0x00080002
+video0: VIDIOC_G_CTRL: error -22: name=Min Number of Capture Buffers, id=0x980927, value=0
+video0: VIDIOC_REQBUFS: count=0, type=vid-cap-mplane, memory=mmap
+video0: VIDIOC_CREATE_BUFS: index=0, count=0, memory=mmap, capabilities=0x00000015, type=vid-cap-mplane, width=64, height=64, format=YUYV little-endian (0x56595559), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=1
+plane 0: bytesperline=128 sizeimage=8192
+video0: VIDIOC_REQBUFS: error -22: count=0, type=vid-cap-mplane, memory=userptr
+video0: VIDIOC_REQBUFS: count=0, type=vid-cap-mplane, memory=dmabuf
+video0: VIDIOC_CREATE_BUFS: index=0, count=0, memory=dmabuf, capabilities=0x00000015, type=vid-cap-mplane, width=64, height=64, format=YUYV little-endian (0x56595559), field=none, colorspace=8, num_planes=1, flags=0x0, ycbcr_enc=1, quantization=1, xfer_func=1
+plane 0: bytesperline=128 sizeimage=8192
+video0: VIDIOC_G_INPUT: error -25: value=0
+video0: VIDIOC_SUBSCRIBE_EVENT: error -22: type=0x5, id=0x0, flags=0x0
+video0: VIDIOC_G_CTRL: error -22: name=Min Number of Capture Buffers, id=0x980927, value=0
+video0: VIDIOC_REQBUFS: count=4, type=vid-cap-mplane, memory=mmap
+video0: VIDIOC_QUERYBUF: 00:00:00.000000 index=0, type=vid-cap-mplane, request_fd=0, flags=0x00002000, field=any, sequence=0, memory=mmap
+plane 0: bytesused=0, data_offset=0x00000000, offset/userptr=0x0, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_QUERYBUF: 00:00:00.000000 index=1, type=vid-cap-mplane, request_fd=0, flags=0x00002000, field=any, sequence=0, memory=mmap
+plane 0: bytesused=0, data_offset=0x00000000, offset/userptr=0x2000, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_QUERYBUF: 00:00:00.000000 index=2, type=vid-cap-mplane, request_fd=0, flags=0x00002000, field=any, sequence=0, memory=mmap
+plane 0: bytesused=0, data_offset=0x00000000, offset/userptr=0x4000, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_QUERYBUF: 00:00:00.000000 index=3, type=vid-cap-mplane, request_fd=0, flags=0x00002000, field=any, sequence=0, memory=mmap
+plane 0: bytesused=0, data_offset=0x00000000, offset/userptr=0x6000, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_EXPBUF: fd=13, type=vid-cap-mplane, index=0, plane=0, flags=0x00080002
+video0: VIDIOC_QBUF: 00:00:00.000000 index=0, type=vid-cap-mplane, request_fd=0, flags=0x00002003, field=any, sequence=0, memory=mmap
+plane 0: bytesused=8192, data_offset=0x00000000, offset/userptr=0x0, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_EXPBUF: fd=14, type=vid-cap-mplane, index=1, plane=0, flags=0x00080002
+video0: VIDIOC_QBUF: 00:00:00.000000 index=1, type=vid-cap-mplane, request_fd=0, flags=0x00002003, field=any, sequence=0, memory=mmap
+plane 0: bytesused=8192, data_offset=0x00000000, offset/userptr=0x2000, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_EXPBUF: fd=15, type=vid-cap-mplane, index=2, plane=0, flags=0x00080002
+video0: VIDIOC_QBUF: 00:00:00.000000 index=2, type=vid-cap-mplane, request_fd=0, flags=0x00002003, field=any, sequence=0, memory=mmap
+plane 0: bytesused=8192, data_offset=0x00000000, offset/userptr=0x4000, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+video0: VIDIOC_EXPBUF: fd=16, type=vid-cap-mplane, index=3, plane=0, flags=0x00080002
+video0: VIDIOC_QBUF: 00:00:00.000000 index=3, type=vid-cap-mplane, request_fd=0, flags=0x00002003, field=any, sequence=0, memory=mmap
+plane 0: bytesused=8192, data_offset=0x00000000, offset/userptr=0x6000, length=8192
+timecode=00:00:00 type=0, flags=0x00000000, frames=0, userbits=0x00000000
+----------------------- adj_fmt 1
+----------------------- adj_fmt 64 64 0x2001
+----------------------- set_fmt 6 = 0
+input fmt RGB4
+output fmt YUYV
+video0: VIDIOC_STREAMON: type=vid-cap-mplane
+videodev: v4l2_poll: video0: poll: 00000000 00000039
+videodev: v4l2_poll: video0: poll: 00000000 00000039
+video0: VIDIOC_STREAMOFF: type=vid-cap-mplane
+video0: VIDIOC_REQBUFS: count=0, type=vid-cap-mplane, memory=mmap
+videodev: v4l2_release: video0: release
