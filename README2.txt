@@ -262,6 +262,22 @@ https://github.com/phytec/linux-phytec/blob/v5.15.71/drivers/media/i2c/tc358743.
 https://github.com/phytec/linux-phytec/blob/v5.15.71/Documentation/devicetree/bindings/media/i2c/tc358743.txt
 
 
+VIDIOC_DQBUF
+https://www.nxp.com/docs/en/reference-manual/IMX_REFERENCE_MANUAL.pdf
+
+https://www2.baslerweb.com/en/downloads/software-downloads/basler-camera-enablement-package-for-nxp-s-i-mx-8m-plus-applications-processor/
+
+V4L2 capture
+https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/v4l2.html
+https://vocal.com/video/overview-of-video-capture-in-linux/
+https://www.researchgate.net/figure/V4L2-image-capture-operation-flowchart_fig1_324172011
+http://v4l.videotechnology.com/dwg/v4l2.pdf
+
+https://github.com/avionic-design/linux-l4t/blob/meerkat/l4t-r21-5/drivers/media/i2c/tc358748.c#L793
+https://community.nxp.com/t5/i-MX-Processors/TC358743-HDMI-CSI-Bridge-Driver-for-iMX8QM/m-p/1279555
+https://github.com/torvalds/linux/blob/v6.2/drivers/media/i2c/tc358746.c
+
+
 ============================================================
 RTC ?
 https://github.com/phytec/linux-phytec/blob/v5.15.71/drivers/rtc/rtc-mcp795.c
