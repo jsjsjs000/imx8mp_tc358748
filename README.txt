@@ -192,6 +192,8 @@ scp root@192.168.3.11:/root/image.bin . && ghex image.bin &
 /home/p2119/linux-imx-v5.15.71_2.2.2-phy/drivers/media/v4l2-core/v4l2-ioctl.c
 static void v4l_print_buffer(const void *arg, bool write_only)
 
+alias up_k='scp ~/linux-imx-v5.15.71_2.2.2-phy/arch/arm64/boot/Image root@192.168.3.11:/boot/'
+
 	# ok:
 video0: VIDIOC_STREAMON: type=vid-cap-mplane
 videodev: v4l2_poll: video0: poll: 00000000 00000039

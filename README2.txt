@@ -286,7 +286,8 @@ echo 3 > /sys/module/mxc_mipi_csi2_yav/parameters/debug
 echo 0xff > /sys/class/video4linux/video0/dev_debug
 echo 0xff > /sys/class/video4linux/v4l-subdev1/dev_debug
 
-dmesg | grep 'video0\|videodev'
+dmesg
+# dmesg | grep 'video0\|videodev'
 
 Makefile:
 pr_debug("debug variable = %d\n", 3);
@@ -309,6 +310,11 @@ ehco 1 > /sys/module/tc358840/parameters/debug
 please refer to v4l2_dbg function definition in comment #5, you should be able to saw below message while setting the debug flags.
 
 v4l2_dbg(1, debug, sd, "%s: no valid signal\n", __func__);
+
+
+============================================================
+
+echo 0xff > /sys/class/video4linux/video0/dev_debug; gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw; dmesg | tail -20
 
 ============================================================
 RTC ?
