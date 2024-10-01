@@ -257,15 +257,6 @@ https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-C
 https://community.nxp.com/t5/i-MX-Processors/How-to-calculate-MIPI-CSI-2-required-operating-frequency/m-p/331051
 https://community.nxp.com/t5/i-MX-Processors/MIPI-CSI2-Required-Operating-Frequency-Calculation/m-p/431947
 
-Phytec TC358743 - Toshiba HDMI to CSI-2 bridge
-https://github.com/phytec/linux-phytec/blob/v5.15.71/drivers/media/i2c/tc358743.c
-https://github.com/phytec/linux-phytec/blob/v5.15.71/Documentation/devicetree/bindings/media/i2c/tc358743.txt
-
-
-VIDIOC_DQBUF
-https://www.nxp.com/docs/en/reference-manual/IMX_REFERENCE_MANUAL.pdf
-
-https://www2.baslerweb.com/en/downloads/software-downloads/basler-camera-enablement-package-for-nxp-s-i-mx-8m-plus-applications-processor/
 
 V4L2 capture
 https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/v4l2.html
@@ -273,11 +264,19 @@ https://vocal.com/video/overview-of-video-capture-in-linux/
 https://www.researchgate.net/figure/V4L2-image-capture-operation-flowchart_fig1_324172011
 http://v4l.videotechnology.com/dwg/v4l2.pdf
 
+VIDIOC_DQBUF
+https://www.nxp.com/docs/en/reference-manual/IMX_REFERENCE_MANUAL.pdf
+
+https://www2.baslerweb.com/en/downloads/software-downloads/basler-camera-enablement-package-for-nxp-s-i-mx-8m-plus-applications-processor/
+
 https://github.com/avionic-design/linux-l4t/blob/meerkat/l4t-r21-5/drivers/media/i2c/tc358748.c#L793
 https://community.nxp.com/t5/i-MX-Processors/TC358743-HDMI-CSI-Bridge-Driver-for-iMX8QM/m-p/1279555
 https://github.com/torvalds/linux/blob/v6.2/drivers/media/i2c/tc358746.c
 
 
+nVidia camera development
+https://docs.nvidia.com/jetson/archives/r34.1/DeveloperGuide/text/SD/CameraDevelopment.html
+https://elinux.org/Jetson/Cameras
 
 
 	Kernel debug
@@ -289,44 +288,28 @@ echo 0xff > /sys/class/video4linux/v4l-subdev1/dev_debug
 dmesg
 # dmesg | grep 'video0\|videodev'
 
-Makefile:
-pr_debug("debug variable = %d\n", 3);
-CFLAGS_filename.o := -DDEBUG
-# https://stackoverflow.com/questions/28936199/why-is-pr-debug-of-the-linux-kernel-not-giving-any-output
+	V4L2 capture driver debug
 
+echo 0xff > /sys/class/video4linux/video0/dev_debug; \
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw; \
+dmesg | \
+tail -20
+
+/home/p2119/linux-imx-v5.15.71_2.2.2-phy/include/uapi/linux/videodev2.h
+#define V4L2_BUF_FLAG_MAPPED			0x00000001
+#define V4L2_BUF_FLAG_QUEUED			0x00000002
 
 ============================================================
+	Driver debug
 https://forums.developer.nvidia.com/t/how-to-check-v4l2-dbg-message-in-the-console/57749/12
-
-please refer to below code snippet in the tc358840 kernel driver.
 
 static int debug;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "debug level (0-3)");
-above paragraph will create the debug flags under its module.
-and you should be able to control the value following below.
 
-ehco 1 > /sys/module/tc358840/parameters/debug
-please refer to v4l2_dbg function definition in comment #5, you should be able to saw below message while setting the debug flags.
+echo 1 > /sys/module/tc358840/parameters/debug
 
 v4l2_dbg(1, debug, sd, "%s: no valid signal\n", __func__);
 
-
 ============================================================
-
-echo 0xff > /sys/class/video4linux/video0/dev_debug; gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=64,height=64 ! multifilesink location=image.raw; dmesg | tail -20
-
-============================================================
-RTC ?
-https://github.com/phytec/linux-phytec/blob/v5.15.71/drivers/rtc/rtc-mcp795.c
-https://github.com/phytec/linux-phytec/blob/v5.15.71/drivers/rtc/rtc-rv3028.c
-https://ww1.microchip.com/downloads/en/DeviceDoc/MCP79410-MCP79411-MCP79412-Battery-Backed%20I2C-RTCC-20002266J.pdf
-https://ww1.microchip.com/downloads/en/DeviceDoc/22280A.pdf
-
-IMU ?
-https://www.st.com/resource/en/datasheet/asm330lhb.pdf
-
-
-
-
 

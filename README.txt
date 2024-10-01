@@ -121,6 +121,8 @@ https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-C
 
 https://github.com/avionic-design/linux-l4t/blob/meerkat/l4t-r21-5/drivers/media/i2c/tc358748.c#L793
 
+https://community.nxp.com/t5/i-MX-Processors/Host-Driver-not-registring-V4L2-subdevices-after-bridge/m-p/1359414
+
 
 # ---------------------------------------- AR051
 
@@ -187,6 +189,21 @@ scp root@192.168.3.11:/root/image.bin . && ghex image.bin &
 [    2.890677] : mipi_csis_imx8mp_phy_reset, No remote pad found!
 
 
+# ------------------------------------------------------------
+	CSI-2 debug
+kernel/drivers/mxc/mipi/mxc_mipi_csi2.c:275
+mipi_csi2_write(info, 0x00000001, CSI2_PHY_TST_CTRL0);
+
+Debug steps for customer MIPI sensor Data Flow
+google: Debug steps for customer MIPI sensor.docx
+
+# ------------------------------------------------------------ Unknown $$$$
+https://community.nxp.com/t5/i-MX-Processors/IMX8MP-HDMI-input-Convert-to-MIPI-CSI-debug-issue/m-p/1458690/highlight/true
+https://www.kernel.org/doc/html/v5.13/driver-api/media/csi2.html
+https://community.infineon.com/t5/USB-superspeed-peripherals/How-can-I-debug-the-MIPI-CSI-2-RX-interface/td-p/75860
+https://www.kernel.org/doc/html/v4.15/media/kapi/csi2.html
+
+https://www.ezurio.com/resources/software-announcements/hdmi-input-for-i-mx8-boards-via-mipi-csi
 
 # ------------------------------------------------------------ debug V4L2 driver:
 /home/p2119/linux-imx-v5.15.71_2.2.2-phy/drivers/media/v4l2-core/v4l2-ioctl.c
