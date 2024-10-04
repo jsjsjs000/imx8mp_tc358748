@@ -35,7 +35,8 @@ clear; co && up && mod
 
 media-ctl -p; ls /dev/video*; ls /dev/media*
 
-v4l2-ctl --list-devices
+v4l2-ctl -d0 --list-devices
+v4l2-ctl -d0 --list-formats
 
 
 	# usefull aliases for i.MX - writing to .bashrc

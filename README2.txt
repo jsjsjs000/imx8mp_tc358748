@@ -313,3 +313,21 @@ v4l2_dbg(1, debug, sd, "%s: no valid signal\n", __func__);
 
 ============================================================
 
+
+
+
+
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! multifilesink location=image.raw
+hexdump -n384 image.raw
+ll image.raw  # 640 * 480 * 3 = 921600
+
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! jpegenc ! multifilesink location=image.jpeg
+
+scp root@192.168.3.11:/root/image.jpeg . && xdg-open image.jpeg
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480 ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+
+	# PC receive
+gst-launch-1.0 -v tcpclientsrc port=8888 host=192.168.3.11 ! tsdemux ! h264parse ! openh264dec ! glimagesink sync=false
