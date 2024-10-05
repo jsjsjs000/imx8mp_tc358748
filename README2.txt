@@ -318,16 +318,50 @@ v4l2_dbg(1, debug, sd, "%s: no valid signal\n", __func__);
 
 
 
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480 ! multifilesink location=image.raw
 gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! multifilesink location=image.raw
 hexdump -n384 image.raw
 ll image.raw  # 640 * 480 * 3 = 921600
 
 gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! jpegenc ! multifilesink location=image.jpeg
 
+gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=YUV422 ! jpegenc ! multifilesink location=image.jpeg
+
 scp root@192.168.3.11:/root/image.jpeg . && xdg-open image.jpeg
 
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480 ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
+
+	# i.MX send video
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
 
 	# PC receive
-gst-launch-1.0 -v tcpclientsrc port=8888 host=192.168.3.11 ! tsdemux ! h264parse ! openh264dec ! glimagesink sync=false
+gst-launch-1.0 -v tcpclientsrc port=8888 host=192.168.3.11 ! tsdemux ! h264parse ! openh264dec ! fpsdisplaysink sync=false
+
+
+
+	#
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_h264 ! rtph264pay name=pay0 ! udpsink port=8888 host=0.0.0.0
+
+gst-launch-1.0 -v udpsrc port=8888 address=192.168.3.11 ! application/x-rtp,media=video,clock-rate=90000,encoding-name=H264,payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! fpsdisplaysink sync=false
+
+
+dmesg | grep '\-\-\-'
+
+[   12.673114] input fmt RGB4                                                                       
+[   12.675819] output fmt RGB3                                                                      
+
+v4l2-ctl -d /dev/video0 --set-fmt-video=pixelformat=RGB3
+
+	Image test - 8 color bars
+The 75% Colour Bars or EBU/IBA 100/0/75/0 Colour Bars pattern
+https://en.wikipedia.org/wiki/EBU_colour_bars
+
+https://en.wikipedia.org/wiki/SMPTE_color_bars
+
+white   #FFFFFF
+yellow  #F0FF03
+cyan    #0FFFFF
+green   #00FF03
+magenta #FF00FC
+red     #F00000
+blue    #0F00FC
+black   #000000
