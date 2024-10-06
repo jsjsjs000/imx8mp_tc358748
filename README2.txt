@@ -245,6 +245,7 @@ https://github.com/avionic-design/linux-l4t/blob/meerkat/l4t-r21-5/drivers/media
 https://community.nxp.com/t5/i-MX-Processors/IMX8MM-MIPI-CSI/td-p/1048942
 	TC9590XBG_Rev1.0_20181227.pdf
 
+https://adaptivesupport.amd.com/s/question/0D52E00007CBEiTSAX/mipi-csi2-rx-subsystem-40-line-rate-calculation?language=en_US
 https://forums.raspberrypi.com/viewtopic.php?t=287424
 https://community.nxp.com/t5/i-MX-Processors/Parallel-to-mipi-csi2-issue-for-toshiba-chip-TC358748/td-p/544245?profile.language=en
 https://community.nxp.com/t5/i-MX-Processors-Knowledge-Base/Debug-steps-for-customer-MIPI-sensor-docx/ta-p/1120244
