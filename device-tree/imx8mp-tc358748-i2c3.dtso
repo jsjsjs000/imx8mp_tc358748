@@ -145,24 +145,12 @@
 				remote-endpoint = <&mipi_csi0_ep>;
 				bus-type = <4>;                               // MIPI CSI-2 D-PHY
 
-				link-frequencies = /bits/ 64 <504000000>;  // 504 MHz AR0521 wykrywa i działa
-				// link-frequencies = /bits/ 64 <252000000>;  // 252 MHz AR0521 wykrywa i działa
-				// link-frequencies = /bits/ 64 <200000000>;  // 200 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
-				// link-frequencies = /bits/ 64 <189000000>;  // 200 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
-				// link-frequencies = /bits/ 64 <126000000>;  // 126 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
-				// link-frequencies = /bits/ 64 <80000000>;  // 80 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
-				// link-frequencies = /bits/ 64 <63000000>;  // 63 MHz AR0521 wykrywa setup-pipeline-csi1 ale NIE działa
-				// link-frequencies = /bits/ 64 <38028180>;  // 38 MHz
-
-				// link-frequencies = /bits/ 64 <38028180>;      // 38 MHz
-				// link-frequencies = /bits/ 64 <76056360>;   // 38 * 2 MHz
-				// link-frequencies = /bits/ 64 <152112720>;     // 38 * 4 MHz
-
 				clock-lanes = <0>;
 				clock-noncontinuous = <1>;
 
-				data-lanes = <1 2 3 4>;   // 4 lanes
-				// data-lanes = <1>;      // 1 lane
+				// data-lanes = <1 2 3 4>;  // 4 lanes
+ 				data-lanes = <1 2>;      // 2 lanes
+ 				// data-lanes = <1>;        // 1 lane
 			};
 		};
 	};
@@ -171,19 +159,19 @@
 &mipi_csi_0 {
 	#address-cells = <1>;
 	#size-cells = <0>;
+	status = "okay";
 
 	port@0 {
 		reg = <0>;
 		mipi_csi0_ep: endpoint {
 			remote-endpoint = <&vm017_csi1_ep>;
 
-			data-lanes = <4>;
+			// data-lanes = <4>;
+			// csis-hs-settle = <1>;   // dla 80-90 Mbps - 4 lanes 38 MHz
+			// csis-clk-settle = <0>;  // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
 
-			// csis-hs-settle = <16>;  // dla VM-017
-			// csis-hs-settle = <13>;  // dla VM-016, VM-020
-			// csis-clk-settle = <2>;
-
-			csis-hs-settle = <0>;   // dla 80-90 Mbps - 4 lanes 38 MHz
+			data-lanes = <2>;
+			csis-hs-settle = <1>;   // dla 80-90 Mbps - 4 lanes 38 MHz
 			csis-clk-settle = <0>;  // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
 
 			// data-lanes = <1>;
@@ -195,12 +183,9 @@
 	};
 };
 
-
-/* */
 &cameradev {
 	status = "okay";
 };
-
 
 &isi_0 {
 	dma-coherent;
@@ -211,9 +196,6 @@
 	};
 };
 
-&mipi_csi_0 {
-	status = "okay";
-};
 
 
 /*

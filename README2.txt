@@ -329,19 +329,24 @@ gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,
 
 scp root@192.168.3.11:/root/image.jpeg . && xdg-open image.jpeg
 
+echo "alias j='gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! jpegenc ! multifilesink location=image.jpeg'" >> .bashrc
+echo "alias t='gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0'" >> .bashrc
 
-	# i.MX send video
+
+
+	# i.MX send video - TCP server h264
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0
 
-	# PC receive
+	# PC receive - TCP server h264
 gst-launch-1.0 -v tcpclientsrc port=8888 host=192.168.3.11 ! tsdemux ! h264parse ! openh264dec ! fpsdisplaysink sync=false
 
 
+	# i.MX send video - RTSP server h265
+./test-launch "v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_hevc ! rtph265pay name=pay0"
 
-	#
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_h264 ! rtph264pay name=pay0 ! udpsink port=8888 host=0.0.0.0
+	# PC receive - RTSP h265
+gst-launch-1.0 rtspsrc location=rtsp://192.168.3.11:8554/test latency=0 ! rtph265depay ! h265parse ! avdec_h265 ! decodebin ! fpsdisplaysink sync=false
 
-gst-launch-1.0 -v udpsrc port=8888 address=192.168.3.11 ! application/x-rtp,media=video,clock-rate=90000,encoding-name=H264,payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! fpsdisplaysink sync=false
 
 
 dmesg | grep '\-\-\-'
