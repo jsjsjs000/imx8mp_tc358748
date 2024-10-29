@@ -331,7 +331,7 @@ gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,
 scp root@192.168.3.11:/root/image.jpeg . && xdg-open image.jpeg
 
 echo "alias j='gst-launch-1.0 v4l2src num-buffers=1 device=/dev/video0 ! video/x-raw,width=640,height=480,format=RGB ! jpegenc ! multifilesink location=image.jpeg'" >> .bashrc
-echo "alias t='gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_h264 ! mpegtsmux ! tcpserversink port=8888 host=0.0.0.0'" >> .bashrc
+echo "alias t='./test-launch \"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1,format=RGB ! videoconvert ! vpuenc_hevc ! rtph265pay name=pay0\"'" >> .bashrc
 
 
 

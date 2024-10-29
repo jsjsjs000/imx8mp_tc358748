@@ -11,110 +11,7 @@
 	compatible = "phytec,imx8mp-phyboard-pollux";
 };
 
-
-/* I2C3 * /   // only I2C driver
-&i2c3 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-
-	clock-frequency = <400000>;
-	status = "okay";
-
-	tc358748@0e {
-		compatible = "pco,tc358748_driver";
-		reg = <0x0e>;
-		status = "okay";
-	};
-};
-*/
-
-
-/* I2C3 * /   // my from tc358743
-&i2c3 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-
-	clock-frequency = <400000>;
-	status = "okay";
-
-	tc358748@0e {
-		compatible = "pco,tc358748_driver";
-		reg = <0x0e>;
-		status = "okay";
-
-		clock-names = "refclk";
-		refclk = <10000000>;
-		pixclk = <74250000>;  // 74.25 MHz (* 3 = 222.75 MHz)
-		csi_id = <0x00>;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@1 {  / * Output * /
-				reg = <1>;
-				tc358748_mipi_tx: endpoint {
-					data-lanes = <1 2 3 4>;
-					clock-lanes = <0>;
-					// clock-continuous;
-					clock-noncontinuous;
-					link-frequencies = /bits/ 64 <38028180>;  // 222.5 MHz -> 38 MHz
-					remote-endpoint = <&mipi_csi_0_in>;
-				};
-			};
-		};
-	};
-};
-
-&cameradev {
-	status = "okay";
-};
-
-&isp_0 {
-	status = "disabled";
-};
-
-&isi_0 {
-	status = "okay";
-
-	cap_device {
-		status = "okay";
-	};
-
-	ports {
-		port@0 {
-			isi_in_0: endpoint {
-				remote-endpoint = <&mipi_csi_0_out>;
-			};
-		};
-	};
-};
-
-&mipi_csi_0 {
-	status = "okay";
-
-	port@0 {
-		mipi_csi_0_in: endpoint {
-			remote-endpoint = <&tc358748_mipi_tx>;
-			data-lanes = <4>;
-			csis-hs-settle = <13>;
-		};
-	};
-
-	port@1 {
-		mipi_csi_0_out: endpoint {
-			 remote-endpoint = <&isi_in_0>;
-		};
-	};
-};
-*/
-
-
-
-
-
-
-/* from AR0521 */
+/* TC358748 Toshiba parallel to CSI-2 */
 &{/} {
 	vm017_csi1_clk: vm017-csi1-ext-clk {
 		#clock-cells = <0>;
@@ -166,17 +63,17 @@
 		mipi_csi0_ep: endpoint {
 			remote-endpoint = <&vm017_csi1_ep>;
 
-			// data-lanes = <4>;
-			// csis-hs-settle = <1>;   // dla 80-90 Mbps - 4 lanes 38 MHz
+			// data-lanes = <4>;       // 4 lanes
+			// csis-hs-settle = <1>;   // for 80-90 Mbps - 4 lanes 38 MHz
 			// csis-clk-settle = <0>;  // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
 
-			data-lanes = <2>;
-			csis-hs-settle = <1>;   // dla 80-90 Mbps - 4 lanes 38 MHz
+			data-lanes = <2>;       // 2 lanes
+			csis-hs-settle = <1>;   // for 80-90 Mbps - 2 lanes 72 MHz
 			csis-clk-settle = <0>;  // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
 
-			// data-lanes = <1>;
-			// csis-hs-settle = <3>;    // dla 140-180 Mbps - 1 lane 152 MHz
-			// csis-clk-settle = <0>;   // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
+			// data-lanes = <1>;       // 1 lane
+			// csis-hs-settle = <3>;   // for 140-180 Mbps - 1 lane 152 MHz
+			// csis-clk-settle = <0>;  // https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764265
 
 			csis-wclk;               // WRAP_CLK - EXTCLK - external clock
 		};
@@ -195,31 +92,3 @@
 		status = "okay";
 	};
 };
-
-
-
-/*
-https://community.nxp.com/t5/i-MX-Processors/Trouble-with-TC358748-Parallel-to-CSI2-video-bridge/td-p/1846172?attachment-id=173630
-
-
-		.name		= "RGB24",
-		.fourcc		= V4L2_PIX_FMT_RGB24,
-		.depth		= { 24 },
-		.color		= MXC_ISI_OUT_FMT_BGR32P,
-		.memplanes	= 1,
-		.colplanes	= 1,
-		.align		= 2,
-		.mbus_code  = MEDIA_BUS_FMT_RGB888_1X24,
-
-
-
-
-[ 7.992257] mx8-img-md: Registered sensor subdevice: tc358748 2-000e (1)
-[ 8.002921] mx8-img-md: created link [mxc_isi.0] => [mxc_isi.0.capture]
-[ 8.018980] mx8-img-md: created link [mxc-mipi-csi2.0] => [mxc_isi.0]
-[ 8.025519] mx8-img-md: created link [tc358748 2-000e] => [mxc-mipi-csi2.0]
-[ 8.032634] mxc-md 32c00000.bus:camera: mxc_md_create_links
-
-
-
-*/
