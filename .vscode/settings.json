@@ -16,4 +16,7 @@
 "CC_PREFIX": "${config:OECORE_NATIVE_SYSROOT}/usr/bin/${config:ARCH}/${config:ARCH}-",
 "CXX": "${config:CC_PREFIX}g++ --sysroot=${config:SDKTARGETSYSROOT}",
 "CC": "${config:CC_PREFIX}gcc --sysroot=${config:SDKTARGETSYSROOT}",
+"files.associations": {
+  "vvsensor.h": "c"
+},
 }
